@@ -13,15 +13,20 @@
 
 vtable_t g_NOSUPER_vtable = {NULL, NULL};
 
+INLINE void DELETE(void *ptr)
+{
+    ((void (*)(void*, int))((*(vtable_t **)ptr)->__entry[3].__address))(ptr, 1);
+}
+
 void * look_for_virtual_function(void *obj, const char * func_name)
 {
-    int i = 0;
     if (NULL != obj && NULL != func_name)
     {
         vtable_t * vptr = (*(vtable_t **)obj);
-        while (NULL != vptr) {
-            while (vptr->__entry[i].__address && vptr->__entry[i].__name)
-            {
+        assert(NULL != vptr);
+        while (NULL != vptr->__entry) {
+            int i = 0;
+            while (vptr->__entry[i].__address && vptr->__entry[i].__name) {
                 if (0 == strcmp(func_name, vptr->__entry[i].__name)) {
                     return vptr->__entry[i].__address;
                 }
@@ -32,3 +37,4 @@ void * look_for_virtual_function(void *obj, const char * func_name)
     }
     return NULL;
 }
+

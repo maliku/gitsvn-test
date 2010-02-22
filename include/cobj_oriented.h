@@ -52,7 +52,8 @@ extern struct type * type##_##preconstructor(struct type *); \
 extern vtable_t g_NOSUPER_vtable;
 
 
-#define MEMBER_FUNC_NAMED(type, func, ...) type##_##func(type *self, ##__VA_ARGS__)
+/* #define MEMBER_FUNC_NAMED(type, func, ...) type##_##func(type *self, ##__VA_ARGS__)
+ */
 
 #define MEMBER_FUNC_DECBEGIN(type) struct _##type##_memfuncs { \
     struct type* (*type)(struct type*);
@@ -68,10 +69,12 @@ extern vtable_t g_NOSUPER_vtable;
 
 #define MEMBER_FUNC_REGEND };
 
-#define VIRTUAL_MEMFUNC_DECLARE(type, funcname) \
+#define VIRTUAL_MEMFUNC_REGISTER(type, funcname) \
         {#funcname, (void *)type##_##funcname, 0},
 
-#define VIRTUAL_FUNC_REGISTER(type, base) \
+#define VIRTUAL_MEMFUNC_DECLARE VIRTUAL_MEMFUNC_REGISTER
+
+#define VIRTUAL_FUNC_REGBEGIN(type, base) \
     PRECONSTRUCTOR_DEFINE(type) \
 PREDESTRUCTOR_DEFINE(type) \
 extern void type##_##destructor(type *); \
@@ -94,7 +97,7 @@ extern void type##_##destructor(type *); \
 #define CONSTRUCTOR_DECLARE(type) struct type* MEMBER_FUNC_DECLARE(type, type)
 #define CONSTRUCTOR_ARGS_DECLARE(type, ...) struct type* MEMBER_FUNC_DECLARE(type, type##_args, ##__VA_ARGS__)
 
-#define DESTRUCTOR_REGISTER(type) [1] = {.__address = type##_##destructor},
+#define DESTRUCTOR_REGISTER(type) [1] = {.__name = "destructor", .__address = type##_##destructor},
 #define DESTRUCTOR_DEFINE(type) void type##_##destructor(type * self)
 
 #define PRECONSTRUCTOR_DEFINE(type) \
@@ -108,7 +111,7 @@ extern void type##_##destructor(type *); \
         return (NULL != g_##type##_member_functions.type) ? \
         g_##type##_member_functions.type(self): self; \
     } \
-       /* INLINE*/ type * type##_##array_constructor(type *self, int num) { \
+       INLINE type * type##_##array_constructor(type *self, int num) { \
             type * head = self; \
             int  i = num; \
             while (i--) { \
@@ -127,7 +130,7 @@ extern void type##_##destructor(type *); \
             prev = prev->__base; \
         } \
     } \
-/*INLINE */void type##_##array_destructor(type *self, int num) { \
+INLINE void type##_##array_destructor(type *self, int num) { \
     type * head = self; \
     int  i = num; \
     while (i--) { \
@@ -154,7 +157,7 @@ extern void type##_##destructor(type *); \
         self; \
     })
 
-static void DELETE(void *ptr) {((void (*)(void*, int))((*(vtable_t **)ptr)->__entry[3].__address))(ptr, 1);}
+void DELETE(void *ptr);
 //#define DELETE(ptr) ((void (*)(void*, int))((*(vtable_t **)ptr)->__entry[3].__address))(ptr, 1)
 #define DELETE_ARRAY(ptr, num) ((void (*)(void*, int))((*(vtable_t **)ptr)->__entry[3].__address))(ptr, num)
 

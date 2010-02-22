@@ -52,6 +52,6 @@
 #ifdef INLINE
 #undef INLINE
 #endif
-#define INLINE inline
-
+//#define INLINE inline
+#define INLINE
 #endif
