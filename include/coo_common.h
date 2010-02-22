@@ -11,6 +11,7 @@
 #define __COO_COMMON_H__
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #ifdef TYPE_OF
 #undef TYPE_OF

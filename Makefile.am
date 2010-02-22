@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS=foreign
 
-SUBDIRS = src include test
+SUBDIRS = src include
 
 COMM_HDRS = miluiconfig.h
 

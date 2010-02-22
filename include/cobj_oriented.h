@@ -108,7 +108,7 @@ extern void type##_##destructor(type *); \
         return (NULL != g_##type##_member_functions.type) ? \
         g_##type##_member_functions.type(self): self; \
     } \
-        INLINE type * type##_##array_constructor(type *self, int num) { \
+       /* INLINE*/ type * type##_##array_constructor(type *self, int num) { \
             type * head = self; \
             int  i = num; \
             while (i--) { \
@@ -119,16 +119,15 @@ extern void type##_##destructor(type *); \
 
 #define PREDESTRUCTOR_DEFINE(type) \
     void type##predestructor(type *self) { \
-        vtable_t * prev = /* (*(vtable_t **)self); *//* equal to */g_##type##_vtable.__base; \
+        vtable_t * prev = g_##type##_vtable.__base; \
         if (NULL != ((*(vtable_t **)self)->__entry[1].__address)) { \
         ((void (*)(void*))((*(vtable_t **)self)->__entry[1].__address))(self); }\
-        while (prev->__entry /* && prev->__entry*/) { \
-            printf("prev->__entry=%p\n", prev->__entry); \
+        while (prev->__entry) { \
             ((void (*)(void*))(prev->__entry[1].__address))(self); \
             prev = prev->__base; \
         } \
     } \
-INLINE void type##_##array_destructor(type *self, int num) { \
+/*INLINE */void type##_##array_destructor(type *self, int num) { \
     type * head = self; \
     int  i = num; \
     while (i--) { \
@@ -155,7 +154,8 @@ INLINE void type##_##array_destructor(type *self, int num) { \
         self; \
     })
 
-#define DELETE(ptr) ((void (*)(void*, int))((*(vtable_t **)ptr)->__entry[3].__address))(ptr, 1)
+static void DELETE(void *ptr) {((void (*)(void*, int))((*(vtable_t **)ptr)->__entry[3].__address))(ptr, 1);}
+//#define DELETE(ptr) ((void (*)(void*, int))((*(vtable_t **)ptr)->__entry[3].__address))(ptr, 1)
 #define DELETE_ARRAY(ptr, num) ((void (*)(void*, int))((*(vtable_t **)ptr)->__entry[3].__address))(ptr, num)
 
 #define CALL_MEMBER_FUNC(obj, func, ...) (obj)->__member_functions->func(obj, ##__VA_ARGS__)

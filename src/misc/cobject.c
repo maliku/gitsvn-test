@@ -1,6 +1,6 @@
 /*! ============================================================================
- * @file oop.c 
- * @Synopsis  
+ * @file cobject.c 
+ * @Synopsis Cobject was the root class. 
  * @author DongKai
  * @version 1.0
  * @date 2009年12月01日
@@ -15,13 +15,16 @@ VIRTUAL_FUNC_REGISTER(Cobject, NOSUPER)
 DESTRUCTOR_REGISTER(Cobject)
 VIRTUAL_FUNC_REGEND
 
+/* constructor is not necessary but at here for style uniform. */
 CONSTRUCTOR_DEFINE(Cobject)
 {
 }
 
+/* Destructor is necessary because it's virtual. */
 DESTRUCTOR_DEFINE(Cobject)
 {
 }
+
 
 MEMBER_FUNC_REGBEGIN(Cobject)
 MEMBER_FUNC_REGISTER(Cobject, Cobject)
