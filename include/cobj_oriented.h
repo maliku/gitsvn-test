@@ -28,6 +28,8 @@ typedef struct _vtable
     virtual_function_t*  __entry;
 } vtable_t;
 
+void * find_virtual_function_in_current_class(virtual_function_t*, const char*);
+
 #define STRUCT(type) \
 extern struct type * type##_##preconstructor(struct type *); \
     extern virtual_function_t g_##type##_virtual_functions[]; \
@@ -69,10 +71,8 @@ extern vtable_t g_NOSUPER_vtable;
 
 #define MEMBER_FUNC_REGEND };
 
-#define VIRTUAL_MEMFUNC_REGISTER(type, funcname) \
+#define VIRTUAL_FUNC_REGISTER(type, funcname) \
         {#funcname, (void *)type##_##funcname, 0},
-
-#define VIRTUAL_MEMFUNC_DECLARE VIRTUAL_MEMFUNC_REGISTER
 
 #define VIRTUAL_FUNC_REGBEGIN(type, base) \
     PRECONSTRUCTOR_DEFINE(type) \
@@ -97,7 +97,11 @@ extern void type##_##destructor(type *); \
 #define CONSTRUCTOR_DECLARE(type) struct type* MEMBER_FUNC_DECLARE(type, type)
 #define CONSTRUCTOR_ARGS_DECLARE(type, ...) struct type* MEMBER_FUNC_DECLARE(type, type##_args, ##__VA_ARGS__)
 
-#define DESTRUCTOR_REGISTER(type) [1] = {.__name = "destructor", .__address = type##_##destructor},
+#define DESTRUCTOR_REGISTER(type) \
+{0, 0, 0}, \
+[1] = {.__name = "destructor", .__address = type##_##destructor}}; \
+struct {int *unused[3];} Please_Take_Destructor_Register_Of_##type##_At_Last = {
+
 #define DESTRUCTOR_DEFINE(type) void type##_##destructor(type * self)
 
 #define PRECONSTRUCTOR_DEFINE(type) \
@@ -120,8 +124,21 @@ extern void type##_##destructor(type *); \
             return self; \
         }
 
+#if 0
 #define PREDESTRUCTOR_DEFINE(type) \
-    void type##predestructor(type *self) { \
+    void type##_##predestructor(type *self) { \
+        vtable_t * prev = g_##type##_vtable.__base; \
+        void (*destructor)(void*) = find_virtual_function_in_current_class(g_##type##_vtable.__entry, "destructor"); \
+        if (NULL != destructor) (*destructor)(self); \
+        while (prev->__entry) { \
+            destructor = find_virtual_function_in_current_class(prev->__entry, "destructor"); \
+            (*destructor)(self); \
+        prev = prev->__base; \
+        } \
+    }
+#endif
+#define PREDESTRUCTOR_DEFINE(type) \
+    void type##_##predestructor(type *self) { \
         vtable_t * prev = g_##type##_vtable.__base; \
         if (NULL != ((*(vtable_t **)self)->__entry[1].__address)) { \
         ((void (*)(void*))((*(vtable_t **)self)->__entry[1].__address))(self); }\
@@ -134,7 +151,7 @@ INLINE void type##_##array_destructor(type *self, int num) { \
     type * head = self; \
     int  i = num; \
     while (i--) { \
-        type##predestructor(head++); \
+        type##_##predestructor(head++); \
     } \
     free(self); \
 }

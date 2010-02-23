@@ -11,7 +11,7 @@
 #include <string.h>
 #include "cobj_oriented.h"
 
-vtable_t g_NOSUPER_vtable = {NULL, NULL};
+vtable_t g_NOSUPER_vtable;
 
 INLINE void DELETE(void *ptr)
 {
@@ -27,6 +27,7 @@ void * look_for_virtual_function(void *obj, const char * func_name)
         while (NULL != vptr->__entry) {
             int i = 0;
             while (vptr->__entry[i].__address && vptr->__entry[i].__name) {
+                printf("virtual func name: %s\n", vptr->__entry[i].__name);
                 if (0 == strcmp(func_name, vptr->__entry[i].__name)) {
                     return vptr->__entry[i].__address;
                 }
@@ -38,3 +39,19 @@ void * look_for_virtual_function(void *obj, const char * func_name)
     return NULL;
 }
 
+void * find_virtual_function_in_current_class(virtual_function_t* entry, const char * func_name)
+{
+    int i = 0;
+    if (NULL != entry && NULL != func_name)
+    {
+        while (entry[i].__address && entry[i].__name)
+        {
+            printf("virtual func name: %s\n", entry[i].__name);
+            if (0 == strcmp(func_name, entry[i].__name)) {
+                return entry[i].__address;
+            }
+            ++i;
+        }
+    }
+    return NULL;
+}
