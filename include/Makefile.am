@@ -5,5 +5,5 @@ libmiluiincludedir = $(includedir)/milui
 
 # Which header files to install
 libmiluiinclude_HEADERS =     \
-    cobject.h  cobj_oriented.h  coo_common.h
+	coobase.h  coo.h
 
