@@ -52,6 +52,10 @@ struct _##type {\
 #define	_Self(type)	type* self		/* 'this' pointer for COO framework */
 #define	_SELF	void* self		/* 'this' pointer for COO framework */
 
+#define	_C(obj)	((obj)->__mptr)		/*  */
+#define	MCALL(func)	__mptr->func    /*  */
+#define	VCALL(func)	__vptr->func    /*  */
+
 #define VIRTUAL_FUNCTION_DECLARE_BEGIN(type) \
     struct __##type##Vtable {\
         RTTI __rtti;\
@@ -122,7 +126,6 @@ struct __##type##Mtable g_##type##Mtable = {
 }
 
 #define New(type) type##Preconstructor((type *)malloc(sizeof(type)))
-
 void Delete(void *ptr);
 
 #endif   /* ----- #ifndef COO_INC  ----- */

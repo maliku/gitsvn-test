@@ -29,7 +29,7 @@ void test(_Self(Object), int i)
 
 VIRTUAL_FUNCTION_REGBEGIN(Object, CooBase)
     ObjectDestructor
-VIRTUAL_FUNCTION_REGEND
+    VIRTUAL_FUNCTION_REGEND
 
 MEMBER_FUNCTION_REGBEGIN(Object)
     ObjectConstructor,
@@ -39,7 +39,8 @@ MEMBER_FUNCTION_REGBEGIN(Object)
 int main()
 {
     Object* obj = New(Object);
-    obj->__mptr->test(obj, 666);
+    _C(obj)->test(obj, 666);
+    obj->MCALL(test)(obj, 777);
     Delete(obj);
 
     return 0;
