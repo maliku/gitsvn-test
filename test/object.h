@@ -9,20 +9,13 @@
 
 #ifndef __OBJECT_H__
 #define __OBJECT_H__
-#include <milui/cobject.h>
+#include <milui/coobase.h>
 
-/* ====================== for class level1 ======================*/
-SUB_CLASS_DEFINE(level1, Cobject)
-    MEMBER_FUNC_DECBEGIN(level1)
-    void MEMBER_FUNC_DECLARE(level1, test1)
-    MEMBER_FUNC_DECEND
-SUB_CLASS_DEFEND(level1)
-
-/* ====================== for class level2 ======================*/
-SUB_CLASS_DEFINE(level2, level1)
-    MEMBER_FUNC_DECBEGIN(level2)
-    void MEMBER_FUNC_DECLARE(level2, test2)
-    MEMBER_FUNC_DECEND
-SUB_CLASS_DEFEND(level2)
+/* ====================== for class Object ======================*/
+CLASS_INHERIT_BEGIN(Object, CooBase)
+    MEMBER_FUNCTION_DECLARE_BEGIN(Object)
+    void (*test)(_Self(Object), int);
+    MEMBER_FUNCTION_DECLARE_END
+CLASS_INHERIT_END
 
 #endif
