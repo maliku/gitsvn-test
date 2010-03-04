@@ -41,7 +41,4 @@ int main()
     Object* obj = New(Object);
     _C(obj)->test(obj, 666);
     obj->MCALL(test)(obj, 777);
-    Delete(obj);
-
-    return 0;
-}
+   

@@ -69,21 +69,4 @@ VIRTUAL_MEMFUNC_REGISTER(level2, virtual_function_test)
 VIRTUAL_FUNC_REGEND
 
 MEMBER_FUNC_REGBEGIN(level2)
-MEMBER_FUNC_REGISTER(level2, level2)
-MEMBER_FUNC_REGISTER(level2, test)
-MEMBER_FUNC_REGEND
-
-int main()
-{
-    level1* lv1 = NEW(level1);
-    CALL_MEMBER_FUNC(lv1, test);
-    CALL_VIRTUAL_FUNC1(void, lv1, virtual_function_test, 10);
-    DELETE(lv1);
-
-    level2* lv2 = NEW(level2);
-    CALL_MEMBER_FUNC(lv2, test);
-    CALL_MEMBER_FUNC((level1*)lv2, test);
-    DELETE(lv2);
-
-    return 0;
-}
+MEMBER_FUN
