@@ -8,47 +8,47 @@ CLASS_INHERIT_BEGIN(CooSub, CooBase)
         MEMBER_FUNCTION_DECLARE_END
 CLASS_INHERIT_END
 
-void CooSubDestructor(void * self)
+DESTRUCTOR(CooSub)
 {
     printf("CooSubDestructor:%p\n", self);
 }
 
-CooSub * CooSubConstructor(CooSub* self)
+CONSTRUCTOR(CooSub)
 {
     printf("CooSubConstructor:%p\n", self);
     return self;
 }
-
-MEMBER_FUNCTION_REGBEGIN(CooSub)
-    CooSubConstructor
-MEMBER_FUNCTION_REGEND
-
-VIRTUAL_FUNCTION_REGBEGIN(CooSub, CooBase)
-    CooSubDestructor
+    VIRTUAL_FUNCTION_REGBEGIN(CooSub, CooBase)
+DESTRUCTOR_REGISTER(CooSub)
     VIRTUAL_FUNCTION_REGEND
+
+    MEMBER_FUNCTION_REGBEGIN(CooSub)
+CONSTRUCTOR_REGISTER(CooSub)
+    MEMBER_FUNCTION_REGEND
+
 /*============================================================================*/
 CLASS_INHERIT_BEGIN(CooLevel1, CooSub)
         MEMBER_FUNCTION_DECLARE_BEGIN(CooLevel1)
         MEMBER_FUNCTION_DECLARE_END
 CLASS_INHERIT_END
 
-void CooLevel1Destructor(void * self)
+DESTRUCTOR(CooLevel1)
 {
     printf("CooLevel1Destructor:%p\n", self);
 }
 
-CooLevel1 * CooLevel1Constructor(CooLevel1* self)
+CONSTRUCTOR(CooLevel1)
 {
     printf("CooLevel1Constructor:%p\n", self);
     return self;
 }
 
 MEMBER_FUNCTION_REGBEGIN(CooLevel1)
-    CooLevel1Constructor
+    CONSTRUCTOR_REGISTER(CooLevel1)
 MEMBER_FUNCTION_REGEND
 
 VIRTUAL_FUNCTION_REGBEGIN(CooLevel1, CooSub)
-    CooLevel1Destructor
+    DESTRUCTOR_REGISTER(CooLevel1)
     VIRTUAL_FUNCTION_REGEND
 
 #endif   /* ----- #ifndef _SUBTEST_INC  ----- */

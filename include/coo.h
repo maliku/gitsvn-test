@@ -50,7 +50,7 @@ struct _##type {\
 #define	CLASS_INHERIT_END };
 
 #define	_Self(type)	type* self		/* 'this' pointer for COO framework */
-#define	_SELF	void* self		/* 'this' pointer for COO framework */
+#define	_SELF   _Self(void)		/* 'this' pointer for COO framework */
 
 #define	_C(obj)	((obj)->__mptr)		/*  */
 #define	MCALL(func)	__mptr->func    /*  */
@@ -72,13 +72,13 @@ struct _##type {\
 #define	MEMBER_FUNCTION_DECLARE_END }*__mptr;
 
 #define VIRTUAL_FUNCTION_REGBEGIN(type, basetype) \
-PRECONSTRUCTOR_DEFINE(type)\
-PREDESTRUCTOR_DEFINE(type)\
+PRECONSTRUCTORS(type)\
+PREDESTRUCTORS(type)\
 type##Vtable g_##type##Vtable = {\
     {(RTTI*)(&g_##basetype##Vtable), #type},\
     type##Preconstructor,\
     type##Predestructor,
-#define	VIRTUAL_FUNCTION_REGISTER(type, func) type##func,
+#define	FUNCTION_REGISTER(type, func) type##func,
 #define VIRTUAL_FUNCTION_REGEND };
 
 #define PrintTest(fmt, ...) printf(fmt,##__VA_ARGS__)
@@ -86,7 +86,7 @@ type##Vtable g_##type##Vtable = {\
 struct __##type##Mtable g_##type##Mtable = {
 #define MEMBER_FUNCTION_REGEND };
 
-#define PRECONSTRUCTOR_DEFINE(type) \
+#define PRECONSTRUCTORS(type) \
     void * type##Preconstructor(void * self) { \
         type * addr = (type*)self;\
         RTTI * prev = &g_##type##Vtable.__rtti; \
@@ -107,7 +107,7 @@ struct __##type##Mtable g_##type##Mtable = {
             return self; \
         }
 
-#define PREDESTRUCTOR_DEFINE(type) \
+#define PREDESTRUCTORS(type) \
 	void type##Predestructor(void * self) { \
 	RTTI * prev = &g_##type##Vtable.__rtti; \
 	assert(NULL != prev);\
@@ -124,6 +124,12 @@ struct __##type##Mtable g_##type##Mtable = {
 	} \
 	free(self); \
 }
+
+#define CONSTRUCTOR(type) type* type##Constructor(_Self(type))
+#define DESTRUCTOR(type) void type##Destructor(_SELF)
+
+#define CONSTRUCTOR_REGISTER(type) type##Constructor,
+#define DESTRUCTOR_REGISTER(type) type##Destructor,
 
 #define New(type) type##Preconstructor((type *)malloc(sizeof(type)))
 void Delete(void *ptr);

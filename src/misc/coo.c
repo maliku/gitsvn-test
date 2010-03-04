@@ -12,3 +12,4 @@ void Delete(void *ptr)
 		free(ptr);
 	}
 }
+

@@ -4,6 +4,5 @@
 libmiluiincludedir = $(includedir)/milui
 
 # Which header files to install
-libmiluiinclude_HEADERS =     \
-	coobase.h  coo.h
+libmiluiinclude_HEADERS = coobase.h  coo.h
 

@@ -11,12 +11,12 @@
 
 /* ====================== for class Object ======================*/
 
-void ObjectDestructor(_SELF)
+DESTRUCTOR(Object)
 {
     printf("Object %p destructed...\n", self);
 }
 
-Object* ObjectConstructor(_Self(Object))
+CONSTRUCTOR(Object)
 {
     printf("Object %p constructed...\n", self);
     return self;
@@ -28,11 +28,11 @@ void test(_Self(Object), int i)
 }
 
 VIRTUAL_FUNCTION_REGBEGIN(Object, CooBase)
-    ObjectDestructor
+    DESTRUCTOR_REGISTER(Object)
     VIRTUAL_FUNCTION_REGEND
 
 MEMBER_FUNCTION_REGBEGIN(Object)
-    ObjectConstructor,
+    CONSTRUCTOR_REGISTER(Object)
     test
     MEMBER_FUNCTION_REGEND
 
