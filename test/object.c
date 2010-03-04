@@ -33,12 +33,15 @@ VIRTUAL_FUNCTION_REGBEGIN(Object, CooBase)
 
 MEMBER_FUNCTION_REGBEGIN(Object)
     CONSTRUCTOR_REGISTER(Object)
+    NON_COPY_CONSTRUCTOR
     test
     MEMBER_FUNCTION_REGEND
 
 int main()
 {
     Object* obj = New(Object);
-    _C(obj)->test(obj, 666);
-    obj->MCALL(test)(obj, 777);
+    _MC(obj)->test(obj, 666);
+    return 0;
+}
+
    

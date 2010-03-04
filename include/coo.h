@@ -21,7 +21,7 @@ typedef struct __RTTI {
 
 typedef struct __CommonVtable {
         RTTI __rtti;
-        void* (*Preconstructor)(void * self);
+        void* (*OrderConstruct)(void * self);
         void  (*Predestructor)(void * self);
         void  (*destructor)(void*);
 } CommonVtable;
@@ -50,7 +50,9 @@ struct _##type {\
 #define	CLASS_INHERIT_END };
 
 #define	_Self(type)	type* self		/* 'this' pointer for COO framework */
+#define	_Rhs(type)	type* rhs		/* 'this' pointer for COO framework */
 #define	_SELF   _Self(void)		/* 'this' pointer for COO framework */
+#define	_RHS	_Rhs(void)		/* 'this' pointer for COO framework */
 
 #define	_MC(pobj)	((pobj)->__mptr)
 #define	_VC(pobj)	(((pobj)->__mptr)->__GetVptr(pobj))
@@ -58,7 +60,7 @@ struct _##type {\
 #define VIRTUAL_FUNCTION_DECLARE_BEGIN(type) \
     struct __##type##Vtable {\
         RTTI __rtti;\
-        void * (*Preconstructor)(void*);\
+        void * (*OrderConstruct)(void*);\
         void (*Predestructor)(void*);\
         void (*destructor)(void*);
 
@@ -67,54 +69,72 @@ struct _##type {\
 #define MEMBER_FUNCTION_DECLARE_BEGIN(type) \
     struct __##type##Mtable {\
         type##Vtable* (*__GetVptr)(type*);\
-        type * (*type)(type*);
+        type * (*type)(type*);\
+        type * (*type##Copy)(type*);
 
 #define	MEMBER_FUNCTION_DECLARE_END }*__mptr;
+
+#define VIRTUAL_FUNC_DECLARE_PLACEHOLDER(type) \
+VIRTUAL_FUNCTION_DECLARE_BEGIN(type) \
+VIRTUAL_FUNCTION_DECLARE_END 
+
+#define MEMBER_FUNC_DECLARE_PLACEHOLDER(type) \
+MEMBER_FUNCTION_DECLARE_BEGIN(type) \
+MEMBER_FUNCTION_DECLARE_END 
 
 #define VIRTUAL_FUNCTION_REGBEGIN(type, basetype) \
 PRECONSTRUCTORS(type)\
 PREDESTRUCTORS(type)\
 type##Vtable g_##type##Vtable = {\
     {(RTTI*)(&g_##basetype##Vtable), #type},\
-    type##Preconstructor,\
+    type##OrderConstruct,\
     type##Predestructor,
 #define	FUNCTION_REGISTER(type, func) type##func,
 #define VIRTUAL_FUNCTION_REGEND };
 
-#define PrintTest(fmt, ...) printf(fmt,##__VA_ARGS__)
+#define VIRTUAL_FUNC_REGISTER_PLACEHOLDER(type) \
+VIRTUAL_FUNCTION_REGBEGIN(type) \
+VIRTUAL_FUNCTION_REGEND 
+
 #define MEMBER_FUNCTION_REGBEGIN(type) \
 LOCATE_VTABLE(type);\
 struct __##type##Mtable g_##type##Mtable = { \
     type##GetVPTR,
 #define MEMBER_FUNCTION_REGEND };
 
+#define MEMBER_FUNC_REGISTER_PLACEHOLDER(type) \
+MEMBER_FUNCTION_REGBEGIN(type) \
+MEMBER_FUNCTION_REGEND 
+
 #define LOCATE_VTABLE(type) \
     type##Vtable* type##GetVPTR(type* self) { return ((type##Vtable*)*(type##Vtable**)self); }
     
-
 #define PRECONSTRUCTORS(type) \
-    void * type##Preconstructor(void * self) { \
+    void * type##OrderConstruct(_SELF) { \
         type * addr = (type*)self;\
         RTTI * prev = &g_##type##Vtable.__rtti; \
         assert(NULL != prev);\
-        if (((CommonVtable*)*(CommonVtable**)prev)->Preconstructor)\
-        ((CommonVtable*)*(CommonVtable**)prev)->Preconstructor(self);\
-        *(type##Vtable**)self = &g_##type##Vtable;\
+        if (((CommonVtable*)*(CommonVtable**)prev)->OrderConstruct)\
+        ((CommonVtable*)*(CommonVtable**)prev)->OrderConstruct(self);\
         addr->__mptr = &g_##type##Mtable;\
         return (NULL != g_##type##Mtable.type) ? \
         g_##type##Mtable.type(self) : self; \
     } \
-        INLINE type * type##ArrayConstructor(type *self, int num) { \
-            type * head = self; \
-            int  i = num; \
-            while (i--) { \
-                type##Preconstructor(head++); \
-            } \
-            return self; \
-        }
+INLINE void * type##Preconstructor(_SELF) { \
+    *(type##Vtable**)self = &g_##type##Vtable;\
+    return type##OrderConstruct(self);\
+}\
+INLINE type * type##ArrayConstructor(_Self(type), int num) { \
+    type * head = self; \
+    int  i = num; \
+    while (i--) { \
+        type##Preconstructor(head++); \
+    } \
+    return self; \
+}
 
 #define PREDESTRUCTORS(type) \
-	void type##Predestructor(void * self) { \
+	void type##Predestructor(_SELF) { \
 	RTTI * prev = &g_##type##Vtable.__rtti; \
 	assert(NULL != prev);\
 	if (((CommonVtable*)*(CommonVtable**)prev)->destructor)\
@@ -122,7 +142,7 @@ struct __##type##Mtable g_##type##Mtable = { \
 	if (((CommonVtable*)*(CommonVtable**)prev)->Predestructor)\
 	((CommonVtable*)*(CommonVtable**)prev)->Predestructor(self);\
 } \
-	INLINE void type##ArrayDestructor(type *self, int num) { \
+	INLINE void type##ArrayDestructor(_Self(type), int num) { \
 	type * head = self; \
 	int  i = num; \
 	while (i--) { \
@@ -132,14 +152,20 @@ struct __##type##Mtable g_##type##Mtable = { \
 }
 
 #define CONSTRUCTOR(type) type* type##Constructor(_Self(type))
+#define COPY_CONSTRUCTOR(type) type* type##Duplicator(_Self(type), _Rhs(type))
+
 #define DESTRUCTOR(type) void type##Destructor(_SELF)
 
 #define CONSTRUCTOR_REGISTER(type) type##Constructor,
 #define DESTRUCTOR_REGISTER(type) type##Destructor,
 
 #define FUNCTION_PLACEHOLDER NULL,
+#define NON_CONSTRUCTOR FUNCTION_PLACEHOLDER
+#define NON_DESTRUCTOR FUNCTION_PLACEHOLDER
 
 #define New(type) type##Preconstructor((type *)malloc(sizeof(type)))
+#define DupNew(type, rhs) type##Duplicator(New(type), (rhs))
 void Delete(void *ptr);
 
+#define PrintTest(fmt, ...) printf(fmt,##__VA_ARGS__)
 #endif   /* ----- #ifndef COO_INC  ----- */

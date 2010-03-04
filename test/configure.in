@@ -12,7 +12,7 @@ AM_INIT_AUTOMAKE([foreign no-define])
 AC_PROG_CXX
 
 # Checks for libraries.
-AC_CHECK_LIB([milui], [look_for_virtual_function])
+AC_CHECK_LIB([milui], [Delete])
 
 # Checks for header files.
 
