@@ -7,66 +7,69 @@
  *  Company: Beijing Feynman Software Technology Co., Ltd.
  */
 
-#include "object.h"
+#include "virtual.h"
 
-/* ====================== for class level1 ======================*/
-DESTRUCTOR_DEFINE(level1)
+/* ====================== for class MyBase ======================*/
+DESTRUCTOR(MyBase)
 {
-    printf("level1 %p destructed...\n", self);
+    printf("MyBase %p destructed...\n", self);
 }
 
-CONSTRUCTOR_DEFINE(level1)
+CONSTRUCTOR(MyBase)
 {
-    printf("level1 %p constructed...\n", self);
+    printf("MyBase %p constructed...\n", self);
     return self;
 }
 
-void MEMBER_FUNC_DEFINE(level1, test)
+void MyBasevtest(_SELF, int in)
 {
-    puts("level1::test\n");
+    printf("Obj from Mybase %p get %d.\n", (MyBase*)self, in);
 }
 
-void MEMBER_FUNC_DEFINE(level1, virtual_function_test, int a)
+VIRTUAL_FUNCTION_REGBEGIN(MyBase, NonBase)
+    DESTRUCTOR_REGISTER(MyBase)
+FUNCTION_REGISTER(MyBase, vtest)
+    VIRTUAL_FUNCTION_REGEND
+
+MEMBER_FUNCTION_REGBEGIN(MyBase)
+    CONSTRUCTOR_REGISTER(MyBase)
+    MEMBER_FUNCTION_REGEND
+
+/* ====================== for class MyBase ======================*/
+DESTRUCTOR(MySub)
 {
-    printf("level1:virtual_function_test(%d).\n", a);
+    printf("MySub %p destructed...\n", self);
 }
 
-VIRTUAL_FUNC_REGBEGIN(level1, Cobject)
-DESTRUCTOR_REGISTER(level1)
-VIRTUAL_MEMFUNC_REGISTER(level1, virtual_function_test)
-VIRTUAL_FUNC_REGEND
-
-MEMBER_FUNC_REGBEGIN(level1)
-MEMBER_FUNC_REGISTER(level1, level1)
-MEMBER_FUNC_REGISTER(level1, test)
-MEMBER_FUNC_REGEND
-
-/* ====================== for class level2 ======================*/
-DESTRUCTOR_DEFINE(level2)
+CONSTRUCTOR(MySub)
 {
-    printf("level2 %p destructed...\n", self);
-}
-
-CONSTRUCTOR_DEFINE(level2)
-{
-    printf("level2 %p constructed...\n", self);
+    printf("MySub %p constructed...\n", self);
     return self;
 }
 
-void MEMBER_FUNC_DEFINE(level2, test)
+void MySubvtest(_SELF, int in)
 {
-    puts("level2::test\n");
+    printf("Obj from MySub %p get %d.\n", (MySub*)self, in);
 }
 
-void MEMBER_FUNC_DEFINE(level2, virtual_function_test, int a)
+VIRTUAL_FUNCTION_REGBEGIN(MySub, NonBase)
+    DESTRUCTOR_REGISTER(MySub)
+FUNCTION_REGISTER(MySub, vtest)
+    VIRTUAL_FUNCTION_REGEND
+
+MEMBER_FUNCTION_REGBEGIN(MySub)
+    CONSTRUCTOR_REGISTER(MySub)
+    MEMBER_FUNCTION_REGEND
+
+int main()
 {
-    printf("level2:virtual_function_test(%d).\n", a);
+    MyBase* base = New(MyBase);
+    _VC(base)->vtest(base, 123);
+    Delete(base);
+
+    MyBase* sub = New(MySub);
+    _VC(sub)->vtest(sub, 456);
+    Delete(sub);
+
+    return 0;
 }
-
-VIRTUAL_FUNC_REGBEGIN(level2, level1)
-DESTRUCTOR_REGISTER(level2)
-VIRTUAL_MEMFUNC_REGISTER(level2, virtual_function_test)
-VIRTUAL_FUNC_REGEND
-
-MEMBER_FUNC_REGBEGIN(level2)
-MEMBER_FUN
