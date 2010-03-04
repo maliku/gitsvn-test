@@ -12,7 +12,7 @@
 CLASS(MyBase)
 {
     VIRTUAL_FUNCTION_DECLARE_BEGIN(MyBase)
-        void (*vtest)(MyBase*, int);
+        void (*vtest)(void*, int);
     VIRTUAL_FUNCTION_DECLARE_END
     MEMBER_FUNC_DECLARE_PLACEHOLDER(MyBase);
 };

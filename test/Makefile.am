@@ -11,5 +11,5 @@ object_LDADD=$(MILUI_LIBS)
 virtual_SOURCES=virtual.c
 virtual_LDADD=$(MILUI_LIBS)
 
-virtual_SOURCES=duplicator.c
-virtual_LDADD=$(MILUI_LIBS)
+duplicator_SOURCES=duplicator.c
+duplicator_LDADD=$(MILUI_LIBS)

@@ -21,9 +21,9 @@ typedef struct __RTTI {
 
 typedef struct __CommonVtable {
         RTTI __rtti;
-        void* (*OrderConstruct)(void * self);
-        void  (*Predestructor)(void * self);
-        void  (*destructor)(void*);
+        void* (*OrderConstruct)(void*);
+        void  (*Predestructor)(void*);
+        void  (*Destructor)(void*);
 } CommonVtable;
 extern CommonVtable g_NonBaseVtable;
 
@@ -60,9 +60,9 @@ struct _##type {\
 #define VIRTUAL_FUNCTION_DECLARE_BEGIN(type) \
     struct __##type##Vtable {\
         RTTI __rtti;\
-        void * (*OrderConstruct)(void*);\
+        void* (*OrderConstruct)(void*);\
         void (*Predestructor)(void*);\
-        void (*destructor)(void*);
+        void (*Destructor)(void*);
 
 #define	VIRTUAL_FUNCTION_DECLARE_END }*__vptr;
 
@@ -70,7 +70,6 @@ struct _##type {\
     struct __##type##Mtable {\
         type##Vtable* (*__GetVptr)(type*);\
         type * (*type)(type*);\
-        type * (*type##Copy)(type*);
 
 #define	MEMBER_FUNCTION_DECLARE_END }*__mptr;
 
@@ -137,8 +136,8 @@ INLINE type * type##ArrayConstructor(_Self(type), int num) { \
 	void type##Predestructor(_SELF) { \
 	RTTI * prev = &g_##type##Vtable.__rtti; \
 	assert(NULL != prev);\
-	if (((CommonVtable*)*(CommonVtable**)prev)->destructor)\
-	((CommonVtable*)*(CommonVtable**)prev)->destructor(self);\
+	if (((CommonVtable*)*(CommonVtable**)prev)->Destructor)\
+	((CommonVtable*)*(CommonVtable**)prev)->Destructor(self);\
 	if (((CommonVtable*)*(CommonVtable**)prev)->Predestructor)\
 	((CommonVtable*)*(CommonVtable**)prev)->Predestructor(self);\
 } \
@@ -165,7 +164,9 @@ INLINE type * type##ArrayConstructor(_Self(type), int num) { \
 
 #define New(type) type##Preconstructor((type *)malloc(sizeof(type)))
 #define DupNew(type, rhs) type##Duplicator(New(type), (rhs))
+#define News(type, num) type##ArrayConstructor((type *)malloc(sizeof(type)), (num))
 void Delete(void *ptr);
+void Deletes(void *ptr, size_t num);
 
 #define PrintTest(fmt, ...) printf(fmt,##__VA_ARGS__)
 #endif   /* ----- #ifndef COO_INC  ----- */

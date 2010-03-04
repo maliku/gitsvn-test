@@ -23,7 +23,7 @@ CONSTRUCTOR(MyBase)
 
 void MyBasevtest(_SELF, int in)
 {
-    printf("Obj from Mybase %p get %d.\n", (MyBase*)self, in);
+    printf("Obj from MyBase %p get %d.\n", (MyBase*)self, in);
 }
 
 VIRTUAL_FUNCTION_REGBEGIN(MyBase, NonBase)
@@ -52,7 +52,7 @@ void MySubvtest(_SELF, int in)
     printf("Obj from MySub %p get %d.\n", (MySub*)self, in);
 }
 
-VIRTUAL_FUNCTION_REGBEGIN(MySub, NonBase)
+VIRTUAL_FUNCTION_REGBEGIN(MySub, MyBase)
     DESTRUCTOR_REGISTER(MySub)
 FUNCTION_REGISTER(MySub, vtest)
     VIRTUAL_FUNCTION_REGEND
@@ -63,11 +63,11 @@ MEMBER_FUNCTION_REGBEGIN(MySub)
 
 int main()
 {
-    MyBase* base = New(MyBase);
+    MyBase* base = (MyBase*)New(MyBase);
     _VC(base)->vtest(base, 123);
     Delete(base);
-
-    MyBase* sub = New(MySub);
+    printf("=========================\n");
+    MySub* sub = (MySub*)New(MySub);
     _VC(sub)->vtest(sub, 456);
     Delete(sub);
 
