@@ -145,8 +145,8 @@ INLINE type * type##ArrayConstructor(_Self(type), int num) { \
 	type * head = self; \
 	int  i = num; \
 	while (i--) { \
-	type##Predestructor(head++); \
-	} \
+        type##Predestructor(head++); \
+    } \
 	free(self); \
 }
 
