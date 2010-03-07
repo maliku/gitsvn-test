@@ -33,7 +33,6 @@
  */
 #include "MIL_rwops.h"
 
-#define MIL_Error(err)
 /* Functions to read/write stdio file pointers */
 
 static int stdio_seek(MIL_RWops *context, int offset, int whence)
@@ -94,7 +93,7 @@ static int mem_seek(MIL_RWops *context, int offset, int whence)
 			newpos = context->hidden.mem.stop+offset;
 			break;
 		default:
-			MIL_SetError("Unknown value for 'whence'");
+			//MIL_SetError("Unknown value for 'whence'");
 			return(-1);
 	}
 	if ( newpos < context->hidden.mem.base ) {
@@ -137,7 +136,7 @@ static int mem_write(MIL_RWops *context, const void *ptr, int size, int num)
 }
 static int mem_writeconst(MIL_RWops *context, const void *ptr, int size, int num)
 {
-	MIL_SetError("Can't write to read-only memory");
+	//MIL_SetError("Can't write to read-only memory");
 	return(-1);
 }
 static int mem_close(MIL_RWops *context)
@@ -217,7 +216,7 @@ MIL_RWops *MIL_RWFromFile(const char *file, const char *mode)
 	fp = fopen(file, mode);
 #endif
 	if ( fp == NULL ) {
-		MIL_SetError("Couldn't open %s", file);
+		//MIL_SetError("Couldn't open %s", file);
 	} else {
 #ifdef WIN32
 		in_sdl = 1;
@@ -236,7 +235,7 @@ MIL_RWops *MIL_RWFromFP(FILE *fp, int autoclose)
 
 #ifdef WIN32
 	if ( ! in_sdl ) {
-		MIL_SetError("You can't pass a FILE pointer to a DLL (?)");
+		//MIL_SetError("You can't pass a FILE pointer to a DLL (?)");
 		/*return(NULL);*/
 	}
 #endif
