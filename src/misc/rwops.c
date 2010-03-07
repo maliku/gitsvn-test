@@ -20,22 +20,20 @@
     slouken@libsdl.org
 */
 
-#ifdef SAVE_RCSID
-static char rcsid =
- "@(#) $Id: MIL_rwops.c,v 1.9 2005/06/24 12:48:38 icculus Exp $";
-#endif
-
 /* This file provides a general interface for MIL to read and write
    data sources.  It can easily be extended to files, memory, etc.
 */
 
+#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "MIL_error.h"
+/* #include "MIL_error.h"
+ */
 #include "MIL_rwops.h"
 
+#define MIL_Error(err)
 /* Functions to read/write stdio file pointers */
 
 static int stdio_seek(MIL_RWops *context, int offset, int whence)
@@ -242,12 +240,8 @@ MIL_RWops *MIL_RWFromFP(FILE *fp, int autoclose)
 		/*return(NULL);*/
 	}
 #endif
-	rwops = MIL_AllocRW();
+	rwops = New(RawFileOperator);
 	if ( rwops != NULL ) {
-		rwops->seek = stdio_seek;
-		rwops->read = stdio_read;
-		rwops->write = stdio_write;
-		rwops->close = stdio_close;
 		rwops->hidden.stdio.fp = fp;
 		rwops->hidden.stdio.autoclose = autoclose;
 	}
@@ -256,14 +250,9 @@ MIL_RWops *MIL_RWFromFP(FILE *fp, int autoclose)
 
 MIL_RWops *MIL_RWFromMem(void *mem, int size)
 {
-	MIL_RWops *rwops;
+	MIL_RWops *rwops = New(MemFileOperator);
 
-	rwops = MIL_AllocRW();
 	if ( rwops != NULL ) {
-		rwops->seek = mem_seek;
-		rwops->read = mem_read;
-		rwops->write = mem_write;
-		rwops->close = mem_close;
 		rwops->hidden.mem.base = (Uint8 *)mem;
 		rwops->hidden.mem.here = rwops->hidden.mem.base;
 		rwops->hidden.mem.stop = rwops->hidden.mem.base+size;
@@ -273,14 +262,8 @@ MIL_RWops *MIL_RWFromMem(void *mem, int size)
 
 MIL_RWops *MIL_RWFromConstMem(const void *mem, int size)
 {
-	MIL_RWops *rwops;
-
-	rwops = MIL_AllocRW();
+	MIL_RWops *rwops = (MIL_RWops*)New(MemFileOperator);
 	if ( rwops != NULL ) {
-		rwops->seek = mem_seek;
-		rwops->read = mem_read;
-		rwops->write = mem_writeconst;
-		rwops->close = mem_close;
 		rwops->hidden.mem.base = (Uint8 *)mem;
 		rwops->hidden.mem.here = rwops->hidden.mem.base;
 		rwops->hidden.mem.stop = rwops->hidden.mem.base+size;
@@ -290,6 +273,7 @@ MIL_RWops *MIL_RWFromConstMem(const void *mem, int size)
 
 MIL_RWops *MIL_AllocRW(void)
 {
+    assert(NULL);
 	MIL_RWops *area;
 
 	area = (MIL_RWops *)malloc(sizeof *area);
@@ -301,5 +285,28 @@ MIL_RWops *MIL_AllocRW(void)
 
 void MIL_FreeRW(MIL_RWops *area)
 {
+    assert(NULL);
 	free(area);
 }
+
+/* Make MIL_RWops to a pure vitrual class. */
+MAKE_PURE_VIRTUAL_CLASS(MIL_RWops)
+MEMBER_FUNC_REGISTER_PLACEHOLDER(MIL_RWops)
+
+VIRTUAL_FUNCTION_REGBEGIN(RawFileOperator, MIL_RWops)
+    NON_DESTRUCTOR
+    stdio_seek,
+    stdio_read,
+    stdio_write,
+    stdio_close,
+VIRTUAL_FUNCTION_REGEND
+MEMBER_FUNC_REGISTER_PLACEHOLDER(RawFileOperator)
+
+VIRTUAL_FUNCTION_REGBEGIN(MemFileOperator, MIL_RWops)
+    NON_DESTRUCTOR
+    mem_seek,
+    mem_read,
+    mem_write,
+    mem_close,
+VIRTUAL_FUNCTION_REGEND
+MEMBER_FUNC_REGISTER_PLACEHOLDER(MemFileOperator)
