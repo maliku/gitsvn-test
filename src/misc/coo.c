@@ -2,7 +2,7 @@
 
 CommonVtable g_NonBaseVtable;
 
-void Delete(void *ptr)
+void OrderDestruct(void * ptr)
 {
 	if (NULL != ptr)
 	{
@@ -11,7 +11,12 @@ void Delete(void *ptr)
             ((CommonVtable*)*(CommonVtable**)ptr)->Destructor(ptr);
 		assert (((CommonVtable*)*(CommonVtable**)ptr)->Predestructor);
         ((CommonVtable*)*(CommonVtable**)ptr)->Predestructor(ptr);
-		free(ptr);
 	}
+}
+
+void Delete(void *ptr)
+{
+    OrderDestruct(ptr);
+    free(ptr);
 }
 

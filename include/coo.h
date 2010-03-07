@@ -29,6 +29,7 @@ extern CommonVtable g_NonBaseVtable;
 
 #define	INLINE 
 
+/* Macro for class declare. */
 #define	CLASS(type)	\
     struct __##type##Vtable;\
 typedef struct __##type##Vtable type##Vtable;\
@@ -38,6 +39,7 @@ struct __##type;\
 typedef struct __##type type;\
 struct __##type
 
+/* Macro for inherit class decalre. */
 #define	CLASS_INHERIT_BEGIN(type, basetype) \
 typedef basetype##Vtable type##Vtable;\
 extern type##Vtable g_##type##Vtable;\
@@ -54,9 +56,12 @@ struct _##type {\
 #define	_SELF   _Self(void)		/* 'this' pointer for COO framework */
 #define	_RHS	_Rhs(void)		/* 'this' pointer for COO framework */
 
+/* Macro for call member function of object. */
 #define	_MC(pobj)	((pobj)->__mptr)
+/* Macro for call virtual member function of object. */
 #define	_VC(pobj)	(((pobj)->__mptr)->__GetVptr(pobj))
 		
+/* Macro for virtual member function declare begin. */
 #define VIRTUAL_FUNCTION_DECLARE_BEGIN(type) \
     struct __##type##Vtable {\
         RTTI __rtti;\
@@ -64,13 +69,17 @@ struct _##type {\
         void (*Predestructor)(void*);\
         void (*Destructor)(void*);
 
+/* Macro for virtual member function declare end. */
+#define VIRTUAL_FUNCTION_DECLARE_BEGIN(type) \
 #define	VIRTUAL_FUNCTION_DECLARE_END }*__vptr;
 
+/* Macro for member function declare begin. */
 #define MEMBER_FUNCTION_DECLARE_BEGIN(type) \
     struct __##type##Mtable {\
         type##Vtable* (*__GetVptr)(type*);\
         type * (*type)(type*);\
 
+/* Macro for member function declare end. */
 #define	MEMBER_FUNCTION_DECLARE_END }*__mptr;
 
 #define VIRTUAL_FUNC_DECLARE_PLACEHOLDER(type) \
@@ -162,11 +171,21 @@ INLINE type * type##ArrayConstructor(_Self(type), int num) { \
 #define NON_CONSTRUCTOR FUNCTION_PLACEHOLDER
 #define NON_DESTRUCTOR FUNCTION_PLACEHOLDER
 
+/* Placement new operator. */
+#define NewAt(type, p) type##Preconstructor((type *)p)
+/* Normal new operator. */
 #define New(type) type##Preconstructor((type *)malloc(sizeof(type)))
+/* Copy constructor. */
 #define DupNew(type, rhs) type##Duplicator(New(type), (rhs))
+/* Constructor a array of type. */
 #define News(type, num) type##ArrayConstructor((type *)malloc(sizeof(type)), (num))
-void Delete(void *ptr);
-void Deletes(void *ptr, size_t num);
+void OrderDestruct(void*);
+/* Normal Delete operator. */
+void Delete(void*);
+/* Delete a array of object. */
+void Deletes(void*, size_t);
+/* Delete a object without free memory. */
+#define DeleteAt(p) OrderDestruct(p)
 
 #define PrintTest(fmt, ...) printf(fmt,##__VA_ARGS__)
 #endif   /* ----- #ifndef COO_INC  ----- */
