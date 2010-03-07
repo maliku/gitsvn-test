@@ -4,7 +4,7 @@
  * @author DongKai
  * @version 1.0
  * @date 03/02/2010 03:33:57 PM 
- *  Company: Beijing Feynman Software Technology Co., Ltd.
+ *  Organization: http://www.ds0101.net
  */
 
 #ifndef  COOBASE_INC

@@ -4,7 +4,7 @@
  * @author DongKai
  * @version 1.0
  * @date 03/02/2010 03:33:57 PM 
- *  Company: Beijing Feynman Software Technology Co., Ltd.
+ *  Organization: http://www.ds0101.net
  */
 
 #ifndef  COO_INC
@@ -13,6 +13,8 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "common.h"
 
 typedef struct __RTTI {
     struct __RTTI * __base;
@@ -26,8 +28,6 @@ typedef struct __CommonVtable {
         void  (*Destructor)(void*);
 } CommonVtable;
 extern CommonVtable g_NonBaseVtable;
-
-#define	INLINE 
 
 /* Macro for class declare. */
 #define	CLASS(type)	\
@@ -52,9 +52,9 @@ struct _##type {\
 #define	CLASS_INHERIT_END };
 
 #define	_Self(type)	type* self		/* 'this' pointer for COO framework */
-#define	_Rhs(type)	type* rhs		/* 'this' pointer for COO framework */
+#define	_Rhs(type)	type* rhs		/* 'rhs' pointer for COO framework */
 #define	_SELF   _Self(void)		/* 'this' pointer for COO framework */
-#define	_RHS	_Rhs(void)		/* 'this' pointer for COO framework */
+#define	_RHS	_Rhs(void)		/* 'rhs' pointer for COO framework */
 
 /* Macro for call member function of object. */
 #define	_MC(pobj)	((pobj)->__mptr)
@@ -70,7 +70,6 @@ struct _##type {\
         void (*Destructor)(void*);
 
 /* Macro for virtual member function declare end. */
-#define VIRTUAL_FUNCTION_DECLARE_BEGIN(type) \
 #define	VIRTUAL_FUNCTION_DECLARE_END }*__vptr;
 
 /* Macro for member function declare begin. */
@@ -117,6 +116,9 @@ MEMBER_FUNCTION_REGEND
 #define LOCATE_VTABLE(type) \
     type##Vtable* type##GetVPTR(type* self) { return ((type##Vtable*)*(type##Vtable**)self); }
     
+#define	MEMBER_FUNCTION_NAMED(type, func) type##func
+#define	MEMFUNC_NAMED(type, func) MEMBER_FUNCTION_NAMED(type, func)
+
 #define PRECONSTRUCTORS(type) \
     void * type##OrderConstruct(_SELF) { \
         type * addr = (type*)self;\
@@ -128,11 +130,11 @@ MEMBER_FUNCTION_REGEND
         return (NULL != g_##type##Mtable.type) ? \
         g_##type##Mtable.type(self) : self; \
     } \
-INLINE void * type##Preconstructor(_SELF) { \
+__inline__ void * type##Preconstructor(_SELF) { \
     *(type##Vtable**)self = &g_##type##Vtable;\
     return type##OrderConstruct(self);\
 }\
-INLINE type * type##ArrayConstructor(_Self(type), int num) { \
+__inline__ type * type##ArrayConstructor(_Self(type), int num) { \
     type * head = self; \
     int  i = num; \
     while (i--) { \
@@ -142,7 +144,7 @@ INLINE type * type##ArrayConstructor(_Self(type), int num) { \
 }
 
 #define PREDESTRUCTORS(type) \
-	void type##Predestructor(_SELF) { \
+	__inline__ void type##Predestructor(_SELF) { \
 	RTTI * prev = &g_##type##Vtable.__rtti; \
 	assert(NULL != prev);\
 	if (((CommonVtable*)*(CommonVtable**)prev)->Destructor)\
@@ -150,7 +152,7 @@ INLINE type * type##ArrayConstructor(_Self(type), int num) { \
 	if (((CommonVtable*)*(CommonVtable**)prev)->Predestructor)\
 	((CommonVtable*)*(CommonVtable**)prev)->Predestructor(self);\
 } \
-	INLINE void type##ArrayDestructor(_Self(type), int num) { \
+	__inline__ void type##ArrayDestructor(_Self(type), int num) { \
 	type * head = self; \
 	int  i = num; \
 	while (i--) { \
