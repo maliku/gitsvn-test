@@ -12,7 +12,7 @@
 int main()
 {
     char content[] = "Hello World!";
-    MIL_RWops * ops = MIL_RWFromFile("./rwops.tmp", "rw");
+    MIL_RWops * ops = MIL_RWFromFile("./rwops.tmp", "w+");
     if (NULL != ops) {
         _VC(ops)->write(ops, content, strlen(content), 1);
         _VC(ops)->close(ops);

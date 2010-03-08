@@ -101,8 +101,9 @@ extern DECLSPEC MIL_RWops * MILCALL MIL_RWFromFP(FILE *fp, int autoclose);
 extern DECLSPEC MIL_RWops * MILCALL MIL_RWFromMem(void *mem, int size);
 extern DECLSPEC MIL_RWops * MILCALL MIL_RWFromConstMem(const void *mem, int size);
 
-extern DECLSPEC MIL_RWops * MILCALL MIL_AllocRW(void);
-extern DECLSPEC void MILCALL MIL_FreeRW(MIL_RWops *area);
+/* extern DECLSPEC MIL_RWops * MILCALL MIL_AllocRW(void);
+ * extern DECLSPEC void MILCALL MIL_FreeRW(MIL_RWops *area);
+ */
 
 /* Macros to easily read and write from an MIL_RWops structure */
 #define MIL_RWseek(ctx, offset, whence)	_VC(ctx)->seek(ctx, offset, whence)

@@ -35,77 +35,80 @@
 
 /* Functions to read/write stdio file pointers */
 
-static int stdio_seek(MIL_RWops *context, int offset, int whence)
+static int MEMBER_FUNCTION_NAMED(RawFileOperator, seek)(_Self(MIL_RWops), int offset, int whence)
 {
-	if ( fseek(context->hidden.stdio.fp, offset, whence) == 0 ) {
-		return(ftell(context->hidden.stdio.fp));
+	if ( fseek(self->hidden.stdio.fp, offset, whence) == 0 ) {
+		return(ftell(self->hidden.stdio.fp));
 	} else {
 		MIL_Error(MIL_EFSEEK);
 		return(-1);
 	}
 }
-static int stdio_read(MIL_RWops *context, void *ptr, int size, int maxnum)
+
+static int MEMBER_FUNCTION_NAMED(RawFileOperator, read)(_Self(MIL_RWops), void *ptr, int size, int maxnum)
 {
 	size_t nread;
 
-	nread = fread(ptr, size, maxnum, context->hidden.stdio.fp); 
-	if ( nread == 0 && ferror(context->hidden.stdio.fp) ) {
+	nread = fread(ptr, size, maxnum, self->hidden.stdio.fp); 
+	if ( nread == 0 && ferror(self->hidden.stdio.fp) ) {
 		MIL_Error(MIL_EFREAD);
 	}
 	return(nread);
 }
-static int stdio_write(MIL_RWops *context, const void *ptr, int size, int num)
+
+static int MEMBER_FUNCTION_NAMED(RawFileOperator, write)(_Self(MIL_RWops), const void *ptr, int size, int num)
 {
 	size_t nwrote;
-
-	nwrote = fwrite(ptr, size, num, context->hidden.stdio.fp);
-	if ( nwrote == 0 && ferror(context->hidden.stdio.fp) ) {
+	nwrote = fwrite(ptr, size, num, self->hidden.stdio.fp);
+	if ( nwrote == 0 && ferror(self->hidden.stdio.fp) ) {
+        perror("ohh");
 		MIL_Error(MIL_EFWRITE);
 	}
 	return(nwrote);
 }
-static int stdio_close(MIL_RWops *context)
+
+static int MEMBER_FUNCTION_NAMED(RawFileOperator, close)(_Self(MIL_RWops))
 {
-	if ( context ) {
-		if ( context->hidden.stdio.autoclose ) {
+	if ( self ) {
+		if ( self->hidden.stdio.autoclose ) {
 			/* WARNING:  Check the return value here! */
-			fclose(context->hidden.stdio.fp);
+			fclose(self->hidden.stdio.fp);
 		}
-		free(context);
+		free(self);
 	}
 	return(0);
 }
 
 /* Functions to read/write memory pointers */
 
-static int mem_seek(MIL_RWops *context, int offset, int whence)
+static int MEMBER_FUNCTION_NAMED(MemFileOperator, seek)(_Self(MIL_RWops), int offset, int whence)
 {
 	Uint8 *newpos;
 
 	switch (whence) {
 		case SEEK_SET:
-			newpos = context->hidden.mem.base+offset;
+			newpos = self->hidden.mem.base+offset;
 			break;
 		case SEEK_CUR:
-			newpos = context->hidden.mem.here+offset;
+			newpos = self->hidden.mem.here+offset;
 			break;
 		case SEEK_END:
-			newpos = context->hidden.mem.stop+offset;
+			newpos = self->hidden.mem.stop+offset;
 			break;
 		default:
 			//MIL_SetError("Unknown value for 'whence'");
 			return(-1);
 	}
-	if ( newpos < context->hidden.mem.base ) {
-		newpos = context->hidden.mem.base;
+	if ( newpos < self->hidden.mem.base ) {
+		newpos = self->hidden.mem.base;
 	}
-	if ( newpos > context->hidden.mem.stop ) {
-		newpos = context->hidden.mem.stop;
+	if ( newpos > self->hidden.mem.stop ) {
+		newpos = self->hidden.mem.stop;
 	}
-	context->hidden.mem.here = newpos;
-	return(context->hidden.mem.here-context->hidden.mem.base);
+	self->hidden.mem.here = newpos;
+	return(self->hidden.mem.here-self->hidden.mem.base);
 }
-static int mem_read(MIL_RWops *context, void *ptr, int size, int maxnum)
+static int MEMBER_FUNCTION_NAMED(MemFileOperator, read)(_Self(MIL_RWops), void *ptr, int size, int maxnum)
 {
 	int total_bytes;
 	int mem_available;
@@ -115,34 +118,34 @@ static int mem_read(MIL_RWops *context, void *ptr, int size, int maxnum)
 		return 0;
 	}
 
-	mem_available = (context->hidden.mem.stop - context->hidden.mem.here);
+	mem_available = (self->hidden.mem.stop - self->hidden.mem.here);
 	if (total_bytes > mem_available) {
 		total_bytes = mem_available;
 	}
 
-	memcpy(ptr, context->hidden.mem.here, total_bytes);
-	context->hidden.mem.here += total_bytes;
+	memcpy(ptr, self->hidden.mem.here, total_bytes);
+	self->hidden.mem.here += total_bytes;
 
 	return (total_bytes / size);
 }
-static int mem_write(MIL_RWops *context, const void *ptr, int size, int num)
+static int MEMBER_FUNCTION_NAMED(MemFileOperator, write)(_Self(MIL_RWops), const void *ptr, int size, int num)
 {
-	if ( (context->hidden.mem.here + (num*size)) > context->hidden.mem.stop ) {
-		num = (context->hidden.mem.stop-context->hidden.mem.here)/size;
+	if ( (self->hidden.mem.here + (num*size)) > self->hidden.mem.stop ) {
+		num = (self->hidden.mem.stop-self->hidden.mem.here)/size;
 	}
-	memcpy(context->hidden.mem.here, ptr, num*size);
-	context->hidden.mem.here += num*size;
+	memcpy(self->hidden.mem.here, ptr, num*size);
+	self->hidden.mem.here += num*size;
 	return(num);
 }
-static int mem_writeconst(MIL_RWops *context, const void *ptr, int size, int num)
+static int mem_writeconst(_Self(MIL_RWops), const void *ptr, int size, int num)
 {
 	//MIL_SetError("Can't write to read-only memory");
 	return(-1);
 }
-static int mem_close(MIL_RWops *context)
+static int MEMBER_FUNCTION_NAMED(MemFileOperator, close)(_Self(MIL_RWops))
 {
-	if ( context ) {
-		free(context);
+	if ( self ) {
+		free(self);
 	}
 	return(0);
 }
@@ -231,7 +234,7 @@ MIL_RWops *MIL_RWFromFile(const char *file, const char *mode)
 
 MIL_RWops *MIL_RWFromFP(FILE *fp, int autoclose)
 {
-	MIL_RWops *rwops;
+	MIL_RWops *rwops = NULL;
 
 #ifdef WIN32
 	if ( ! in_sdl ) {
@@ -259,34 +262,36 @@ MIL_RWops *MIL_RWFromMem(void *mem, int size)
 	return(rwops);
 }
 
-MIL_RWops *MIL_RWFromConstMem(const void *mem, int size)
-{
-	MIL_RWops *rwops = (MIL_RWops*)New(MemFileOperator);
-	if ( rwops != NULL ) {
-		rwops->hidden.mem.base = (Uint8 *)mem;
-		rwops->hidden.mem.here = rwops->hidden.mem.base;
-		rwops->hidden.mem.stop = rwops->hidden.mem.base+size;
-	}
-	return(rwops);
-}
+/* MIL_RWops *MIL_RWFromConstMem(const void *mem, int size)
+ * {
+ * 	MIL_RWops *rwops = (MIL_RWops*)New(MemFileOperator);
+ * 	if ( rwops != NULL ) {
+ * 		rwops->hidden.mem.base = (Uint8 *)mem;
+ * 		rwops->hidden.mem.here = rwops->hidden.mem.base;
+ * 		rwops->hidden.mem.stop = rwops->hidden.mem.base+size;
+ * 	}
+ * 	return(rwops);
+ * }
+ */
 
-MIL_RWops *MIL_AllocRW(void)
-{
-    assert(NULL);
-	MIL_RWops *area;
-
-	area = (MIL_RWops *)malloc(sizeof *area);
-	if ( area == NULL ) {
-		MIL_OutOfMemory();
-	}
-	return(area);
-}
-
-void MIL_FreeRW(MIL_RWops *area)
-{
-    assert(NULL);
-	free(area);
-}
+/* MIL_RWops *MIL_AllocRW(void)
+ * {
+ *     assert(NULL);
+ * 	MIL_RWops *area;
+ * 
+ * 	area = (MIL_RWops *)malloc(sizeof *area);
+ * 	if ( area == NULL ) {
+ * 		MIL_OutOfMemory();
+ * 	}
+ * 	return(area);
+ * }
+ * 
+ * void MIL_FreeRW(MIL_RWops *area)
+ * {
+ *     assert(NULL);
+ * 	free(area);
+ * }
+ */
 
 /* Make MIL_RWops to a pure vitrual class. */
 MAKE_PURE_VIRTUAL_CLASS(MIL_RWops)
@@ -294,18 +299,18 @@ MEMBER_FUNC_REGISTER_PLACEHOLDER(MIL_RWops)
 
 VIRTUAL_FUNCTION_REGBEGIN(RawFileOperator, MIL_RWops)
     NON_DESTRUCTOR
-    stdio_seek,
-    stdio_read,
-    stdio_write,
-    stdio_close,
-VIRTUAL_FUNCTION_REGEND
+    FUNCTION_REGISTER(RawFileOperator, seek)
+    FUNCTION_REGISTER(RawFileOperator, read)
+    FUNCTION_REGISTER(RawFileOperator, write)
+FUNCTION_REGISTER(RawFileOperator, close)
+    VIRTUAL_FUNCTION_REGEND
 MEMBER_FUNC_REGISTER_PLACEHOLDER(RawFileOperator)
 
 VIRTUAL_FUNCTION_REGBEGIN(MemFileOperator, MIL_RWops)
     NON_DESTRUCTOR
-    mem_seek,
-    mem_read,
-    mem_write,
-    mem_close,
+    FUNCTION_REGISTER(MemFileOperator, seek)
+    FUNCTION_REGISTER(MemFileOperator, read)
+    FUNCTION_REGISTER(MemFileOperator, write)
+FUNCTION_REGISTER(MemFileOperator, close)
 VIRTUAL_FUNCTION_REGEND
 MEMBER_FUNC_REGISTER_PLACEHOLDER(MemFileOperator)
