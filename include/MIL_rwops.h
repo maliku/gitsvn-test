@@ -29,7 +29,7 @@
 
 #include <stdio.h>
 
-#include "common.h"
+#include "coo.h"
 
 #include "begin_code.h"
 /* Set up for C function definitions, even when using C++ */
@@ -39,46 +39,58 @@ extern "C" {
 
 /* This is the read/write operation structure -- very basic */
 
-typedef struct MIL_RWops {
-	/* Seek to 'offset' relative to whence, one of stdio's whence values:
-		SEEK_SET, SEEK_CUR, SEEK_END
-	   Returns the final offset in the data source.
-	 */
-	int (MILCALL *seek)(struct MIL_RWops *context, int offset, int whence);
+CLASS(MIL_RWops) 
+{
+    VIRTUAL_FUNCTION_DECLARE_BEGIN(MIL_RWops)
+        /* Seek to 'offset' relative to whence, one of stdio's whence values:
+           SEEK_SET, SEEK_CUR, SEEK_END
+           Returns the final offset in the data source.
+           */
+        int (MILCALL *seek)(_Self(MIL_RWops), int offset, int whence);
 
-	/* Read up to 'num' objects each of size 'objsize' from the data
-	   source to the area pointed at by 'ptr'.
-	   Returns the number of objects read, or -1 if the read failed.
-	 */
-	int (MILCALL *read)(struct MIL_RWops *context, void *ptr, int size, int maxnum);
+    /* Read up to 'num' objects each of size 'objsize' from the data
+       source to the area pointed at by 'ptr'.
+       Returns the number of objects read, or -1 if the read failed.
+       */
+    int (MILCALL *read)(_Self(MIL_RWops), void *ptr, int size, int maxnum);
 
-	/* Write exactly 'num' objects each of size 'objsize' from the area
-	   pointed at by 'ptr' to data source.
-	   Returns 'num', or -1 if the write failed.
-	 */
-	int (MILCALL *write)(struct MIL_RWops *context, const void *ptr, int size, int num);
+    /* Write exactly 'num' objects each of size 'objsize' from the area
+       pointed at by 'ptr' to data source.
+       Returns 'num', or -1 if the write failed.
+       */
+    int (MILCALL *write)(_Self(MIL_RWops), const void *ptr, int size, int num);
 
-	/* Close and free an allocated MIL_FSops structure */
-	int (MILCALL *close)(struct MIL_RWops *context);
+    /* Close and free an allocated MIL_FSops structure */
+    int (MILCALL *close)(_Self(MIL_RWops));
 
-	Uint32 type;
-	union {
-	    struct {
-		int autoclose;
-	 	FILE *fp;
-	    } stdio;
-	    struct {
-		Uint8 *base;
-	 	Uint8 *here;
-		Uint8 *stop;
-	    } mem;
-	    struct {
-		void *data1;
-	    } unknown;
-	} hidden;
+    VIRTUAL_FUNCTION_DECLARE_END
 
-} MIL_RWops;
+        MEMBER_FUNC_DECLARE_PLACEHOLDER(MIL_RWops);
+    Uint32 type;
+    union {
+        struct {
+            int autoclose;
+            FILE *fp;
+        } stdio;
+        struct {
+            Uint8 *base;
+            Uint8 *here;
+            Uint8 *stop;
+        } mem;
+        struct {
+            void *data1;
+        } unknown;
+    } hidden;
 
+};
+
+CLASS_INHERIT_BEGIN(RawFileOperator, MIL_RWops)
+    MEMBER_FUNC_DECLARE_PLACEHOLDER(RawFileOperator);
+CLASS_INHERIT_END 
+
+CLASS_INHERIT_BEGIN(MemFileOperator, MIL_RWops)
+    MEMBER_FUNC_DECLARE_PLACEHOLDER(MemFileOperator);
+CLASS_INHERIT_END 
 
 /* Functions to create MIL_RWops structures from various data sources */
 
@@ -93,11 +105,11 @@ extern DECLSPEC MIL_RWops * MILCALL MIL_AllocRW(void);
 extern DECLSPEC void MILCALL MIL_FreeRW(MIL_RWops *area);
 
 /* Macros to easily read and write from an MIL_RWops structure */
-#define MIL_RWseek(ctx, offset, whence)	(ctx)->seek(ctx, offset, whence)
-#define MIL_RWtell(ctx)			(ctx)->seek(ctx, 0, SEEK_CUR)
-#define MIL_RWread(ctx, ptr, size, n)	(ctx)->read(ctx, ptr, size, n)
-#define MIL_RWwrite(ctx, ptr, size, n)	(ctx)->write(ctx, ptr, size, n)
-#define MIL_RWclose(ctx)		(ctx)->close(ctx)
+#define MIL_RWseek(ctx, offset, whence)	_VC(ctx)->seek(ctx, offset, whence)
+#define MIL_RWtell(ctx)			_VC(ctx)->seek(ctx, 0, SEEK_CUR)
+#define MIL_RWread(ctx, ptr, size, n)	_VC(ctx)->read(ctx, ptr, size, n)
+#define MIL_RWwrite(ctx, ptr, size, n)	_VC(ctx)->write(ctx, ptr, size, n)
+#define MIL_RWclose(ctx)		_VC(ctx)->close(ctx)
 
 
 /* Ends C function definitions when using C++ */

@@ -37,6 +37,8 @@ extern struct __##type##Vtable g_##type##Vtable;\
 extern struct __##type##Mtable g_##type##Mtable;\
 struct __##type;\
 typedef struct __##type type;\
+void* type##Preconstructor(_SELF);\
+void type##Predestructor(_SELF);\
 struct __##type
 
 /* Macro for inherit class decalre. */
@@ -46,6 +48,8 @@ extern type##Vtable g_##type##Vtable;\
 extern struct __##type##Mtable g_##type##Mtable;\
 struct _##type;\
 typedef struct _##type type;\
+void* type##Preconstructor(_SELF);\
+void type##Predestructor(_SELF);\
 struct _##type {\
 	basetype __super;
 
@@ -99,9 +103,11 @@ type##Vtable g_##type##Vtable = {\
 #define	FUNCTION_REGISTER(type, func) type##func,
 #define VIRTUAL_FUNCTION_REGEND };
 
-#define VIRTUAL_FUNC_REGISTER_PLACEHOLDER(type) \
-VIRTUAL_FUNCTION_REGBEGIN(type) \
+#define VIRTUAL_FUNC_REGISTER_PLACEHOLDER(type, basetype) \
+VIRTUAL_FUNCTION_REGBEGIN(type, basetype) \
 VIRTUAL_FUNCTION_REGEND 
+
+#define MAKE_PURE_VIRTUAL_CLASS(type) VIRTUAL_FUNC_REGISTER_PLACEHOLDER(type, NonBase)
 
 #define MEMBER_FUNCTION_REGBEGIN(type) \
 LOCATE_VTABLE(type);\
@@ -190,4 +196,6 @@ void Deletes(void*, size_t);
 #define DeleteAt(p) OrderDestruct(p)
 
 #define PrintTest(fmt, ...) printf(fmt,##__VA_ARGS__)
+#define MIL_Error(err)
+#define MIL_SetError(err)
 #endif   /* ----- #ifndef COO_INC  ----- */
