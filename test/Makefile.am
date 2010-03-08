@@ -1,4 +1,4 @@
-noinst_PROGRAMS=inherit object virtual duplicator
+noinst_PROGRAMS=inherit object virtual duplicator rwops
 
 MILUI_LIBS=-lmilui -ljpeg -lpng -lpthread
 
@@ -13,3 +13,6 @@ virtual_LDADD=$(MILUI_LIBS)
 
 duplicator_SOURCES=duplicator.c
 duplicator_LDADD=$(MILUI_LIBS)
+
+rwops_SOURCES=rwops_test.c
+rwops_LDADD=$(MILUI_LIBS)
