@@ -39,7 +39,7 @@
 
 #include <stdio.h>
 
-#include "common.h"
+#include "MIL_stdinc.h"
 #include "MIL_rwops.h"
 
 #include "byteorder.h"

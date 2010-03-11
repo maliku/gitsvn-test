@@ -1,13 +1,14 @@
 TOP_DIR=..
 INCLUDES = -I$(TOP_DIR)/include
 
-SUBDIRS = misc
+SUBDIRS = misc stdlib
 DIST_SUBDIRS = $(SUBDIRS)
 
 lib_LTLIBRARIES = libmilui.la
 
 COMMON_LIBADD =               \
-    misc/libmisc.la
+    misc/libmisc.la \
+	stdlib/libstdlib.la
 
 libmilui_la_LIBADD =  \
     $(COMMON_LIBADD)

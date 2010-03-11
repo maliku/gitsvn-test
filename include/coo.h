@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "common.h"
+#include "MIL_stdinc.h"
 
 typedef struct __RTTI {
     struct __RTTI * __base;

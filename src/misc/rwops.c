@@ -37,7 +37,7 @@
 
 static int MEMBER_FUNCTION_NAMED(RawFileOperator, seek)(_Self(MIL_RWops), int offset, int whence)
 {
-	if ( fseek(self->hidden.stdio.fp, offset, whence) == 0 ) {
+	if (fseek(self->hidden.stdio.fp, offset, whence) == 0 ) {
 		return(ftell(self->hidden.stdio.fp));
 	} else {
 		MIL_Error(MIL_EFSEEK);
