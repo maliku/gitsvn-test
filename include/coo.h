@@ -64,6 +64,9 @@ struct _##type {\
 #define	_MC(pobj)	((pobj)->__mptr)
 /* Macro for call virtual member function of object. */
 #define	_VC(pobj)	(((pobj)->__mptr)->__GetVptr(pobj))
+
+#define _mc(pobj, method, ...) _MC(pobj)->method(pobj, ##__VA_ARGS__)
+#define _vc(pobj, method, ...) _VC(pobj)->method(pobj, ##__VA_ARGS__)
 		
 /* Macro for virtual member function declare begin. */
 #define VIRTUAL_FUNCTION_DECLARE_BEGIN(type) \

@@ -1,7 +1,7 @@
 TOP_DIR=..
 INCLUDES = -I$(TOP_DIR)/include
 
-SUBDIRS = misc stdlib
+SUBDIRS = misc stdlib thread
 DIST_SUBDIRS = $(SUBDIRS)
 
 lib_LTLIBRARIES = libmilui.la
