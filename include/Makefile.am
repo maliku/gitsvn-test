@@ -7,4 +7,4 @@ SUBDIRS = configs
 
 # Which header files to install
 libmiluiinclude_HEADERS = begin_code.h close_code.h coo.h MIL_endian.h MIL_stdinc.h MIL_types.h \
-						 byteorder.h coobase.h MIL_config.h MIL_mutex.h MIL_rwops.h MIL_surface.h
+						  coobase.h MIL_config.h MIL_mutex.h MIL_rwops.h MIL_surface.h

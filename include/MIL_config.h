@@ -38,6 +38,8 @@
 #include "configs/MIL_config_win32.h"
 #elif defined(__OS2__)
 #include "configs/MIL_config_os2.h"
+#elif defined(__LINUX__)
+#include "MIL_config_linux.h"
 #else
 #include "configs/MIL_config_minimal.h"
 #endif /* platform config */

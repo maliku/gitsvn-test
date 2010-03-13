@@ -126,7 +126,8 @@ METHOD_REGEND
     type##Vtable* type##GetVPTR(type* self) { return ((type##Vtable*)*(type##Vtable**)self); }
     
 #define	METHOD_NAMED(type, func) type##func
-#define	MEMFUNC_NAMED(type, func) METHOD_NAMED(type, func)
+/* #define	MEMFUNC_NAMED(type, func) METHOD_NAMED(type, func)
+ */
 
 #define PRECONSTRUCTORS(type) \
     void * type##OrderConstruct(_SELF) { \
@@ -200,5 +201,5 @@ void Deletes(void*, size_t);
 
 #define PrintTest(fmt, ...) printf(fmt,##__VA_ARGS__)
 #define MIL_Error(err)
-#define MIL_SetError(err)
+#define MIL_SetError(err) puts(err)
 #endif   /* ----- #ifndef COO_INC  ----- */
