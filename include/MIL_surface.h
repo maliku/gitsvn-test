@@ -73,7 +73,7 @@ typedef struct MIL_PixelFormat {
 */
 CLASS(MIL_Surface) {
     VIRTUAL_FUNC_REGISTER_PLACEHOLDER(MIL_Surface)
-    MEMBER_FUNC_REGISTER_PLACEHOLDER(MIL_Surface)
+    METHOD_REGISTER_PLACEHOLDER(MIL_Surface)
     
     Uint32 flags;				/* Read-only */
 	MIL_PixelFormat *format;		/* Read-only */

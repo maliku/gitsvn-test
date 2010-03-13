@@ -13,9 +13,9 @@
 
 /* ====================== for class Object ======================*/
 CLASS_INHERIT_BEGIN(Object, CooBase)
-    MEMBER_FUNCTION_DECLARE_BEGIN(Object)
+    METHOD_DECLARE_BEGIN(Object)
     void (*test)(_Self(Object), int);
-    MEMBER_FUNCTION_DECLARE_END
+    METHOD_DECLARE_END
 CLASS_INHERIT_END
 
 #endif

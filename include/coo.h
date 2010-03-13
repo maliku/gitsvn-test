@@ -69,7 +69,7 @@ struct _##type {\
 #define _vc(pobj, method, ...) _VC(pobj)->method(pobj, ##__VA_ARGS__)
 		
 /* Macro for virtual member function declare begin. */
-#define VIRTUAL_FUNCTION_DECLARE_BEGIN(type) \
+#define VIRTUAL_METHOD_DECLARE_BEGIN(type) \
     struct __##type##Vtable {\
         RTTI __rtti;\
         void* (*OrderConstruct)(void*);\
@@ -77,56 +77,56 @@ struct _##type {\
         void (*Destructor)(void*);
 
 /* Macro for virtual member function declare end. */
-#define	VIRTUAL_FUNCTION_DECLARE_END }*__vptr;
+#define	VIRTUAL_METHOD_DECLARE_END }*__vptr;
 
 /* Macro for member function declare begin. */
-#define MEMBER_FUNCTION_DECLARE_BEGIN(type) \
+#define METHOD_DECLARE_BEGIN(type) \
     struct __##type##Mtable {\
         type##Vtable* (*__GetVptr)(type*);\
         type * (*type)(type*);\
 
 /* Macro for member function declare end. */
-#define	MEMBER_FUNCTION_DECLARE_END }*__mptr;
+#define	METHOD_DECLARE_END }*__mptr;
 
 #define VIRTUAL_FUNC_DECLARE_PLACEHOLDER(type) \
-VIRTUAL_FUNCTION_DECLARE_BEGIN(type) \
-VIRTUAL_FUNCTION_DECLARE_END 
+VIRTUAL_METHOD_DECLARE_BEGIN(type) \
+VIRTUAL_METHOD_DECLARE_END 
 
-#define MEMBER_FUNC_DECLARE_PLACEHOLDER(type) \
-MEMBER_FUNCTION_DECLARE_BEGIN(type) \
-MEMBER_FUNCTION_DECLARE_END 
+#define METHOD_DECLARE_PLACEHOLDER(type) \
+METHOD_DECLARE_BEGIN(type) \
+METHOD_DECLARE_END 
 
-#define VIRTUAL_FUNCTION_REGBEGIN(type, basetype) \
+#define VIRTUAL_METHOD_REGBEGIN(type, basetype) \
 PRECONSTRUCTORS(type)\
 PREDESTRUCTORS(type)\
 type##Vtable g_##type##Vtable = {\
     {(RTTI*)(&g_##basetype##Vtable), #type},\
     type##OrderConstruct,\
     type##Predestructor,
-#define	FUNCTION_REGISTER(type, func) type##func,
-#define VIRTUAL_FUNCTION_REGEND };
+#define	METHOD_REGISTER(type, func) type##func,
+#define VIRTUAL_METHOD_REGEND };
 
 #define VIRTUAL_FUNC_REGISTER_PLACEHOLDER(type, basetype) \
-VIRTUAL_FUNCTION_REGBEGIN(type, basetype) \
-VIRTUAL_FUNCTION_REGEND 
+VIRTUAL_METHOD_REGBEGIN(type, basetype) \
+VIRTUAL_METHOD_REGEND 
 
 #define MAKE_PURE_VIRTUAL_CLASS(type) VIRTUAL_FUNC_REGISTER_PLACEHOLDER(type, NonBase)
 
-#define MEMBER_FUNCTION_REGBEGIN(type) \
+#define METHOD_REGBEGIN(type) \
 LOCATE_VTABLE(type);\
 struct __##type##Mtable g_##type##Mtable = { \
     type##GetVPTR,
-#define MEMBER_FUNCTION_REGEND };
+#define METHOD_REGEND };
 
-#define MEMBER_FUNC_REGISTER_PLACEHOLDER(type) \
-MEMBER_FUNCTION_REGBEGIN(type) \
-MEMBER_FUNCTION_REGEND 
+#define METHOD_REGISTER_PLACEHOLDER(type) \
+METHOD_REGBEGIN(type) \
+METHOD_REGEND 
 
 #define LOCATE_VTABLE(type) \
     type##Vtable* type##GetVPTR(type* self) { return ((type##Vtable*)*(type##Vtable**)self); }
     
-#define	MEMBER_FUNCTION_NAMED(type, func) type##func
-#define	MEMFUNC_NAMED(type, func) MEMBER_FUNCTION_NAMED(type, func)
+#define	METHOD_NAMED(type, func) type##func
+#define	MEMFUNC_NAMED(type, func) METHOD_NAMED(type, func)
 
 #define PRECONSTRUCTORS(type) \
     void * type##OrderConstruct(_SELF) { \
@@ -178,9 +178,9 @@ __inline__ type * type##ArrayConstructor(_Self(type), int num) { \
 #define CONSTRUCTOR_REGISTER(type) type##Constructor,
 #define DESTRUCTOR_REGISTER(type) type##Destructor,
 
-#define FUNCTION_PLACEHOLDER NULL,
-#define NON_CONSTRUCTOR FUNCTION_PLACEHOLDER
-#define NON_DESTRUCTOR FUNCTION_PLACEHOLDER
+#define METHOD_PLACEHOLDER NULL,
+#define NON_CONSTRUCTOR METHOD_PLACEHOLDER
+#define NON_DESTRUCTOR METHOD_PLACEHOLDER
 
 /* Placement new operator. */
 #define NewAt(type, p) type##Preconstructor((type *)p)

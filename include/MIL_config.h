@@ -23,7 +23,7 @@
 #ifndef _MIL_config_h
 #define _MIL_config_h
 
-#include "MIL_platform.h"
+#include "configs/MIL_platform.h"
 
 /* Add any platform that doesn't build using the configure system */
 #if defined(__DREAMCAST__)

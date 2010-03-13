@@ -35,7 +35,7 @@
 
 /* Functions to read/write stdio file pointers */
 
-static int MEMBER_FUNCTION_NAMED(RawFileOperator, seek)(_Self(MIL_RWops), int offset, int whence)
+static int METHOD_NAMED(RawFileOperator, seek)(_Self(MIL_RWops), int offset, int whence)
 {
 	if (fseek(self->hidden.stdio.fp, offset, whence) == 0 ) {
 		return(ftell(self->hidden.stdio.fp));
@@ -45,7 +45,7 @@ static int MEMBER_FUNCTION_NAMED(RawFileOperator, seek)(_Self(MIL_RWops), int of
 	}
 }
 
-static int MEMBER_FUNCTION_NAMED(RawFileOperator, read)(_Self(MIL_RWops), void *ptr, int size, int maxnum)
+static int METHOD_NAMED(RawFileOperator, read)(_Self(MIL_RWops), void *ptr, int size, int maxnum)
 {
 	size_t nread;
 
@@ -56,7 +56,7 @@ static int MEMBER_FUNCTION_NAMED(RawFileOperator, read)(_Self(MIL_RWops), void *
 	return(nread);
 }
 
-static int MEMBER_FUNCTION_NAMED(RawFileOperator, write)(_Self(MIL_RWops), const void *ptr, int size, int num)
+static int METHOD_NAMED(RawFileOperator, write)(_Self(MIL_RWops), const void *ptr, int size, int num)
 {
 	size_t nwrote;
 	nwrote = fwrite(ptr, size, num, self->hidden.stdio.fp);
@@ -67,7 +67,7 @@ static int MEMBER_FUNCTION_NAMED(RawFileOperator, write)(_Self(MIL_RWops), const
 	return(nwrote);
 }
 
-static int MEMBER_FUNCTION_NAMED(RawFileOperator, close)(_Self(MIL_RWops))
+static int METHOD_NAMED(RawFileOperator, close)(_Self(MIL_RWops))
 {
 	if ( self ) {
 		if ( self->hidden.stdio.autoclose ) {
@@ -81,7 +81,7 @@ static int MEMBER_FUNCTION_NAMED(RawFileOperator, close)(_Self(MIL_RWops))
 
 /* Functions to read/write memory pointers */
 
-static int MEMBER_FUNCTION_NAMED(MemFileOperator, seek)(_Self(MIL_RWops), int offset, int whence)
+static int METHOD_NAMED(MemFileOperator, seek)(_Self(MIL_RWops), int offset, int whence)
 {
 	Uint8 *newpos;
 
@@ -108,7 +108,7 @@ static int MEMBER_FUNCTION_NAMED(MemFileOperator, seek)(_Self(MIL_RWops), int of
 	self->hidden.mem.here = newpos;
 	return(self->hidden.mem.here-self->hidden.mem.base);
 }
-static int MEMBER_FUNCTION_NAMED(MemFileOperator, read)(_Self(MIL_RWops), void *ptr, int size, int maxnum)
+static int METHOD_NAMED(MemFileOperator, read)(_Self(MIL_RWops), void *ptr, int size, int maxnum)
 {
 	int total_bytes;
 	int mem_available;
@@ -128,7 +128,7 @@ static int MEMBER_FUNCTION_NAMED(MemFileOperator, read)(_Self(MIL_RWops), void *
 
 	return (total_bytes / size);
 }
-static int MEMBER_FUNCTION_NAMED(MemFileOperator, write)(_Self(MIL_RWops), const void *ptr, int size, int num)
+static int METHOD_NAMED(MemFileOperator, write)(_Self(MIL_RWops), const void *ptr, int size, int num)
 {
 	if ( (self->hidden.mem.here + (num*size)) > self->hidden.mem.stop ) {
 		num = (self->hidden.mem.stop-self->hidden.mem.here)/size;
@@ -142,7 +142,7 @@ static int mem_writeconst(_Self(MIL_RWops), const void *ptr, int size, int num)
 	//MIL_SetError("Can't write to read-only memory");
 	return(-1);
 }
-static int MEMBER_FUNCTION_NAMED(MemFileOperator, close)(_Self(MIL_RWops))
+static int METHOD_NAMED(MemFileOperator, close)(_Self(MIL_RWops))
 {
 	if ( self ) {
 		free(self);
@@ -295,22 +295,22 @@ MIL_RWops *MIL_RWFromMem(void *mem, int size)
 
 /* Make MIL_RWops to a pure vitrual class. */
 MAKE_PURE_VIRTUAL_CLASS(MIL_RWops)
-MEMBER_FUNC_REGISTER_PLACEHOLDER(MIL_RWops)
+METHOD_REGISTER_PLACEHOLDER(MIL_RWops)
 
-VIRTUAL_FUNCTION_REGBEGIN(RawFileOperator, MIL_RWops)
+VIRTUAL_METHOD_REGBEGIN(RawFileOperator, MIL_RWops)
     NON_DESTRUCTOR
-    FUNCTION_REGISTER(RawFileOperator, seek)
-    FUNCTION_REGISTER(RawFileOperator, read)
-    FUNCTION_REGISTER(RawFileOperator, write)
-FUNCTION_REGISTER(RawFileOperator, close)
-    VIRTUAL_FUNCTION_REGEND
-MEMBER_FUNC_REGISTER_PLACEHOLDER(RawFileOperator)
+    METHOD_REGISTER(RawFileOperator, seek)
+    METHOD_REGISTER(RawFileOperator, read)
+    METHOD_REGISTER(RawFileOperator, write)
+METHOD_REGISTER(RawFileOperator, close)
+    VIRTUAL_METHOD_REGEND
+METHOD_REGISTER_PLACEHOLDER(RawFileOperator)
 
-VIRTUAL_FUNCTION_REGBEGIN(MemFileOperator, MIL_RWops)
+VIRTUAL_METHOD_REGBEGIN(MemFileOperator, MIL_RWops)
     NON_DESTRUCTOR
-    FUNCTION_REGISTER(MemFileOperator, seek)
-    FUNCTION_REGISTER(MemFileOperator, read)
-    FUNCTION_REGISTER(MemFileOperator, write)
-FUNCTION_REGISTER(MemFileOperator, close)
-VIRTUAL_FUNCTION_REGEND
-MEMBER_FUNC_REGISTER_PLACEHOLDER(MemFileOperator)
+    METHOD_REGISTER(MemFileOperator, seek)
+    METHOD_REGISTER(MemFileOperator, read)
+    METHOD_REGISTER(MemFileOperator, write)
+METHOD_REGISTER(MemFileOperator, close)
+VIRTUAL_METHOD_REGEND
+METHOD_REGISTER_PLACEHOLDER(MemFileOperator)

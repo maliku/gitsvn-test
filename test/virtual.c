@@ -26,14 +26,14 @@ void MyBasevtest(_SELF, int in)
     printf("Obj from MyBase %p get %d.\n", (MyBase*)self, in);
 }
 
-VIRTUAL_FUNCTION_REGBEGIN(MyBase, NonBase)
+VIRTUAL_METHOD_REGBEGIN(MyBase, NonBase)
     DESTRUCTOR_REGISTER(MyBase)
-FUNCTION_REGISTER(MyBase, vtest)
-    VIRTUAL_FUNCTION_REGEND
+METHOD_REGISTER(MyBase, vtest)
+    VIRTUAL_METHOD_REGEND
 
-MEMBER_FUNCTION_REGBEGIN(MyBase)
+METHOD_REGBEGIN(MyBase)
     CONSTRUCTOR_REGISTER(MyBase)
-    MEMBER_FUNCTION_REGEND
+    METHOD_REGEND
 
 /* ====================== for class MyBase ======================*/
 DESTRUCTOR(MySub)
@@ -52,14 +52,14 @@ void MySubvtest(_SELF, int in)
     printf("Obj from MySub %p get %d.\n", (MySub*)self, in);
 }
 
-VIRTUAL_FUNCTION_REGBEGIN(MySub, MyBase)
+VIRTUAL_METHOD_REGBEGIN(MySub, MyBase)
     DESTRUCTOR_REGISTER(MySub)
-FUNCTION_REGISTER(MySub, vtest)
-    VIRTUAL_FUNCTION_REGEND
+METHOD_REGISTER(MySub, vtest)
+    VIRTUAL_METHOD_REGEND
 
-MEMBER_FUNCTION_REGBEGIN(MySub)
+METHOD_REGBEGIN(MySub)
     CONSTRUCTOR_REGISTER(MySub)
-    MEMBER_FUNCTION_REGEND
+    METHOD_REGEND
 
 int main()
 {

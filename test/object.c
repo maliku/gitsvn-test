@@ -27,14 +27,14 @@ void test(_Self(Object), int i)
     printf("Object::test input %d.\n", i);
 }
 
-VIRTUAL_FUNCTION_REGBEGIN(Object, CooBase)
+VIRTUAL_METHOD_REGBEGIN(Object, CooBase)
     DESTRUCTOR_REGISTER(Object)
-    VIRTUAL_FUNCTION_REGEND
+    VIRTUAL_METHOD_REGEND
 
-MEMBER_FUNCTION_REGBEGIN(Object)
+METHOD_REGBEGIN(Object)
     CONSTRUCTOR_REGISTER(Object)
     test
-    MEMBER_FUNCTION_REGEND
+    METHOD_REGEND
 
 int main()
 {

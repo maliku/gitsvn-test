@@ -1,7 +1,7 @@
 INCLUDES = -I../../include -I../include
 
 SUBDIRS = pthread
-DIST_SUBDIRS = $(SUBDIRS)
+#DIST_SUBDIRS = $(SUBDIRS)
 
 noinst_LTLIBRARIES = libthread.la
 
