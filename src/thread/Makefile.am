@@ -8,5 +8,5 @@ noinst_LTLIBRARIES = libthread.la
 #COMMON_LIBADD =               \
 #    libthread.la
 
-libthread_la_SOURCES = 
+libthread_la_SOURCES = MIL_mutex.c
 

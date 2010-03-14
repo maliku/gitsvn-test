@@ -4,7 +4,7 @@
 AC_PREREQ([2.61])
 AC_INIT([libmilui], [0.0.1])
 AC_CONFIG_SRCDIR([src/misc/misc.c])
-AC_CONFIG_HEADERS([miluiconfig.h])
+AC_CONFIG_HEADERS([MIL_config_linux.h])
 AC_CANONICAL_SYSTEM
 
 MilUI_MAJOR_VERSION=0
@@ -38,6 +38,13 @@ AC_CANONICAL_SYSTEM
 AM_INIT_AUTOMAKE([foreign no-define])
 
 dnl ========================================================================
+AC_C_BIGENDIAN
+if test x$ac_cv_c_bigendian = xyes; then
+    AC_DEFINE(MIL_BYTEORDER, 4321, [Make sure byte order.])
+else
+    AC_DEFINE(MIL_BYTEORDER, 1234, [Make sure byte order.])
+fi
+
 dnl Check for tools
 AC_PROG_LIBTOOL
 AC_PROG_CC
@@ -48,26 +55,168 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 
 dnl ========================================================================
+case "$host" in
+    *-*-cygwin*)
+        # We build MIL on cygwin without the UNIX emulation layer
+        BASE_CFLAGS="-I/usr/include/mingw -mno-cygwin"
+        BASE_LDFLAGS="-mno-cygwin"
+        ;;
+    *)
+        BASE_CFLAGS="-D_GNU_SOURCE=1"
+        BASE_LDFLAGS=""
+        ;;
+esac
+BUILD_CFLAGS="$CFLAGS $CPPFLAGS"
+BUILD_LDFLAGS="$LDFLAGS"
+EXTRA_LDFLAGS="$BASE_LDFLAGS"
+MIL_CFLAGS="$BASE_CFLAGS"
+MIL_LIBS="-lMIL $BASE_LDFLAGS"
+LDFLAGS="$LDFLAGS $EXTRA_LDFLAGS"
+
 dnl Checks for header files.
-AC_HEADER_STDC
 AC_HEADER_DIRENT
-AC_CHECK_HEADERS(sys/types.h sys/time.h termio.h unistd.h math.h locale.h)
 
 # Checks for libraries.
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_C_INLINE
+AC_C_VOLATILE
 AC_TYPE_SIZE_T
 AC_HEADER_TIME
 AC_STRUCT_TM
 
 dnl Checks for library functions.
-AC_FUNC_ALLOCA
-AC_FUNC_MEMCMP
-AC_FUNC_MMAP
-AC_FUNC_VPRINTF
-AC_CHECK_FUNCS(time mktime localtime strdup strcasecmp strncasecmp strerror setlocale getpt)
+dnl See whether we are allowed to use the system C library
+AC_ARG_ENABLE(libc,
+AC_HELP_STRING([--enable-libc], [Use the system C library [[default=yes]]]),
+              , enable_libc=yes)
+if test x$enable_libc = xyes; then
+    AC_DEFINE(HAVE_LIBC, 1, [Have system C library.])
+
+    dnl Check for C library headers
+    AC_HEADER_STDC
+    AC_CHECK_HEADERS(sys/types.h stdio.h stdlib.h stddef.h stdarg.h sys/time.h termio.h unistd.h locale.h malloc.h memory.h string.h strings.h inttypes.h stdint.h ctype.h math.h iconv.h signal.h)
+
+    dnl Check for typedefs, structures, etc.
+    AC_TYPE_SIZE_T
+    if test x$ac_cv_header_inttypes_h = xyes -o x$ac_cv_header_stdint_h = xyes; then
+        AC_CHECK_TYPE(int64_t)
+        if test x$ac_cv_type_int64_t = xyes; then
+            AC_DEFINE(MIL_HAS_64BIT_TYPE, 1, [Has 64bits integer type.])
+        fi
+        have_inttypes=yes
+    fi
+
+    dnl Checks for library functions.
+    case "$host" in
+    *-*-cygwin* | *-*-mingw32*)
+        ;;
+    *)
+        AC_FUNC_ALLOCA
+        ;;
+    esac
+
+    AC_FUNC_MMAP
+    AC_FUNC_VPRINTF
+    AC_FUNC_MEMCMP
+    if test x$ac_cv_func_memcmp_working = xyes; then
+        AC_DEFINE(HAVE_MEMCMP, 1, [Have func memcmp.])
+    fi
+    AC_FUNC_STRTOD
+    if test x$ac_cv_func_strtod = xyes; then
+        AC_DEFINE(HAVE_STRTOD, 1, [Have func strtod.])
+    fi
+    AC_CHECK_FUNC(mprotect,
+        AC_TRY_COMPILE([
+          #include <sys/types.h>
+          #include <sys/mman.h>
+        ],[
+        ],[
+        AC_DEFINE(HAVE_MPROTECT, 1, [Have func mprotect.])
+        ]),
+    )
+    AC_CHECK_FUNCS(malloc calloc realloc free getenv putenv unsetenv qsort abs bcopy memset memcpy memmove strlen strlcpy strlcat strdup _strrev _strupr _strlwr strchr strrchr strstr itoa _ltoa _uitoa _ultoa strtol strtoul _i64toa _ui64toa strtoll strtoull atoi atof strcmp strncmp _stricmp strcasecmp _strnicmp strncasecmp sscanf snprintf vsnprintf iconv sigaction setjmp nanosleep time mktime localtime strerror setlocale getpt)
+
+    AC_CHECK_LIB(iconv, libiconv_open, [EXTRA_LDFLAGS="$EXTRA_LDFLAGS -liconv"])
+    AC_CHECK_LIB(m, pow, [EXTRA_LDFLAGS="$EXTRA_LDFLAGS -lm"])
+fi
+
+if test x$have_inttypes != xyes; then
+    AC_CHECK_SIZEOF(char, 1)
+    AC_CHECK_SIZEOF(short, 2)
+    AC_CHECK_SIZEOF(int, 4)
+    AC_CHECK_SIZEOF(long, 4)
+    AC_CHECK_SIZEOF(long long, 8)
+    if test x$ac_cv_sizeof_char = x1; then
+        AC_DEFINE(int8_t, signed char, [Define int8_t])
+        AC_DEFINE(uint8_t, unsigned char, [Define int8_t])
+    fi
+    if test x$ac_cv_sizeof_short = x2; then
+        AC_DEFINE(int16_t, signed short, [Define int16_t])
+        AC_DEFINE(uint16_t, unsigned short, [Define, uint16_t])
+    else
+        if test x$ac_cv_sizeof_int = x2; then
+            AC_DEFINE(int16_t, signed int, [Define int16_t])
+            AC_DEFINE(uint16_t, unsigned int, [Define uint16_t])
+        fi
+    fi
+    if test x$ac_cv_sizeof_int = x4; then
+        AC_DEFINE(int32_t, signed int, [Define int32_t])
+        AC_DEFINE(uint32_t, unsigned int, [Define uint32_t])
+    else
+        if test x$ac_cv_sizeof_long = x4; then
+            AC_DEFINE(int32_t, signed long, [Define int32_t])
+            AC_DEFINE(uint32_t, unsigned long, [Define uint32_t])
+        fi
+    fi
+    if test x$ac_cv_sizeof_long = x8; then
+        AC_DEFINE(int64_t, signed long, [Define int64_t])
+        AC_DEFINE(uint64_t, unsigned long, [Define uint64_t])
+        AC_DEFINE(MIL_HAS_64BIT_TYPE, 1, [Has 64 bits integer type.])
+    else
+        if test x$ac_cv_sizeof_long_long = x8; then
+            AC_DEFINE(int64_t, signed long long, [Define int64_t])
+            AC_DEFINE(uint64_t, unsigned long long, [Define uint64_t])
+            AC_DEFINE(MIL_HAS_64BIT_TYPE, 1, [Has 64 bits integer type.])
+        fi
+    fi
+    AC_DEFINE(size_t, unsigned int, [Define size_t])
+    AC_DEFINE(uintptr_t, unsigned long, [Define uintptr_t])
+fi
+
+have_pthreads=no
+if test "x$use_threads" != "xno"; then
+  AC_MSG_CHECKING(for pthread library)
+  TMP_SAVE_LIBS=$LIBS
+  AC_TRY_LINK([
+#include "confdefs.h"
+#define __C_ASM_H /* fix for retarded Digital Unix headers */
+#include <pthread.h>],[
+void foo(void)
+{
+pthread_exit (0);
+}
+],
+    have_pthreads=yes
+    AC_MSG_RESULT(yes),
+    AC_MSG_RESULT(no))
+    LIBS=$TMP_SAVE_LIBS
+    AC_DEFINE(HAVE_PTHREAD, 1,
+            [Define if there have libpthread.])
+
+fi
+
+AC_DEFINE_UNQUOTED(MILUI_MAJOR_VERSION, $MilUI_MAJOR_VERSION,
+            [Major version of MilUI])
+AC_DEFINE_UNQUOTED(MILUI_MINOR_VERSION, $MilUI_MINOR_VERSION,
+            [Minor version of MilUI])
+AC_DEFINE_UNQUOTED(MILUI_MICRO_VERSION, $MilUI_MICRO_VERSION,
+            [Micro version of MilUI])
+AC_DEFINE_UNQUOTED(MILUI_INTERFACE_AGE, $MilUI_INTERFACE_AGE,
+            [Interface age of MilUI])
+AC_DEFINE_UNQUOTED(MILUI_BINARY_AGE, $MilUI_BINARY_AGE,
+            [Binary age of MilUI])
 
 AC_OUTPUT(
 Makefile
@@ -80,3 +229,6 @@ src/thread/Makefile
 src/thread/pthread/Makefile
 )
 
+AC_SUBST(BUILD_CFLAGS)
+AC_SUBST(BUILD_LDFLAGS)
+AC_SUBST(EXTRA_LDFLAGS)

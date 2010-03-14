@@ -2,7 +2,7 @@ AUTOMAKE_OPTIONS=foreign
 
 SUBDIRS = src include
 
-COMM_HDRS = miluiconfig.h
+COMM_HDRS = MIL_config_linux.h
 
 # The directory where the include files will be installed
 libmiluiconfigdir = $(includedir)/milui

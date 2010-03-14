@@ -1,4 +1,5 @@
 
-[2010-03-04]: COO framework completed nearly.(dk)
-[2010-03-06]: Add some test case.
+[2010-03-14]: Add more check to configure.in;Mutex class based on pthread was Supportted.
 [2010-03-08]: Add Raw/MemFile Operator class.
+[2010-03-06]: Add some test case.
+[2010-03-04]: COO framework completed nearly.(dk)

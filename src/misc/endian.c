@@ -23,6 +23,7 @@
 /* Functions for dynamically reading and writing endian-specific values */
 
 #include "MIL_endian.h"
+#include "MIL_rwops.h"
 
 Uint16 MIL_ReadLE16 (MIL_RWops *src)
 {
