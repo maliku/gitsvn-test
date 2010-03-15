@@ -8,7 +8,8 @@ lib_LTLIBRARIES = libmilui.la
 
 COMMON_LIBADD =               \
     misc/libmisc.la \
-	stdlib/libstdlib.la
+	stdlib/libstdlib.la \
+	thread/libthread.la
 
 libmilui_la_LIBADD =  \
     $(COMMON_LIBADD)
