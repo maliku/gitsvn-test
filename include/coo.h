@@ -37,7 +37,7 @@ extern struct __##type##Vtable g_##type##Vtable;\
 extern struct __##type##Mtable g_##type##Mtable;\
 struct __##type;\
 typedef struct __##type type;\
-void* type##Preconstructor(_SELF);\
+__inline__ void* type##Preconstructor(_SELF);\
 void type##Predestructor(_SELF);\
 struct __##type
 
@@ -48,10 +48,13 @@ extern type##Vtable g_##type##Vtable;\
 extern struct __##type##Mtable g_##type##Mtable;\
 struct _##type;\
 typedef struct _##type type;\
-void* type##Preconstructor(_SELF);\
+__inline__ void* type##Preconstructor(_SELF);\
 void type##Predestructor(_SELF);\
 struct _##type {\
-	basetype __super;
+    union { \
+	    basetype __class; \
+        type##Vtable *__vptr; \
+    }__super;
 
 #define	CLASS_INHERIT_END };
 
@@ -63,13 +66,16 @@ struct _##type {\
 /* Macro for call member function of object. */
 #define	_MC(pobj)	((pobj)->__mptr)
 /* Macro for call virtual member function of object. */
-#define	_VC(pobj)	(((pobj)->__mptr)->__GetVptr(pobj))
+//#define	_VC(pobj)	(((pobj)->__mptr)->__GetVptr(pobj))
+#define	_VC(pobj)	(((pobj)->__super).__vptr)
 
 #define _mc(pobj, method, ...) _MC(pobj)->method(pobj, ##__VA_ARGS__)
 #define _vc(pobj, method, ...) _VC(pobj)->method(pobj, ##__VA_ARGS__)
 		
 /* Macro for virtual member function declare begin. */
 #define VIRTUAL_METHOD_DECLARE_BEGIN(type) \
+    union { \
+        void * __class; \
     struct __##type##Vtable {\
         RTTI __rtti;\
         void* (*OrderConstruct)(void*);\
@@ -77,12 +83,11 @@ struct _##type {\
         void (*Destructor)(void*);
 
 /* Macro for virtual member function declare end. */
-#define	VIRTUAL_METHOD_DECLARE_END }*__vptr;
+#define	VIRTUAL_METHOD_DECLARE_END }*__vptr; } __super;
 
 /* Macro for member function declare begin. */
 #define METHOD_DECLARE_BEGIN(type) \
     struct __##type##Mtable {\
-        type##Vtable* (*__GetVptr)(type*);\
         type * (*type)(type*);\
 
 /* Macro for member function declare end. */
@@ -113,21 +118,15 @@ VIRTUAL_METHOD_REGEND
 #define MAKE_PURE_VIRTUAL_CLASS(type) VIRTUAL_FUNC_REGISTER_PLACEHOLDER(type, NonBase)
 
 #define METHOD_REGBEGIN(type) \
-LOCATE_VTABLE(type);\
-struct __##type##Mtable g_##type##Mtable = { \
-    type##GetVPTR,
+struct __##type##Mtable g_##type##Mtable = {
+
 #define METHOD_REGEND };
 
 #define METHOD_REGISTER_PLACEHOLDER(type) \
 METHOD_REGBEGIN(type) \
 METHOD_REGEND 
 
-#define LOCATE_VTABLE(type) \
-    type##Vtable* type##GetVPTR(type* self) { return ((type##Vtable*)*(type##Vtable**)self); }
-    
 #define	METHOD_NAMED(type, func) type##func
-/* #define	MEMFUNC_NAMED(type, func) METHOD_NAMED(type, func)
- */
 
 #define PRECONSTRUCTORS(type) \
     void * type##OrderConstruct(_SELF) { \
@@ -199,4 +198,7 @@ void Deletes(void*, size_t);
 /* Delete a object without free memory. */
 #define DeleteAt(p) OrderDestruct(p)
 
-#define PrintTest(fmt, ...) printf(fmt,##_
+#define PrintTest(fmt, ...) printf(fmt,##__VA_ARGS__)
+#define MIL_Error(err)
+#define MIL_SetError(err) puts(err)
+#endif   /* ----- #ifndef COO_INC  ----- */

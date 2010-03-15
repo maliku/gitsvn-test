@@ -7,10 +7,9 @@
  *  Organization: http://www.ds0101.net
  */
 
-#include <pthread.h>
-#include "MIL_config.h"
-#include "MIL_mutex.h"
 #include "PthreadMutex.h"
+
+#if HAVE_PTHREAD
 
 CONSTRUCTOR(PthreadMutex)
 {
@@ -129,13 +128,15 @@ Sint32 METHOD_NAMED(PthreadMutex, unlock)(_Self(MIL_mutex))
 
 }
 
-    VIRTUAL_METHOD_REGBEGIN(PthreadMutex, MIL_mutex)
+VIRTUAL_METHOD_REGBEGIN(PthreadMutex, MIL_mutex)
     DESTRUCTOR_REGISTER(PthreadMutex)
     METHOD_REGISTER(PthreadMutex, lock)
-METHOD_REGISTER(PthreadMutex, unlock)
-    VIRTUAL_METHOD_REGEND
+    METHOD_REGISTER(PthreadMutex, unlock)
+VIRTUAL_METHOD_REGEND
 
-    METHOD_REGBEGIN(PthreadMutex)
-CONSTRUCTOR_REGISTER(PthreadMutex)
-    METHOD_REGEND
+METHOD_REGBEGIN(PthreadMutex)
+    CONSTRUCTOR_REGISTER(PthreadMutex)
+METHOD_REGEND
+
+#endif
 

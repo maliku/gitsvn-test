@@ -10,7 +10,11 @@
 #ifndef  PTHREADMUTEX_INC
 #define  PTHREADMUTEX_INC
 
+#include "MIL_config.h"
+#if HAVE_PTHREAD
+#include <pthread.h>
 #include "MIL_mutex.h"
+
     CLASS_INHERIT_BEGIN(PthreadMutex, MIL_mutex)
 METHOD_DECLARE_PLACEHOLDER(PthreadMutex)
 
@@ -21,5 +25,7 @@ METHOD_DECLARE_PLACEHOLDER(PthreadMutex)
 #endif
 
     CLASS_INHERIT_END
+
+#endif
 
 #endif   /* ----- #ifndef PTHREADMUTEX_INC  ----- */
