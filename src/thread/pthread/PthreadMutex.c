@@ -139,4 +139,3 @@ METHOD_REGBEGIN(PthreadMutex)
 METHOD_REGEND
 
 #endif
-

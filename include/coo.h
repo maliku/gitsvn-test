@@ -201,4 +201,4 @@ void Deletes(void*, size_t);
 #define PrintTest(fmt, ...) printf(fmt,##__VA_ARGS__)
 #define MIL_Error(err)
 #define MIL_SetError(err) puts(err)
-#endif   /* ----- #ifndef COO_INC  ----- */
+#endif   /* ----- #ifndef COO_INC 
