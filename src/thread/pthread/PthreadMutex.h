@@ -28,4 +28,4 @@ METHOD_DECLARE_PLACEHOLDER(PthreadMutex)
 
 #endif
 
-#endif   /* ----- #ifndef PTHREADMUTEX_INC  ----
+#endif   /* ----- #ifndef PTHREADMUTEX_INC  ----- */

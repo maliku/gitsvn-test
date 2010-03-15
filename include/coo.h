@@ -66,7 +66,6 @@ struct _##type {\
 /* Macro for call member function of object. */
 #define	_MC(pobj)	((pobj)->__mptr)
 /* Macro for call virtual member function of object. */
-//#define	_VC(pobj)	(((pobj)->__mptr)->__GetVptr(pobj))
 #define	_VC(pobj)	(((pobj)->__super).__vptr)
 
 #define _mc(pobj, method, ...) _MC(pobj)->method(pobj, ##__VA_ARGS__)
@@ -201,4 +200,4 @@ void Deletes(void*, size_t);
 #define PrintTest(fmt, ...) printf(fmt,##__VA_ARGS__)
 #define MIL_Error(err)
 #define MIL_SetError(err) puts(err)
-#endif   /* ----- #ifndef COO_INC 
+#endif   /* ----- #ifndef COO_INC ----- */
