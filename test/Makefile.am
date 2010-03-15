@@ -1,4 +1,4 @@
-noinst_PROGRAMS=inherit object virtual duplicator rwops
+noinst_PROGRAMS=inherit object virtual duplicator rwops performance
 
 MILUI_LIBS=-lmilui -ljpeg -lpng -lpthread
 
@@ -16,3 +16,6 @@ duplicator_LDADD=$(MILUI_LIBS)
 
 rwops_SOURCES=rwops_test.c
 rwops_LDADD=$(MILUI_LIBS)
+
+performance_SOURCES=performance.c
+performance_LDADD=$(MILUI_LIBS)

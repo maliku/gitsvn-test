@@ -21,7 +21,7 @@ CONSTRUCTOR(MyBase)
     return self;
 }
 
-void MyBasevtest(_SELF, int in)
+void METHOD_NAMED(MyBase, vtest)(_SELF, int in)
 {
     printf("Obj from MyBase %p get %d.\n", (MyBase*)self, in);
 }
@@ -47,7 +47,7 @@ CONSTRUCTOR(MySub)
     return self;
 }
 
-void MySubvtest(_SELF, int in)
+void METHOD_NAMED(MySub, vtest)(_SELF, int in)
 {
     printf("Obj from MySub %p get %d.\n", (MySub*)self, in);
 }

@@ -72,7 +72,7 @@ typedef struct MIL_PixelFormat {
    which, if not NULL, contains the raw pixel data for the surface.
 */
 CLASS(MIL_Surface) {
-    VIRTUAL_FUNC_REGISTER_PLACEHOLDER(MIL_Surface)
+    VIRTUAL_METHOD_REGISTER_PLACEHOLDER(MIL_Surface)
     METHOD_REGISTER_PLACEHOLDER(MIL_Surface)
     
     Uint32 flags;				/* Read-only */

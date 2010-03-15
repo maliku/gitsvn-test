@@ -87,12 +87,12 @@ struct _##type {\
 /* Macro for member function declare begin. */
 #define METHOD_DECLARE_BEGIN(type) \
     struct __##type##Mtable {\
-        type * (*type)(type*);\
+        type * (*type)(type*); /* The constructor can't declare as virtual function because it's need type info. */
 
 /* Macro for member function declare end. */
 #define	METHOD_DECLARE_END }*__mptr;
 
-#define VIRTUAL_FUNC_DECLARE_PLACEHOLDER(type) \
+#define VIRTUAL_METHOD_DECLARE_PLACEHOLDER(type) \
 VIRTUAL_METHOD_DECLARE_BEGIN(type) \
 VIRTUAL_METHOD_DECLARE_END 
 
@@ -110,11 +110,11 @@ type##Vtable g_##type##Vtable = {\
 #define	METHOD_REGISTER(type, func) type##func,
 #define VIRTUAL_METHOD_REGEND };
 
-#define VIRTUAL_FUNC_REGISTER_PLACEHOLDER(type, basetype) \
+#define VIRTUAL_METHOD_REGISTER_PLACEHOLDER(type, basetype) \
 VIRTUAL_METHOD_REGBEGIN(type, basetype) \
 VIRTUAL_METHOD_REGEND 
 
-#define MAKE_PURE_VIRTUAL_CLASS(type) VIRTUAL_FUNC_REGISTER_PLACEHOLDER(type, NonBase)
+#define MAKE_PURE_VIRTUAL_CLASS(type) VIRTUAL_METHOD_REGISTER_PLACEHOLDER(type, NonBase)
 
 #define METHOD_REGBEGIN(type) \
 struct __##type##Mtable g_##type##Mtable = {
