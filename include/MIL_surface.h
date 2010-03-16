@@ -27,8 +27,8 @@ extern "C" {
 
 /* Useful data types */
 typedef struct MIL_Rect {
-	Sint16 x, y;
-	Uint16 w, h;
+	Sint32 x, y;
+	Uint32 w, h;
 } MIL_Rect;
 
 typedef struct MIL_Color {
