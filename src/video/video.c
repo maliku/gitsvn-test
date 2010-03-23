@@ -7,4 +7,4 @@
  *  Company: Beijing Feynman Software Technology Co., Ltd.
  */
 
-
+#include "video_device.h"

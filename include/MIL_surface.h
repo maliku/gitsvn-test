@@ -11,9 +11,6 @@
 #define  SURFACE_INC
 
 #include "coo.h"
-/* #include "mutex.h"
-#include "rwops.h"
- */
 
 #include "begin_code.h"
 /* Set up for C function definitions, even when using C++ */
@@ -71,9 +68,10 @@ typedef struct MIL_PixelFormat {
 /* This structure should be treated as read-only, except for 'pixels',
    which, if not NULL, contains the raw pixel data for the surface.
 */
-CLASS(MIL_Surface) {
-    VIRTUAL_METHOD_REGISTER_PLACEHOLDER(MIL_Surface)
-    METHOD_REGISTER_PLACEHOLDER(MIL_Surface)
+CLASS(MIL_Surface) 
+{
+    VIRTUAL_METHOD_DECLARE_PLACEHOLDER(MIL_Surface)
+    METHOD_DECLARE_PLACEHOLDER(MIL_Surface)
     
     Uint32 flags;				/* Read-only */
 	MIL_PixelFormat *format;		/* Read-only */
@@ -100,7 +98,7 @@ CLASS(MIL_Surface) {
 
 	/* Reference count -- used when freeing surface */
 	int refcount;				/* Read-mostly */
-} MIL_Surface;
+};
 
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus

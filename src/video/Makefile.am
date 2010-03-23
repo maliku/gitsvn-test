@@ -1,11 +1,14 @@
 INCLUDES = -I../../include -I../include
 
-SUBDIRS = fbcon qvfb dos32 dummy
+SUBDIRS = dummy
 
 noinst_LTLIBRARIES = libvideo.la
 
-#COMMON_LIBADD =               \
-#    libvideo.la
+COMMON_LIBADD = \
+    dummy/libdummyvideo.la
 
-libvideo_la_SOURCES = video.c dummy/DummyVideo.c
+libvideo_la_LIBADD =  \
+    $(COMMON_LIBADD)
+
+libvideo_la_SOURCES = video.c
 
