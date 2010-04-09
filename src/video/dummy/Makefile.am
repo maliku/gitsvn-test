@@ -1,4 +1,6 @@
-INCLUDES = -I../../../include -I../../include
+
+TOP_DIR=../../../
+INCLUDES = -I../../../include -I../../include -I../
 
 noinst_LTLIBRARIES = libdummyvideo.la
 

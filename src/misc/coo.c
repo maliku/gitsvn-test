@@ -17,6 +17,6 @@ __inline__ void OrderDestruct(void * ptr)
 __inline__ void Delete(void *ptr)
 {
     OrderDestruct(ptr);
-    free(ptr);
+    MIL_free(ptr);
 }
 

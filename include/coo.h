@@ -16,6 +16,12 @@
 
 #include "MIL_stdinc.h"
 
+#include "begin_code.h"
+/* Set up for C function definitions, even when using C++ */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct __RTTI {
     struct __RTTI * __base;
     const char * __name;
@@ -166,7 +172,7 @@ __inline__ type * type##ArrayConstructor(_Self(type), int num) { \
 	while (i--) { \
         type##Predestructor(head++); \
     } \
-	free(self); \
+	MIL_free(self); \
 }
 
 #define CONSTRUCTOR(type) type* type##Constructor(_Self(type))
@@ -184,11 +190,11 @@ __inline__ type * type##ArrayConstructor(_Self(type), int num) { \
 /* Placement new operator. */
 #define NewAt(type, p) type##Preconstructor((type *)p)
 /* Normal new operator. */
-#define New(type) type##Preconstructor((type *)malloc(sizeof(type)))
+#define New(type) type##Preconstructor((type *)MIL_malloc(sizeof(type)))
 /* Copy constructor. */
 #define DupNew(type, rhs) type##Duplicator(New(type), (rhs))
 /* Constructor a array of type. */
-#define News(type, num) type##ArrayConstructor((type *)malloc(sizeof(type)), (num))
+#define News(type, num) type##ArrayConstructor((type *)MIL_malloc(sizeof(type)), (num))
 void OrderDestruct(void*);
 /* Normal Delete operator. */
 void Delete(void*);
@@ -200,4 +206,10 @@ void Deletes(void*, size_t);
 #define PrintTest(fmt, ...) printf(fmt,##__VA_ARGS__)
 #define MIL_Error(err)
 #define MIL_SetError(err) puts(err)
+
+#ifdef __cplusplus
+}
+#endif
+#include "close_code.h"
+
 #endif   /* ----- #ifndef COO_INC ----- */

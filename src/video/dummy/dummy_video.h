@@ -10,4 +10,8 @@
 #ifndef  DUMMYVIDEO_INC
 #define  DUMMYVIDEO_INC
 
+#include "video_device.h"
+CLASS_INHERIT_BEGIN(DummyVideoDevice, VideoDevice)
+METHOD_DECLARE_PLACEHOLDER(DummyVideoDevice)
+CLASS_INHERIT_END
 #endif   /* ----- #ifndef DUMMYVIDEO_INC  ----- */

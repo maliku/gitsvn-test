@@ -231,6 +231,7 @@ src/thread/win32/Makefile
 src/thread/dummy/Makefile
 src/video/Makefile
 src/video/dummy/Makefile
+src/kernel/Makefile
 )
 
 AC_SUBST(BUILD_CFLAGS)

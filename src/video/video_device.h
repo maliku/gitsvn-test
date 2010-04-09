@@ -151,6 +151,7 @@ CLASS(VideoDevice) {
 	MIL_PixelFormat* displayformatalphapixel;
 	
 };
+VideoDevice* CreateDummyVideoDevice(void);
 
 #endif   /* ----- #ifndef GFX_INC  ----- */
 
