@@ -10,5 +10,5 @@ COMMON_LIBADD = \
 libvideo_la_LIBADD =  \
     $(COMMON_LIBADD)
 
-libvideo_la_SOURCES = video_device.c
+libvideo_la_SOURCES = video_device.c surface.c
 

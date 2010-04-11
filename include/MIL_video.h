@@ -112,32 +112,6 @@ CLASS(MIL_Surface)
 
     METHOD_DECLARE_BEGIN(MIL_Surface)
     METHOD_DECLARE_END
-    
-    Uint32 flags;				/* Read-only */
-	MIL_PixelFormat *format;		/* Read-only */
-	int w, h;				/* Read-only */
-	Uint16 pitch;				/* Read-only */
-	void *pixels;				/* Read-write */
-	int offset;				/* Private */
-
-	/* Hardware-specific surface info */
-	struct private_hwdata *hwdata;
-
-	/* clipping information */
-	MIL_Rect clip_rect;			/* Read-only */
-	Uint32 unused1;				/* for binary compatibility */
-
-	/* Allow recursive locks */
-	Uint32 locked;				/* Private */
-
-	/* info for fast blit mapping to other surfaces */
-	struct MIL_BlitMap *map;		/* Private */
-
-	/* format version, bumped at every change to invalidate blit maps */
-	unsigned int format_version;		/* Private */
-
-	/* Reference count -- used when freeing surface */
-	int refcount;				/* Read-mostly */
 };
 
 /** @name MIL_Surface Flags

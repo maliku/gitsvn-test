@@ -52,6 +52,7 @@ void METHOD_NAMED(VideoDevice, updateMouse)(_Self(VideoDevice))
 {
 
 }
+
 MIL_Overlay* METHOD_NAMED(VideoDevice, createYUVOverlay)(_Self(VideoDevice), int width, int height,
                                  Uint32 format, MIL_Surface *display)
 {
