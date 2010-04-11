@@ -118,7 +118,12 @@ type##Vtable g_##type##Vtable = {\
     {(RTTI*)(&g_##basetype##Vtable), #type},\
     type##OrderConstruct,\
     type##Predestructor,
+
+#ifdef C99 /* TODO: Replace to real c99 macro. */
+#define	METHOD_REGISTER(type, func) .func = type##func,
+#else
 #define	METHOD_REGISTER(type, func) type##func,
+#endif
 #define VIRTUAL_METHOD_REGEND };
 
 #define VIRTUAL_METHOD_REGISTER_PLACEHOLDER(type, basetype) \

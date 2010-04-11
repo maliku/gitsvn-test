@@ -1,6 +1,6 @@
 /*! ============================================================================
  * @file application.c 
- * @Synopsis for MIL_Application 
+ * @Synopsis for Application 
  * @author DongKai
  * @version 1.0
  * @date 2010年04月09日
@@ -10,22 +10,30 @@
 #include "video_device.h"
 #include "application.h"
 
-CONSTRUCTOR(MIL_Application)
+MAKE_PURE_VIRTUAL_CLASS(MIL_Application)
+METHOD_REGISTER_PLACEHOLDER(MIL_Application)
+
+CONSTRUCTOR(Application)
 {
-    printf("MIL_Application %p constructed...\n", self);
+    printf("Application %p constructed...\n", self);
     return self;
 }
 
-DESTRUCTOR(MIL_Application)
+DESTRUCTOR(Application)
 {
-    printf("MIL_Application %p destructed...\n", self);
+    printf("Application %p destructed...\n", self);
+}
+    
+MIL_Application* CreateApplication(char **args, int num)
+{
+    return New(Application);
 }
 
-VIRTUAL_METHOD_REGBEGIN(MIL_Application, NonBase)
-    DESTRUCTOR_REGISTER(MIL_Application)
+VIRTUAL_METHOD_REGBEGIN(Application, NonBase)
+    DESTRUCTOR_REGISTER(Application)
     VIRTUAL_METHOD_REGEND
 
-METHOD_REGBEGIN(MIL_Application)
-    CONSTRUCTOR_REGISTER(MIL_Application)
+METHOD_REGBEGIN(Application)
+    CONSTRUCTOR_REGISTER(Application)
 METHOD_REGEND
 

@@ -26,7 +26,7 @@ CLASS(VideoDevice) {
 	/* List the available video modes for the given pixel format, sorted
 	   from largest to smallest.
 	 */
-	MIL_Rect **(*listModes)(_Self(VideoDevice), MIL_PixelFormat *format, Uint32 flags);
+	MIL_Rect** (*listModes)(_Self(VideoDevice), MIL_PixelFormat *format, Uint32 flags);
 
 	/* Set the requested video mode, returning a surface which will be
 	   set to the MIL_VideoSurface.  The width and height will already
@@ -36,7 +36,7 @@ CLASS(VideoDevice) {
 	   surface if necessary.  If a new mode is returned, this function
 	   should take care of cleaning up the current mode.
 	 */
-	MIL_Surface *(*setVideoMode)(_Self(VideoDevice), MIL_Surface *current,
+	MIL_Surface* (*setVideoMode)(_Self(VideoDevice), MIL_Surface *current,
 				int width, int height, int bpp, Uint32 flags);
 
 	/* Toggle the fullscreen mode */
@@ -52,10 +52,10 @@ CLASS(VideoDevice) {
 	   format.  The hardware should be able to perform at least 2x
 	   scaling on display.
 	 */
-	MIL_Overlay *(*createYUVOverlay)(_Self(VideoDevice), int width, int height,
+	MIL_Overlay* (*createYUVOverlay)(_Self(VideoDevice), int width, int height,
 	                                 Uint32 format, MIL_Surface *display);
 
-        /* Sets the color entries { firstcolor .. (firstcolor+ncolors-1) }
+    /* Sets the color entries { firstcolor .. (firstcolor+ncolors-1) }
 	   of the physical palette to those in 'colors'. If the device is
 	   using a software palette (MIL_HWPALETTE not set), then the
 	   changes are reflected in the logical palette of the screen
@@ -107,16 +107,16 @@ CLASS(VideoDevice) {
 	void (*freeHWSurface)(_Self(VideoDevice), MIL_Surface *surface);
 
 	/* Set the gamma correction directly (emulated with gamma ramps) */
-	int (*SetGamma)(_Self(VideoDevice), float red, float green, float blue);
+	int (*setGamma)(_Self(VideoDevice), float red, float green, float blue);
 
 	/* Get the gamma correction directly (emulated with gamma ramps) */
-	int (*GetGamma)(_Self(VideoDevice), float *red, float *green, float *blue);
+	int (*getGamma)(_Self(VideoDevice), float *red, float *green, float *blue);
 
 	/* Set the gamma ramp */
-	int (*SetGammaRamp)(_Self(VideoDevice), Uint16 *ramp);
+	int (*setGammaRamp)(_Self(VideoDevice), Uint16 *ramp);
 
 	/* Get the gamma ramp */
-	int (*GetGammaRamp)(_Self(VideoDevice), Uint16 *ramp);
+	int (*getGammaRamp)(_Self(VideoDevice), Uint16 *ramp);
 
 	/* * * */
 	/* OpenGL support */
@@ -136,7 +136,6 @@ CLASS(VideoDevice) {
 	/* Swap the current buffers in double buffer mode. */
 	void (*GL_SwapBuffers)(_Self(VideoDevice));
 
-
     VIRTUAL_METHOD_DECLARE_END 
 
     METHOD_DECLARE_BEGIN(VideoDevice)
@@ -152,6 +151,7 @@ CLASS(VideoDevice) {
 	
 };
 VideoDevice* CreateDummyVideoDevice(void);
+VideoDevice* CreateVideoDevice(const char* name);
 
 #endif   /* ----- #ifndef GFX_INC  ----- */
 

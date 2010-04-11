@@ -9,9 +9,9 @@
 
 #include <milui/MIL_application.h>
 
-int main()
+int main(char ** args, int argnum)
 {
-    MIL_Application * app = New(MIL_Application);
+    MIL_Application * app = CreateApplication(args, argnum);
     Delete(app);
     return 0;
 }

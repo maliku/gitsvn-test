@@ -22,7 +22,7 @@ void METHOD_NAMED(MyBase, virtual_method)(_Self(MyBase))
     printf("Now count = %d.\n", self->m_count++);
 }
 
-void METHOD_NAMED(MyBase, normal_func)(_Self(MyBase))
+void METHOD_NAMED(MyBase, normal_method)(_Self(MyBase))
 {
     printf("Now count = %d.\n", self->m_count++);
 }
@@ -34,7 +34,7 @@ VIRTUAL_METHOD_REGEND
 
 METHOD_REGBEGIN(MyBase)
     CONSTRUCTOR_REGISTER(MyBase)
-    METHOD_REGISTER(MyBase, normal_func)
+    METHOD_REGISTER(MyBase, normal_method)
 METHOD_REGEND
 
 void METHOD_NAMED(MySub, virtual_method)(_Self(MyBase))
