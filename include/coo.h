@@ -77,6 +77,11 @@ struct _##type {\
 #define _mc(pobj, method, ...) _MC(pobj)->method(pobj, ##__VA_ARGS__)
 #define _vc(pobj, method, ...) _VC(pobj)->method(pobj, ##__VA_ARGS__)
 		
+#define PRIVATE_BEGIN(type) \
+    char __ [sizeof(struct _##type##_private {
+
+#define PRIVATE_END })]
+
 /* Macro for virtual member function declare begin. */
 #define VIRTUAL_METHOD_DECLARE_BEGIN(type) \
     union { \

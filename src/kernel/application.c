@@ -7,13 +7,12 @@
  *  Company: Beijing Feynman Software Technology Co., Ltd.
  */
 
-#include "video/video_device.h"
-#include "MIL_application.h"
+#include "video_device.h"
+#include "application.h"
 
 CONSTRUCTOR(MIL_Application)
 {
     printf("MIL_Application %p constructed...\n", self);
-    self->video_device = CreateVideoDevice("dummy");
     return self;
 }
 

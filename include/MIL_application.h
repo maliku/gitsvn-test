@@ -16,16 +16,16 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-struct VideoDevice;
+
 CLASS(MIL_Application)
 {
-    VIRTUAL_METHOD_DECLARE_PLACEHOLDER(MIL_Application)
+    VIRTUAL_METHOD_DECLARE_BEGIN(MIL_Application)
+    VIRTUAL_METHOD_DECLARE_END
 
-    METHOD_DECLARE_BEGIN(MIL_Application)
-    METHOD_DECLARE_END
-
-    struct VideoDevice* video_device;
+    METHOD_DECLARE_PLACEHOLDER(MIL_Application)
 };
+
+MIL_Application* CreateApplication(char **args, int num);
 
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
