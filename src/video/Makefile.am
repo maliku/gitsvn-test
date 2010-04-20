@@ -1,6 +1,6 @@
 INCLUDES = -I../../include -I../include
 
-SUBDIRS = dummy
+SUBDIRS = dummy qvfb
 
 noinst_LTLIBRARIES = libvideo.la
 

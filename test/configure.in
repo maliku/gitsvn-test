@@ -9,7 +9,8 @@ AC_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE([foreign no-define])
 
 # Checks for programs.
-AC_PROG_CXX
+AC_PROG_LIBTOOL
+AC_PROG_CC
 
 # Checks for libraries.
 AC_CHECK_LIB([milui], [Delete])

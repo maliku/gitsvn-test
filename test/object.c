@@ -40,6 +40,7 @@ int main()
 {
     Object* obj = New(Object);
     _MC(obj)->test(obj, 666);
+    Delete(obj);
     return 0;
 }
 

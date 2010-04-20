@@ -1,6 +1,6 @@
 noinst_PROGRAMS=inherit object virtual duplicator rwops performance application
 
-MILUI_LIBS=-lmilui -ljpeg -lpng -lpthread
+MILUI_LIBS=-lmilui -lpthread
 
 inherit_SOURCES=inherit.c
 inherit_LDADD=$(MILUI_LIBS)
