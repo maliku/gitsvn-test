@@ -14,6 +14,11 @@
 
 #define QT_VFB_MOUSE_PIPE       "/tmp/.qtvfb_mouse-%d"
 
+typedef struct
+{
+    int left, top, right, bottom;
+} RECT;
+
 typedef struct 
 {
     int width;
@@ -21,7 +26,7 @@ typedef struct
     int depth;
     int linestep;
     int dataoffset;
-    MIL_Rect update;
+    RECT update;
     Uint8 dirty;
     int  numcols;
     unsigned int clut[256];

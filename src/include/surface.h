@@ -16,8 +16,8 @@ CLASS_INHERIT_BEGIN(Surface, MIL_Surface)
     
     Uint32 flags;				/* Read-only */
 	MIL_PixelFormat *format;		/* Read-only */
-	int w, h;				/* Read-only */
-	Uint16 pitch;				/* Read-only */
+	Uint32 w, h;				/* Read-only */
+	Uint32 pitch;				/* Read-only */
 	void *pixels;				/* Read-write */
 	int offset;				/* Private */
 
@@ -26,7 +26,6 @@ CLASS_INHERIT_BEGIN(Surface, MIL_Surface)
 
 	/* clipping information */
 	MIL_Rect clip_rect;			/* Read-only */
-	Uint32 unused1;				/* for binary compatibility */
 
 	/* Allow recursive locks */
 	Uint32 locked;				/* Private */

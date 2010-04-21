@@ -7,6 +7,7 @@
  *  Organization: http://www.ds0101.net
  */
 
+#include "surface.h"
 #include "qvfb_video.h"
 #include <unistd.h>
 #include <sys/mman.h>
@@ -16,7 +17,22 @@
 
 VideoDevice* CreateQVFbVideoDevice(void)
 {
-    return (VideoDevice*)New(QVFbVideoDevice);
+    MIL_PixelFormat vf;
+    Surface *s = New(Surface);
+    VideoDevice* vd = (VideoDevice*)New(QVFbVideoDevice);
+    _VC(vd)->videoInit(vd, &vf);
+    _VC(vd)->setVideoMode(vd, (MIL_Surface*)s, 240, 320, 32, 0);
+    if (NULL != s->pixels) {
+        MIL_Rect rc = {0, 0, 240, 320};
+        int i, j;
+        for (i = 0; i < 320; ++i)
+            for (j = 0; j < 240; ++j)
+                *(Uint32*)(((char*)s->pixels) + i * _VC(s)->getPitch((MIL_Surface*)s) + j) = i;
+        _VC(vd)->updateRects(vd, 1, &rc);
+        puts("draw");
+        getchar();
+    }
+    return vd;
 }
 
 CONSTRUCTOR(QVFbVideoDevice)
@@ -97,9 +113,88 @@ int METHOD_NAMED(QVFbVideoDevice, videoInit)(_Self(VideoDevice), MIL_PixelFormat
     return 0;
 }
 
+MIL_Rect** METHOD_NAMED(QVFbVideoDevice, listModes)(_Self(VideoDevice), 
+        MIL_PixelFormat *format, Uint32 flags)
+{
+    return (MIL_Rect **) NULL;
+}
+
+MIL_Surface* METHOD_NAMED(QVFbVideoDevice, setVideoMode)(_Self(VideoDevice), 
+        MIL_Surface *current, int width, int height, int bpp, Uint32 flags)
+{
+    /* Set up the mode framebuffer */
+    _VC(current)->setFlags(current, MIL_HWSURFACE | MIL_FULLSCREEN);
+    _VC(current)->setWidth(current, ((QVFbVideoDevice*)self)->hw_data->hdr->width);
+    _VC(current)->setHeight(current, ((QVFbVideoDevice*)self)->hw_data->hdr->height);
+    _VC(current)->setPitch(current, ((QVFbVideoDevice*)self)->hw_data->hdr->linestep);
+    ((Surface*)current)->pixels = ((QVFbVideoDevice*)self)->hw_data->shmrgn + ((QVFbVideoDevice*)self)->hw_data->hdr->dataoffset;
+
+    return current;
+}
+
+int METHOD_NAMED(QVFbVideoDevice, setColors)(_Self(VideoDevice), int firstcolor, 
+        int ncolors, MIL_Color *colors)
+{
+    int i, pixel = firstcolor;
+
+    for (i = 0; i < ncolors; i++) {
+        ((QVFbVideoDevice*)self)->hw_data->hdr->clut [pixel] 
+                = (0xff << 24) | ((colors[i].r & 0xff) << 16) | ((colors[i].g & 0xff) << 8) | (colors[i].b & 0xff);
+        pixel ++;
+    }
+
+    return 1;
+}
+
+void METHOD_NAMED(QVFbVideoDevice, updateRects)(_Self(VideoDevice), int numrects, 
+        MIL_Rect *rects)
+{
+    int i;
+
+    RECT bound = ((QVFbVideoDevice*)self)->hw_data->hdr->update;
+
+    for (i = 0; i < numrects; ++i) {
+        RECT rc = {rects[i].x, rects[i].y, 
+                        rects[i].x + rects[i].w, rects[i].y + rects[i].h};
+
+//        SetRect (&rc, rects[i].x, rects[i].y, 
+//                        rects[i].x + rects[i].w, rects[i].y + rects[i].h);
+//        if (IsRectEmpty (&bound))
+            bound = rc;
+//        else
+//            GetBoundRect (&bound, &bound, &rc);
+    }
+
+    ((QVFbVideoDevice*)self)->hw_data->hdr->update = bound;
+    ((QVFbVideoDevice*)self)->hw_data->hdr->dirty = MIL_TRUE;
+}
+
+void METHOD_NAMED(QVFbVideoDevice, videoQuit)(_Self(VideoDevice))
+{
+    shmdt(((QVFbVideoDevice*)self)->hw_data->shmrgn);
+}
+
+int METHOD_NAMED(QVFbVideoDevice, allocHWSurface)(_Self(VideoDevice), MIL_Surface *surface)
+{
+    return -1;
+}
+
 VIRTUAL_METHOD_REGBEGIN(QVFbVideoDevice, VideoDevice)
     DESTRUCTOR_REGISTER(QVFbVideoDevice)
     METHOD_REGISTER(QVFbVideoDevice, videoInit)
+    METHOD_REGISTER(QVFbVideoDevice, listModes)
+    METHOD_REGISTER(QVFbVideoDevice, setVideoMode)
+    PLACEHOLDER(toggleFullScreen),
+    PLACEHOLDER(updateMouse),
+    PLACEHOLDER(createYUVOverlay),
+    METHOD_REGISTER(QVFbVideoDevice, setColors)
+    METHOD_REGISTER(QVFbVideoDevice, updateRects)
+    METHOD_REGISTER(QVFbVideoDevice, videoQuit)
+    METHOD_REGISTER(QVFbVideoDevice, allocHWSurface)
+    PLACEHOLDER(checkHWBlit),
+    PLACEHOLDER(fillHWRect),
+    PLACEHOLDER(setHWColorKey),
+    PLACEHOLDER(setHWAlpha),
 VIRTUAL_METHOD_REGEND
 
 METHOD_REGBEGIN(QVFbVideoDevice)

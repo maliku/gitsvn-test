@@ -67,8 +67,10 @@ struct _##type {\
 #define	CLASS_INHERIT_END };
 
 #define	_Self(type)	type* self		/* 'this' pointer for COO framework */
+#define	_CSelf(type)	const type* self		/* 'this' pointer for COO framework */
 #define	_Rhs(type)	type* rhs		/* 'rhs' pointer for COO framework */
 #define	_SELF   _Self(void)		/* 'this' pointer for COO framework */
+#define	_CSELF   _CSelf(void)		/* 'this' pointer for COO framework */
 #define	_RHS	_Rhs(void)		/* 'rhs' pointer for COO framework */
 
 /* Macro for call member function of object. */
@@ -200,6 +202,7 @@ __inline__ type * type##ArrayConstructor(_Self(type), int num) { \
 #define METHOD_PLACEHOLDER NULL,
 #define NON_CONSTRUCTOR METHOD_PLACEHOLDER
 #define NON_DESTRUCTOR METHOD_PLACEHOLDER
+#define PLACEHOLDER(anything) 0
 
 /* Placement new operator. */
 #define NewAt(type, p) type##Preconstructor((type *)p)

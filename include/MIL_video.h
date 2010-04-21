@@ -48,8 +48,8 @@ extern "C" {
 /** @name Useful data types */
 /*@{*/
 typedef struct MIL_Rect {
-	Sint16 x, y;
-	Uint16 w, h;
+	Sint32 x, y;
+	Uint32 w, h;
 } MIL_Rect;
 
 typedef struct MIL_Color {
@@ -100,7 +100,7 @@ CLASS(MIL_Surface)
     void (*unlock)(_Self(MIL_Surface));
     int  (*setColorKey)(_Self(MIL_Surface), Uint32 flag, Uint32 key);
     int  (*setAlpha)(_Self(MIL_Surface), Uint32 flag, Uint8 alpha);
-    void (*setClipRect)(_Self(MIL_Surface), MIL_Rect *rect);
+    void (*setClipRect)(_Self(MIL_Surface), const MIL_Rect *rect);
     void (*getClipRect)(_Self(MIL_Surface), MIL_Rect *rect);
     int  (*blitSurface)(_Self(MIL_Surface), MIL_Rect *srcrect, MIL_Surface *dst, MIL_Rect *dstrect);
     int  (*fillRect)(_Self(MIL_Surface), MIL_Rect *dstrect, Uint32 color);
@@ -108,10 +108,20 @@ CLASS(MIL_Surface)
     MIL_Surface* (*displayFormat)(_Self(MIL_Surface));
     MIL_Surface* (*displayFormatAlpha)(_Self(MIL_Surface));
     MIL_Surface* (*convert)(_Self(MIL_Surface), MIL_PixelFormat *fmt, Uint32 flags);
+
+    Uint32 (*getWidth)(_CSelf(MIL_Surface));
+    Uint32 (*getHeight)(_CSelf(MIL_Surface));
+    Uint32 (*getPitch)(_CSelf(MIL_Surface));
+    Uint32 (*getFlags)(_CSelf(MIL_Surface));
+
+    void (*setWidth)(_Self(MIL_Surface), Uint32 w);
+    void (*setHeight)(_Self(MIL_Surface), Uint32 h);
+    void (*setPitch)(_Self(MIL_Surface), Uint32 pitch);
+    void (*setFlags)(_Self(MIL_Surface), Uint32 flags);
+
     VIRTUAL_METHOD_DECLARE_END
 
-    METHOD_DECLARE_BEGIN(MIL_Surface)
-    METHOD_DECLARE_END
+    METHOD_DECLARE_PLACEHOLDER(MIL_Surface)
 };
 
 /** @name MIL_Surface Flags

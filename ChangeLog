@@ -1,4 +1,5 @@
 
+[2010-04-22]: QVFB video subsystem was completed and workable.
 [2010-04-21]: Add QVFB video subsystem but not completed.
 [2010-04-11]: Adjust source tree for headfile visible relative, add application class.
 [2010-03-14]: Add more check to configure.in;Mutex class based on pthread was Supportted.
