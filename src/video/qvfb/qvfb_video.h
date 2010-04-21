@@ -14,7 +14,7 @@
 
 #define QT_VFB_MOUSE_PIPE       "/tmp/.qtvfb_mouse-%d"
 
-struct QVFbHeader
+typedef struct 
 {
     int width;
     int height;
@@ -25,25 +25,25 @@ struct QVFbHeader
     Uint8 dirty;
     int  numcols;
     unsigned int clut[256];
-};
+}QVFbHeader;
 
-struct QVFbKeyData
+typedef struct 
 {
     unsigned int unicode;
     unsigned int modifiers;
     MIL_bool press;
     MIL_bool repeat;
-};
+}QVFbKeyData;
 
-struct QVFbHardwareDependent {
+typedef struct {
     unsigned char* shmrgn;
-    struct QVFbHeader* hdr;
-};
+    QVFbHeader* hdr;
+} QVFbHardwareDependent;
 
 CLASS_INHERIT_BEGIN(QVFbVideoDevice, VideoDevice)
     METHOD_DECLARE_PLACEHOLDER(QVFbVideoDevice)
     /* Private display data */
-    struct QVFbHardwareDependent* hw_data;
+    QVFbHardwareDependent* hw_data;
 
 CLASS_INHERIT_END
 

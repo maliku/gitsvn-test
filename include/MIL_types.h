@@ -13,4 +13,5 @@
 
 #include "MIL_stdinc.h"
 
+#define MIL_MAX_PATH 256
 #endif   /* ----- #ifndef TYPES_INC  ----- */

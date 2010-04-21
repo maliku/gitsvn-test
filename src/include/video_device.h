@@ -151,6 +151,7 @@ CLASS(VideoDevice) {
 	
 };
 VideoDevice* CreateDummyVideoDevice(void);
+VideoDevice* CreateQVFbVideoDevice(void);
 VideoDevice* CreateVideoDevice(const char* name);
 
 #endif   /* ----- #ifndef GFX_INC  ----- */

@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "MIL_stdinc.h"
+#include "MIL_types.h"
 
 #include "begin_code.h"
 /* Set up for C function definitions, even when using C++ */
@@ -22,12 +22,14 @@
 extern "C" {
 #endif
 
+#define STRUCT typedef struct
+
 typedef struct __RTTI {
     struct __RTTI * __base;
     const char * __name;
 } RTTI;
 
-typedef struct __CommonVtable {
+STRUCT __CommonVtable {
         RTTI __rtti;
         void* (*OrderConstruct)(void*);
         void  (*Predestructor)(void*);
@@ -74,6 +76,8 @@ struct _##type {\
 /* Macro for call virtual member function of object. */
 #define	_VC(pobj)	(((pobj)->__super).__vptr)
 
+#define	_m(member)	(self->member)
+#define	_tm(type, member)	(((type*)self)->member)
 #define _mc(pobj, method, ...) _MC(pobj)->method(pobj, ##__VA_ARGS__)
 #define _vc(pobj, method, ...) _VC(pobj)->method(pobj, ##__VA_ARGS__)
 		

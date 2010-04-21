@@ -22,24 +22,26 @@ VideoDevice* CreateQVFbVideoDevice(void)
 CONSTRUCTOR(QVFbVideoDevice)
 {
     printf("QVFbVideoDevice %p constructed...\n", self);
+    _m(hw_data) = (QVFbHardwareDependent*)MIL_malloc(sizeof (*_m(hw_data)));
     return self;
 }
 
 DESTRUCTOR(QVFbVideoDevice)
 {
     printf("QVFbVideoDevice %p destructed...\n", self);
+    MIL_free(((QVFbVideoDevice*)self)->hw_data);
 }
 
 int METHOD_NAMED(QVFbVideoDevice, videoInit)(_Self(VideoDevice), MIL_PixelFormat *vformat)
 {
-    char file [50];
+    char file [MIL_MAX_PATH];
     int display = 0;
     key_t key;
     int shmid = 0;
-    struct QVFbHardwareDependent* data = ((QVFbVideoDevice*)self)->hw_data;
+    QVFbHardwareDependent* data = ((QVFbVideoDevice*)self)->hw_data;
 
-    if (GetMgEtcIntValue ("qvfb", "display", &display) < 0)
-        display = 0;
+//    if (GetMgEtcIntValue ("qvfb", "display", &display) < 0)
+//        display = 0;
 
     sprintf (file, QT_VFB_MOUSE_PIPE, display);
     key = ftok (file, 'b');
@@ -49,11 +51,11 @@ int METHOD_NAMED(QVFbVideoDevice, videoInit)(_Self(VideoDevice), MIL_PixelFormat
         data->shmrgn = (unsigned char *)shmat (shmid, 0, 0);
 
     if ((int)data->shmrgn == -1 || data->shmrgn == NULL) {
-        GAL_SetError ("NEWGAL>QVFb: Unable to attach to virtual FrameBuffer server.\n");
+        MIL_SetError ("VIDEO>QVFb: Unable to attach to virtual FrameBuffer server.\n");
         return -1;
     }
 
-     data->hdr = (struct QVFbHeader *) data->shmrgn;
+     data->hdr = (QVFbHeader *) data->shmrgn;
 
     vformat->BitsPerPixel = data->hdr->depth;
     switch (vformat->BitsPerPixel) {
@@ -88,8 +90,7 @@ int METHOD_NAMED(QVFbVideoDevice, videoInit)(_Self(VideoDevice), MIL_PixelFormat
             vformat->Bmask = 0x000000FF;
             break;
         default:
-            GAL_SetError ("NEWGAL>QVFb: Not supported depth: %d, "
-                "please try to use Shadow NEWGAL engine with targetname qvfb.\n", vformat->BitsPerPixel);
+            MIL_SetError("VIDEO>QVFb: Not supported depth\n");
             return -1;
     }
 
@@ -98,7 +99,7 @@ int METHOD_NAMED(QVFbVideoDevice, videoInit)(_Self(VideoDevice), MIL_PixelFormat
 
 VIRTUAL_METHOD_REGBEGIN(QVFbVideoDevice, VideoDevice)
     DESTRUCTOR_REGISTER(QVFbVideoDevice)
-    &g_VideoDeviceVtable.videoInit,
+    METHOD_REGISTER(QVFbVideoDevice, videoInit)
 VIRTUAL_METHOD_REGEND
 
 METHOD_REGBEGIN(QVFbVideoDevice)

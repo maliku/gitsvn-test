@@ -15,6 +15,7 @@ METHOD_REGISTER_PLACEHOLDER(MIL_Application)
 
 CONSTRUCTOR(Application)
 {
+    CreateQVFbVideoDevice();
     printf("Application %p constructed...\n", self);
     return self;
 }

@@ -5,7 +5,8 @@ SUBDIRS = dummy qvfb
 noinst_LTLIBRARIES = libvideo.la
 
 COMMON_LIBADD = \
-    dummy/libdummyvideo.la
+    dummy/libdummyvideo.la \
+    qvfb/libqvfbvideo.la
 
 libvideo_la_LIBADD =  \
     $(COMMON_LIBADD)
