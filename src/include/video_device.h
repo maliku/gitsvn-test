@@ -80,7 +80,7 @@ CLASS(VideoDevice) {
 	/* Hardware acceleration functions */
 
 	/* Allocates a surface in video memory */
-	int (*allocHWSurface)(_Self(VideoDevice), MIL_Surface *surface);
+	int (*allocHWSurface)(_Self(VideoDevice), MIL_Surface* surface);
 
 	/* Sets the hardware accelerated blit function, if any, based
 	   on the current flags of the surface (colorkey, alpha, etc.)
@@ -97,8 +97,8 @@ CLASS(VideoDevice) {
 	int (*setHWAlpha)(_Self(VideoDevice), MIL_Surface *surface, Uint8 value);
 
 	/* Returns a readable/writable surface */
-	int (*lockHWSurface)(_Self(VideoDevice), MIL_Surface *surface);
-	void (*unlockHWSurface)(_Self(VideoDevice), MIL_Surface *surface);
+	int (*lockHWSurface)(_Self(VideoDevice), MIL_Surface* surface);
+	void (*unlockHWSurface)(_Self(VideoDevice), MIL_Surface* surface);
 
 	/* Performs hardware flipping */
 	int (*flipHWSurface)(_Self(VideoDevice), MIL_Surface *surface);
@@ -156,11 +156,17 @@ STRUCT {
     VideoDevice* (*create)(void);
 } VideoDeviceEntry;
 
+extern VideoDevice* g_current_video;
+#define ACT_VIDEO_DEVICE g_current_video
+
 #if MIL_VIDEO_DRIVER_DUMMY
 extern VideoDeviceEntry g_video_dummy;
 #endif
 #if MIL_VIDEO_DRIVER_QVFB
 extern VideoDeviceEntry g_video_qvfb;
+#endif
+#if MIL_VIDEO_DRIVER_FBCON
+extern VideoDeviceEntry g_video_fbcon;
 #endif
 
 /* Video device factory. */

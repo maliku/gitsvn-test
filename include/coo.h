@@ -126,9 +126,9 @@ type##Vtable g_##type##Vtable = {\
     type##Predestructor,
 
 #ifdef C99 /* TODO: Replace to real c99 macro. */
-#define	METHOD_REGISTER(type, func) .func = type##func,
+#define	METHOD_REGISTER(type, func) .func = type##_X_##func,
 #else
-#define	METHOD_REGISTER(type, func) type##func,
+#define	METHOD_REGISTER(type, func) type##_X_##func,
 #endif
 #define VIRTUAL_METHOD_REGEND };
 
@@ -147,7 +147,7 @@ struct __##type##Mtable g_##type##Mtable = {
 METHOD_REGBEGIN(type) \
 METHOD_REGEND 
 
-#define	METHOD_NAMED(type, func) type##func
+#define	METHOD_NAMED(type, func) type##_X_##func
 
 #define PRECONSTRUCTORS(type) \
     void * type##OrderConstruct(_SELF) { \
@@ -199,9 +199,9 @@ __inline__ type * type##ArrayConstructor(_Self(type), int num) { \
 #define CONSTRUCTOR_REGISTER(type) type##Constructor,
 #define DESTRUCTOR_REGISTER(type) type##Destructor,
 
-#define METHOD_PLACEHOLDER NULL,
-#define NON_CONSTRUCTOR METHOD_PLACEHOLDER
-#define NON_DESTRUCTOR METHOD_PLACEHOLDER
+#define METHOD_PLACEHOLDER(method) NULL,
+#define NON_CONSTRUCTOR METHOD_PLACEHOLDER(Constructor)
+#define NON_DESTRUCTOR METHOD_PLACEHOLDER(Destructor)
 #define PLACEHOLDER(anything) 0
 
 /* Placement new operator. */
@@ -222,7 +222,7 @@ void Deletes(void*, size_t);
 
 #define PrintTest(fmt, ...) printf(fmt,##__VA_ARGS__)
 #define MIL_Error(err)
-#define MIL_SetError(err) puts(err)
+#define MIL_SetError(fmt, ...) fprintf(stderr, fmt, ##__VA_ARGS__)
 
 #ifdef __cplusplus
 }

@@ -142,15 +142,13 @@ CheckFBCON()
         if test x$video_fbcon = xyes; then
             AC_DEFINE(MIL_VIDEO_DRIVER_FBCON, 1, 
                 [Define if include FrameBuffer console Video Device engine])
-            VIDEO_SUBDIRS="$VIDEO_SUBDIRS fbcon"
-            VIDEO_DRIVERS="$VIDEO_DRIVERS fbcon/libfbconvideo.la"
 
             have_pciaccess="yes"
             AC_CHECK_LIB(pciaccess, pci_system_init,
                 SYSTEM_LIBS="$SYSTEM_LIBS -lpciaccess", have_pciaccess="no")
 
             if test x$have_pciaccess = xyes; then
-                AC_DEFINE(_MGHAVE_PCIACCESS, 1, 
+                AC_DEFINE(MIL_HAVE_PCIACCESS, 1, 
                 [Define if PCIAccess lib is available])
             fi
         fi
@@ -162,6 +160,7 @@ dnl Checks Video Device Engine.
 {
   CheckDummyVideo
   CheckQVFB
+  CheckFBCON
 }
 
 dnl See whether we are allowed to use the system C library
@@ -316,6 +315,7 @@ src/thread/dummy/Makefile
 src/video/Makefile
 src/video/dummy/Makefile
 src/video/qvfb/Makefile
+src/video/fbcon/Makefile
 src/kernel/Makefile
 )
 
