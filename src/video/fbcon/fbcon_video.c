@@ -12,6 +12,7 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 
+/* TODO: which headfile. */
 #if 0
 #ifndef HAVE_GETPAGESIZE
 #include <asm/page.h>		/* For definition of PAGE_SIZE */
@@ -135,13 +136,38 @@ static void FB_WaitIdle(_Self(VideoDevice))
 	return;
 }
 
+static int FB_FlipHWSurface(_Self(VideoDevice), Surface *surface)
+{
+	if ( ((FBconVideoDevice*)self)->hw_data->switched_away ) {
+		return -2; /* no hardware access */
+	}
+
+	/* Wait for vertical retrace and then flip display */
+	((FBconVideoDevice*)self)->hw_data->cache_vinfo.yoffset = 
+        ((FBconVideoDevice*)self)->hw_data->flip_page * surface->h;
+	if ( FB_IsSurfaceBusy(((FBconVideoDevice*)self)->screen) ) {
+		FB_WaitBusySurfaces(self);
+	}
+	((FBconVideoDevice*)self)->hw_data->wait_vbl(self);
+	if ( ioctl(((FBconVideoDevice*)self)->hw_data->console_fd, FBIOPAN_DISPLAY, 
+                &((FBconVideoDevice*)self)->hw_data->cache_vinfo) < 0 ) {
+		MIL_SetError("ioctl(FBIOPAN_DISPLAY) failed");
+		return(-1);
+	}
+	((FBconVideoDevice*)self)->hw_data->flip_page = 
+        !((FBconVideoDevice*)self)->hw_data->flip_page;
+
+	surface->pixels = 
+        ((FBconVideoDevice*)self)->hw_data->flip_address[((FBconVideoDevice*)self)->hw_data->flip_page];
+	return(0);
+}
 CONSTRUCTOR(FBconVideoDevice)
 {
     printf("FBconVideoDevice %p constructed...\n", self);
     _m(hw_data) = (MIL_PrivateVideoData *)MIL_malloc(sizeof (*_m(hw_data)));
     ((VideoDevice*)self)->name = FBCON_VIDEO_DRIVER_NAME;
 	if (NULL == _m(hw_data)) {
-		MIL_OutOfMemory();
+		/*MIL_OutOfMemory();*/
 		if ( self ) {
 			MIL_free(self);
 		}
@@ -378,7 +404,7 @@ static int FB_AddMode(_Self(VideoDevice), int index, unsigned int w, unsigned in
 	/* Set up the new video mode rectangle */
 	mode = (MIL_Rect *)MIL_malloc(sizeof *mode);
 	if ( mode == NULL ) {
-		MIL_OutOfMemory();
+		/*MIL_OutOfMemory();*/
 		return(-1);
 	}
 	mode->x = 0;
@@ -394,7 +420,7 @@ static int FB_AddMode(_Self(VideoDevice), int index, unsigned int w, unsigned in
 	((FBconVideoDevice*)self)->hw_data->MIL_modelist[index] = (MIL_Rect **)
 	       MIL_realloc(((FBconVideoDevice*)self)->hw_data->MIL_modelist[index], (1+next_mode+1)*sizeof(MIL_Rect *));
 	if ( ((FBconVideoDevice*)self)->hw_data->MIL_modelist[index] == NULL ) {
-		MIL_OutOfMemory();
+		/*MIL_OutOfMemory();*/
 		((FBconVideoDevice*)self)->hw_data->MIL_nummodes[index] = 0;
 		MIL_free(mode);
 		return(-1);
@@ -441,10 +467,13 @@ static MIL_Surface *FB_SetVGA16Mode(_Self(VideoDevice), MIL_Surface *cur,
 	struct fb_var_screeninfo vinfo;
     Surface* current = (Surface*)cur;
 
+    /* TODO: add self invoke at last. */
+#if 0
 	/* Set the terminal into graphics mode */
 	if ( FB_EnterGraphicsMode(self) < 0 ) {
 		return(NULL);
 	}
+#endif
 
 	/* Restore the original palette */
 	FB_RestorePalette(self);
@@ -459,9 +488,12 @@ static MIL_Surface *FB_SetVGA16Mode(_Self(VideoDevice), MIL_Surface *cur,
 	fprintf(stderr, "Printing actual vinfo:\n");
 	print_vinfo(&vinfo);
 #endif
+    /* TODO: Realloc format. */
+#if 0
 	if ( ! MIL_ReallocFormat(current, bpp, 0, 0, 0, 0) ) {
 		return(NULL);
 	}
+#endif
 	current->format->palette->ncolors = 16;
 
 	/* Get the fixed information about the console hardware.
@@ -523,7 +555,7 @@ static int FBconVideoDevice_X_videoInit(_Self(VideoDevice), MIL_PixelFormat *vfo
 	((FBconVideoDevice*)self)->hw_data->hw_lock = MIL_CreateMutex();
 	if ( ((FBconVideoDevice*)self)->hw_data->hw_lock == NULL ) {
 		MIL_SetError("Unable to create lock mutex");
-		FB_VideoQuit(self);
+		_VC(self)->videoQuit(self);
 		return(-1);
 	}
 #endif
@@ -531,7 +563,7 @@ static int FBconVideoDevice_X_videoInit(_Self(VideoDevice), MIL_PixelFormat *vfo
 	/* Get the type of video hardware */
 	if ( ioctl(((FBconVideoDevice*)self)->hw_data->console_fd, FBIOGET_FSCREENINFO, &finfo) < 0 ) {
 		MIL_SetError("Couldn't get console hardware info");
-		FB_VideoQuit(self);
+		_VC(self)->videoQuit(self);
 		return(-1);
 	}
 	switch (finfo.type) {
@@ -544,7 +576,7 @@ static int FBconVideoDevice_X_videoInit(_Self(VideoDevice), MIL_PixelFormat *vfo
 			if ( finfo.type_aux == FB_AUX_VGA_PLANES_VGA4 ) {
 				if ( ioperm(0x3b4, 0x3df - 0x3b4 + 1, 1) < 0 ) {
 					MIL_SetError("No I/O port permissions");
-					FB_VideoQuit(self);
+					_VC(self)->videoQuit(self);
 					return(-1);
 				}
 				_VC(self)->setVideoMode = FB_SetVGA16Mode;
@@ -554,7 +586,7 @@ static int FBconVideoDevice_X_videoInit(_Self(VideoDevice), MIL_PixelFormat *vfo
 #endif /* VGA16_FBCON_SUPPORT */
 		default:
 			MIL_SetError("Unsupported console hardware");
-			FB_VideoQuit(self);
+			_VC(self)->videoQuit(self);
 			return(-1);
 	}
 	switch (finfo.visual) {
@@ -565,7 +597,7 @@ static int FBconVideoDevice_X_videoInit(_Self(VideoDevice), MIL_PixelFormat *vfo
 			break;
 		default:
 			MIL_SetError("Unsupported console hardware");
-			FB_VideoQuit(self);
+			_VC(self)->videoQuit(self);
 			return(-1);
 	}
 
@@ -586,14 +618,14 @@ static int FBconVideoDevice_X_videoInit(_Self(VideoDevice), MIL_PixelFormat *vfo
 	if ( ((FBconVideoDevice*)self)->hw_data->mapped_mem == (char *)-1 ) {
 		MIL_SetError("Unable to memory map the video hardware");
 		((FBconVideoDevice*)self)->hw_data->mapped_mem = NULL;
-		FB_VideoQuit(self);
+		_VC(self)->videoQuit(self);
 		return(-1);
 	}
 
 	/* Determine the current screen depth */
 	if ( ioctl(((FBconVideoDevice*)self)->hw_data->console_fd, FBIOGET_VSCREENINFO, &vinfo) < 0 ) {
 		MIL_SetError("Couldn't get console pixel format");
-		FB_VideoQuit(self);
+		_VC(self)->videoQuit(self);
 		return(-1);
 	}
 	vformat->BitsPerPixel = vinfo.bits_per_pixel;
@@ -762,20 +794,29 @@ static int FBconVideoDevice_X_videoInit(_Self(VideoDevice), MIL_PixelFormat *vfo
 #ifdef FBACCEL_DEBUG
 			printf("Matrox hardware accelerator!\n");
 #endif
+            /* TODO: will supportted. */
+#if 0
 			FB_MatroxAccel(self, finfo.accel);
+#endif
 			break;
 		    case FB_ACCEL_3DFX_BANSHEE:
 #ifdef FBACCEL_DEBUG
 			printf("3DFX hardware accelerator!\n");
 #endif
+            /* TODO: will supportted. */
+#if 0
 			FB_3DfxAccel(self, finfo.accel);
+#endif
 			break;
 		    case FB_ACCEL_NV3:
 		    case FB_ACCEL_NV4:
 #ifdef FBACCEL_DEBUG
 			printf("NVidia hardware accelerator!\n");
 #endif
+            /* TODO: will supportted. */
+#if 0
 			FB_RivaAccel(self, finfo.accel);
+#endif
 			break;
 		    default:
 #ifdef FBACCEL_DEBUG
@@ -794,8 +835,9 @@ static int FBconVideoDevice_X_videoInit(_Self(VideoDevice), MIL_PixelFormat *vfo
 	}
 
 	/* Enable mouse and keyboard support */
+#if 0
 	if ( FB_OpenKeyboard(self) < 0 ) {
-		FB_VideoQuit(self);
+		_VC(self)->videoQuit(self);
 		return(-1);
 	}
 	if ( FB_OpenMouse(self) < 0 ) {
@@ -804,10 +846,11 @@ static int FBconVideoDevice_X_videoInit(_Self(VideoDevice), MIL_PixelFormat *vfo
 		sdl_nomouse = MIL_getenv("MIL_NOMOUSE");
 		if ( ! sdl_nomouse ) {
 			MIL_SetError("Unable to open mouse");
-			FB_VideoQuit(self);
+			_VC(self)->videoQuit(self);
 			return(-1);
 		}
 	}
+#endif
 
 	/* We're done! */
 	return(0);
@@ -820,6 +863,7 @@ static MIL_Rect** FBconVideoDevice_X_listModes(_Self(VideoDevice),
 }
 
 /* Various screen update functions available */
+#if 0
 static void FB_DirectUpdate(_Self(VideoDevice), int numrects, MIL_Rect *rects)
 {
 	int width = ((FBconVideoDevice*)self)->hw_data->cache_vinfo.xres;
@@ -833,7 +877,7 @@ static void FB_DirectUpdate(_Self(VideoDevice), int numrects, MIL_Rect *rects)
 	}
 
 	if (((FBconVideoDevice*)self)->hw_data->cache_vinfo.bits_per_pixel != 16) {
-		SDL_SetError("Shadow copy only implemented for 16 bpp");
+		MIL_SetError("Shadow copy only implemented for 16 bpp");
 		return;
 	}
 
@@ -915,7 +959,7 @@ static void FB_DirectUpdate(_Self(VideoDevice), int numrects, MIL_Rect *rects)
 				shadow_down_delta = 1;
 				break;
 			default:
-				SDL_SetError("Unknown rotation");
+				MIL_SetError("Unknown rotation");
 				return;
 		}
 
@@ -926,7 +970,7 @@ static void FB_DirectUpdate(_Self(VideoDevice), int numrects, MIL_Rect *rects)
            ((FBconVideoDevice*)self)->hw_data->physlinebytes + 
 			scr_x1 * bytes_per_pixel;
 
-		blitFunc((Uint8 *) src_start,
+		((FBconVideoDevice*)self)->hw_data->blitFunc((Uint8 *) src_start,
 				shadow_right_delta, 
 				shadow_down_delta, 
 				(Uint8 *) dst_start,
@@ -935,6 +979,7 @@ static void FB_DirectUpdate(_Self(VideoDevice), int numrects, MIL_Rect *rects)
 				scr_y2 - scr_y1);
 	}
 }
+#endif
 
 #ifdef FBCON_DEBUG
 static void print_vinfo(struct fb_var_screeninfo *vinfo)
@@ -1075,10 +1120,12 @@ static MIL_Surface* FBconVideoDevice_X_setVideoMode(_Self(VideoDevice),
 	int surfaces_len;
     Surface* current = (Surface*)cur;
 
+#if 0
 	/* Set the terminal into graphics mode */
 	if ( FB_EnterGraphicsMode(self) < 0 ) {
 		return(NULL);
 	}
+#endif
 
 	/* Restore the original palette */
 	FB_RestorePalette(self);
@@ -1163,11 +1210,14 @@ static MIL_Surface* FBconVideoDevice_X_setVideoMode(_Self(VideoDevice),
 	for ( i=0; i<vinfo.blue.length; ++i ) {
 		Bmask <<= 1;
 		Bmask |= (0x00000001<<vinfo.blue.offset);
-	}
+	} 
+    /* TODO: Realloc Format. */
+#if 0
 	if ( ! MIL_ReallocFormat(current, vinfo.bits_per_pixel,
 	                                  Rmask, Gmask, Bmask, 0) ) {
 		return(NULL);
 	}
+#endif
 
 	/* Get the fixed information about the console hardware.
 	   This is necessary since finfo.line_length changes.
@@ -1248,7 +1298,8 @@ static MIL_Surface* FBconVideoDevice_X_setVideoMode(_Self(VideoDevice),
 	}
 
 	/* Set the update rectangle function */
-	_VC(self)->updateRects = FB_DirectUpdate;
+/* 	_VC(self)->updateRects = FB_DirectUpdate;
+ */
 
 	/* We're done */
 	return(cur);
@@ -1293,7 +1344,7 @@ static int FB_InitHWSurfaces(_Self(VideoDevice), MIL_Surface *screen, char *base
 	if ( ((FBconVideoDevice*)self)->hw_data->surfaces_memleft > 0 ) {
 		bucket = (vidmem_bucket *)MIL_malloc(sizeof(*bucket));
 		if ( bucket == NULL ) {
-			MIL_OutOfMemory();
+			/*MIL_OutOfMemory();*/
 			return(-1);
 		}
 		bucket->prev = &(((FBconVideoDevice*)self)->hw_data->surfaces);
@@ -1368,7 +1419,7 @@ static int FBconVideoDevice_X_allocHWSurface(_Self(VideoDevice), MIL_Surface *su
 #endif
 		newbucket = (vidmem_bucket *)MIL_malloc(sizeof(*newbucket));
 		if ( newbucket == NULL ) {
-			MIL_OutOfMemory();
+			/*MIL_OutOfMemory();*/
 			return(-1);
 		}
 		newbucket->prev = bucket;
@@ -1452,7 +1503,8 @@ static int FBconVideoDevice_X_lockHWSurface(_Self(VideoDevice), MIL_Surface *sur
 		return -2; /* no hardware access */
 	}
 	if ( surface == ((FBconVideoDevice*)self)->screen ) {
-		MIL_mutexP(((FBconVideoDevice*)self)->hw_data->hw_lock);
+        MIL_mutex* mutex = ((FBconVideoDevice*)self)->hw_data->hw_lock;
+		_VC(mutex)->lock(mutex);
 		if ( FB_IsSurfaceBusy(surface) ) {
 			FB_WaitBusySurfaces(self);
 		}
@@ -1467,13 +1519,15 @@ static int FBconVideoDevice_X_lockHWSurface(_Self(VideoDevice), MIL_Surface *sur
 static void FBconVideoDevice_X_unlockHWSurface(_Self(VideoDevice), MIL_Surface* surface)
 {
 	if ( (Surface*)surface == ((FBconVideoDevice*)self)->screen ) {
-		MIL_mutexV(((FBconVideoDevice*)self)->hw_data->hw_lock);
+        MIL_mutex* mutex = ((FBconVideoDevice*)self)->hw_data->hw_lock;
+		_VC(mutex)->unlock(mutex);
 	}
 }
 
 static int FBconVideoDevice_X_flipHWSurface(_Self(VideoDevice), MIL_Surface *sur)
 {
     Surface* surface = (Surface*)sur;
+
 	if ( ((FBconVideoDevice*)self)->hw_data->switched_away ) {
 		return -2; /* no hardware access */
 	}
@@ -1484,7 +1538,7 @@ static int FBconVideoDevice_X_flipHWSurface(_Self(VideoDevice), MIL_Surface *sur
 	if ( FB_IsSurfaceBusy(((FBconVideoDevice*)self)->screen) ) {
 		FB_WaitBusySurfaces(self);
 	}
-	wait_vbl(self);
+	((FBconVideoDevice*)self)->hw_data->wait_vbl(self);
 	if ( ioctl(((FBconVideoDevice*)self)->hw_data->console_fd, FBIOPAN_DISPLAY, &(((FBconVideoDevice*)self)->hw_data->cache_vinfo)) < 0 ) {
 		MIL_SetError("ioctl(FBIOPAN_DISPLAY) failed");
 		return(-1);
@@ -1535,8 +1589,8 @@ static void FB_blit16blocked(Uint8 *byte_src_pos, int src_right_delta, int src_d
 					src_down_delta,
 					(Uint8 *)dst,
 					dst_linebytes,
-					min(w, BLOCKSIZE_W),
-					min(height, BLOCKSIZE_H));
+					MIL_min(w, BLOCKSIZE_W),
+					MIL_min(height, BLOCKSIZE_H));
 			src += src_right_delta * BLOCKSIZE_W;
 			dst += BLOCKSIZE_W;
 		}
@@ -1956,6 +2010,12 @@ static int FBconVideoDevice_X_setColors(_Self(VideoDevice), int firstcolor,
 	return(1);
 }
 
+int FB_InGraphicsMode(_SELF)
+{
+    FBconVideoDevice* video = (FBconVideoDevice*)self;
+	return((video->hw_data->keyboard_fd >= 0) && (video->hw_data->saved_kbd_mode >= 0));
+}
+
 /* Note:  If we are terminated, self could be called in the middle of
    another MIL video routine -- notably UpdateRects.
 */
@@ -2028,8 +2088,11 @@ static void FBconVideoDevice_X_videoQuit(_Self(VideoDevice))
 		close(((FBconVideoDevice*)self)->hw_data->console_fd);
 		((FBconVideoDevice*)self)->hw_data->console_fd = -1;
 	}
+/* TODO: ... */
+#if 0
 	FB_CloseMouse(self);
 	FB_CloseKeyboard(self);
+#endif
 }
 
 

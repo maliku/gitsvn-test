@@ -22,9 +22,6 @@
 #include "tslib.h"
 #endif
 
-/* Hidden "self" pointer for the video functions */
-#define _THIS	VideoDevice* self
-
 typedef void FB_bitBlit(
 		Uint8 *src_pos,
 		int src_right_delta,	/* pixels, not bytes */
@@ -91,8 +88,8 @@ STRUCT {
 	Uint8 *screen_contents;
 	__u16  screen_palette[3*256];
 
-	void (*wait_vbl)(_THIS);
-	void (*wait_idle)(_THIS);
+	void (*wait_vbl)(_Self(VideoDevice));
+	void (*wait_idle)(_Self(VideoDevice));
 }MIL_PrivateVideoData;
 
 /* Accelerator types that are supported by the driver, but are not
@@ -116,8 +113,8 @@ CLASS_INHERIT_END
 
 
 /* These functions are defined in MIL_fbvideo.c */
-extern void FB_SavePaletteTo(_THIS, int palette_len, __u16 *area);
-extern void FB_RestorePaletteFrom(_THIS, int palette_len, __u16 *area);
+extern void FB_SavePaletteTo(_Self(VideoDevice), int palette_len, __u16 *area);
+extern void FB_RestorePaletteFrom(_Self(VideoDevice), int palette_len, __u16 *area);
 
 /* These are utility functions for working with video surfaces */
 
@@ -131,12 +128,12 @@ static __inline__ int FB_IsSurfaceBusy(Surface *surface)
 	return ((vidmem_bucket *)surface->hwdata)->dirty;
 }
 
-static __inline__ void FB_WaitBusySurfaces(_THIS)
+static __inline__ void FB_WaitBusySurfaces(_Self(VideoDevice))
 {
 	vidmem_bucket *bucket;
 
 	/* Wait for graphic operations to complete */
-	wait_idle(self);
+	((FBconVideoDevice*)self)->hw_data->wait_idle(self);
 
 	/* Clear all surface dirty bits */
 	for ( bucket=&(((FBconVideoDevice*)self)->hw_data->surfaces); bucket; 
@@ -145,7 +142,7 @@ static __inline__ void FB_WaitBusySurfaces(_THIS)
 	}
 }
 
-static __inline__ void FB_dst_to_xy(_THIS, Surface *dst, int *x, int *y)
+static __inline__ void FB_dst_to_xy(_Self(VideoDevice), Surface *dst, int *x, int *y)
 {
 	*x = (long)((char *)dst->pixels - ((FBconVideoDevice*)self)->hw_data->mapped_mem) % ((FBconVideoDevice*)self)->screen->pitch;
 	*y = (long)((char *)dst->pixels - ((FBconVideoDevice*)self)->hw_data->mapped_mem) / 

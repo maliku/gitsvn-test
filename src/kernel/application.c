@@ -19,16 +19,18 @@ CONSTRUCTOR(Application)
     Surface *s = New(Surface);
     VideoDevice* vd = CreateVideoDevice("qvfb");
 
-    _VC(vd)->setVideoMode(vd, (MIL_Surface*)s, 240, 320, 32, 0);
-    if (NULL != s->pixels) {
-        MIL_Rect rc = {0, 0, 240, 320};
-        int i, j;
-        for (i = 0; i < 320; ++i)
-            for (j = 0; j < 240; ++j)
-                *(Uint32*)(((char*)s->pixels) + i * _VC(s)->getPitch((MIL_Surface*)s) + j) = i;
-        _VC(vd)->updateRects(vd, 1, &rc);
-        puts("draw");
-        getchar();
+    if (NULL != vd) {
+        _VC(vd)->setVideoMode(vd, (MIL_Surface*)s, 240, 320, 32, 0);
+        if (NULL != s->pixels) {
+            MIL_Rect rc = {0, 0, 240, 320};
+            int i, j;
+            for (i = 0; i < 320; ++i)
+                for (j = 0; j < 240; ++j)
+                    *(Uint32*)(((char*)s->pixels) + i * _VC(s)->getPitch((MIL_Surface*)s) + j) = i;
+            _VC(vd)->updateRects(vd, 1, &rc);
+            puts("draw");
+            getchar();
+        }
     }
 
     printf("Application %p constructed...\n", self);

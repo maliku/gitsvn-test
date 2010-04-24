@@ -21,9 +21,11 @@ VideoDevice* CreateQVFbVideoDevice(void)
 {
     MIL_PixelFormat vf;
     VideoDevice* vd = (VideoDevice*)New(QVFbVideoDevice);
-    if (0 != _VC(vd)->videoInit(vd, &vf)) {
-        Delete(vd);
-        return NULL;
+    if (NULL != vd) {
+        if (0 != _VC(vd)->videoInit(vd, &vf)) {
+            Delete(vd);
+            return NULL;
+        }
     }
     return vd;
 }
@@ -63,7 +65,7 @@ int QVFbVideoDevice_X_videoInit(_Self(VideoDevice), MIL_PixelFormat *vformat)
 
     shmid = shmget (key, 0, 0);
     if (shmid != -1)
-        data->shmrgn = (unsigned char *)shmat (shmid, 0, 0);
+        data->shmrgn = (unsigned char *)shmat(shmid, 0, 0);
 
     if ((int)data->shmrgn == -1 || data->shmrgn == NULL) {
         MIL_SetError ("VIDEO>QVFb: Unable to attach to virtual FrameBuffer server.\n");
