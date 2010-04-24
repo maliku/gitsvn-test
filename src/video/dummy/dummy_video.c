@@ -9,14 +9,22 @@
 
 #include "dummy_video.h"
 
+#define DUMMY_VIDEO_DRIVER_NAME "dummy"
+
 VideoDevice* CreateDummyVideoDevice(void)
 {
     return (VideoDevice*)New(DummyVideoDevice);
 }
 
+VideoDeviceEntry g_video_dummy = {
+    DUMMY_VIDEO_DRIVER_NAME,
+    CreateDummyVideoDevice
+};
+
 CONSTRUCTOR(DummyVideoDevice)
 {
     printf("DummyVideoDevice %p constructed...\n", self);
+    ((VideoDevice*)self)->name = DUMMY_VIDEO_DRIVER_NAME;
     return self;
 }
 

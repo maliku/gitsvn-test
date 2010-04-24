@@ -15,30 +15,29 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
+#define QVFB_VIDEO_DRIVER_NAME "qvfb"
+
 VideoDevice* CreateQVFbVideoDevice(void)
 {
     MIL_PixelFormat vf;
-    Surface *s = New(Surface);
     VideoDevice* vd = (VideoDevice*)New(QVFbVideoDevice);
-    _VC(vd)->videoInit(vd, &vf);
-    _VC(vd)->setVideoMode(vd, (MIL_Surface*)s, 240, 320, 32, 0);
-    if (NULL != s->pixels) {
-        MIL_Rect rc = {0, 0, 240, 320};
-        int i, j;
-        for (i = 0; i < 320; ++i)
-            for (j = 0; j < 240; ++j)
-                *(Uint32*)(((char*)s->pixels) + i * _VC(s)->getPitch((MIL_Surface*)s) + j) = i;
-        _VC(vd)->updateRects(vd, 1, &rc);
-        puts("draw");
-        getchar();
+    if (0 != _VC(vd)->videoInit(vd, &vf)) {
+        Delete(vd);
+        return NULL;
     }
     return vd;
 }
+
+VideoDeviceEntry g_video_qvfb = {
+    QVFB_VIDEO_DRIVER_NAME,
+    CreateQVFbVideoDevice
+};
 
 CONSTRUCTOR(QVFbVideoDevice)
 {
     printf("QVFbVideoDevice %p constructed...\n", self);
     _m(hw_data) = (QVFbHardwareDependent*)MIL_malloc(sizeof (*_m(hw_data)));
+    ((VideoDevice*)self)->name = QVFB_VIDEO_DRIVER_NAME;
     return self;
 }
 

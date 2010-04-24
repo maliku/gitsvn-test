@@ -150,8 +150,20 @@ CLASS(VideoDevice) {
 	MIL_PixelFormat* displayformatalphapixel;
 	
 };
-VideoDevice* CreateDummyVideoDevice(void);
-VideoDevice* CreateQVFbVideoDevice(void);
+
+STRUCT {
+    const char* name;
+    VideoDevice* (*create)(void);
+} VideoDeviceEntry;
+
+#if MIL_VIDEO_DRIVER_DUMMY
+extern VideoDeviceEntry g_video_dummy;
+#endif
+#if MIL_VIDEO_DRIVER_QVFB
+extern VideoDeviceEntry g_video_qvfb;
+#endif
+
+/* Video device factory. */
 VideoDevice* CreateVideoDevice(const char* name);
 
 #endif   /* ----- #ifndef GFX_INC  ----- */
