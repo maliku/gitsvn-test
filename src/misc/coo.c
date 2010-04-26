@@ -20,3 +20,28 @@ __inline__ void Delete(void *ptr)
     MIL_free(ptr);
 }
 
+void* SafeCast(const char* typeName, void* ptr)
+{
+    if (NULL != ptr) {
+        RTTI* tmp = *(RTTI**)ptr;
+        while (tmp && tmp->__base && NULL != tmp->__name) {
+            /* TODO: Change to g_xxx_Vtable compare.*/
+            if (0 == MIL_strcmp(typeName, tmp->__name)) {
+                return ptr;
+            }
+            tmp = tmp->__base;
+        }
+    }
+    return NULL;
+}
+
+/* Can change to macro. */
+const char* GetTypeName(void* ptr)
+{
+    RTTI* tmp = *(RTTI**)ptr;
+    if (tmp && tmp->__name) {
+        return tmp->__name;
+    }
+    return "";
+}
+

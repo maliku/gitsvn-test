@@ -217,8 +217,13 @@ void OrderDestruct(void*);
 void Delete(void*);
 /* Delete a array of object. */
 void Deletes(void*, size_t);
+void* SafeCast(const char*, void* ptr);
 /* Delete a object without free memory. */
 #define DeleteAt(p) OrderDestruct(p)
+
+#define StaticCast(type, ptr) (type*)(ptr)
+#define ReinterpretCast(type, ptr)
+#define DynamicCast(type, ptr) StaticCast(type, SafeCast(#type, ptr))
 
 #define PrintTest(fmt, ...) printf(fmt,##__VA_ARGS__)
 #define MIL_Error(err)

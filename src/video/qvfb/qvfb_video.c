@@ -128,7 +128,8 @@ MIL_Surface* QVFbVideoDevice_X_setVideoMode(_Self(VideoDevice),
     _VC(current)->setWidth(current, ((QVFbVideoDevice*)self)->hw_data->hdr->width);
     _VC(current)->setHeight(current, ((QVFbVideoDevice*)self)->hw_data->hdr->height);
     _VC(current)->setPitch(current, ((QVFbVideoDevice*)self)->hw_data->hdr->linestep);
-    ((Surface*)current)->pixels = ((QVFbVideoDevice*)self)->hw_data->shmrgn + ((QVFbVideoDevice*)self)->hw_data->hdr->dataoffset;
+    ((Surface*)current)->pixels = ((QVFbVideoDevice*)self)->hw_data->shmrgn + 
+        ((QVFbVideoDevice*)self)->hw_data->hdr->dataoffset;
 
     return current;
 }
@@ -154,7 +155,8 @@ int QVFbVideoDevice_X_setColors(_Self(VideoDevice), int firstcolor,
 
     for (i = 0; i < ncolors; i++) {
         ((QVFbVideoDevice*)self)->hw_data->hdr->clut [pixel] 
-                = (0xff << 24) | ((colors[i].r & 0xff) << 16) | ((colors[i].g & 0xff) << 8) | (colors[i].b & 0xff);
+                = (0xff << 24) | ((colors[i].r & 0xff) << 16) 
+                | ((colors[i].g & 0xff) << 8) | (colors[i].b & 0xff);
         pixel ++;
     }
 
