@@ -216,6 +216,7 @@ int QVFbVideoDevice_X_setHWAlpha(_Self(VideoDevice), MIL_Surface *surface, Uint8
 
 int QVFbVideoDevice_X_lockHWSurface(_Self(VideoDevice), MIL_Surface *surface)
 {
+    return -1;
 }
 
 void QVFbVideoDevice_X_unlockHWSurface(_Self(VideoDevice), MIL_Surface *surface)

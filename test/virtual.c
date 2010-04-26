@@ -63,14 +63,14 @@ METHOD_REGBEGIN(MySub)
 
 int main()
 {
-    int i = 1;
     MyBase* base = (MyBase*)New(MyBase);
-    assert(NULL == DynamicCast(MySub, &i));
+    assert(NULL == DynamicCast(MySub, base));
     _VC(base)->vtest(base, 123);
     Delete(base);
     printf("=========================\n");
     MyBase* sub = (MyBase*)New(MySub);
     assert(NULL != DynamicCast(MySub, sub));
+    puts(GetTypeName(sub));
     _VC(sub)->vtest(sub, 456);
     Delete(sub);
 

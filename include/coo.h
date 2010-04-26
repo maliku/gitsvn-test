@@ -79,6 +79,7 @@ struct _##type {\
 #define	_VC(pobj)	(((pobj)->__super).__vptr)
 
 #define	_m(member)	(self->member)
+#define	_member(member)	_m(member)
 #define	_tm(type, member)	(((type*)self)->member)
 #define _mc(pobj, method, ...) _MC(pobj)->method(pobj, ##__VA_ARGS__)
 #define _vc(pobj, method, ...) _VC(pobj)->method(pobj, ##__VA_ARGS__)
@@ -217,15 +218,17 @@ void OrderDestruct(void*);
 void Delete(void*);
 /* Delete a array of object. */
 void Deletes(void*, size_t);
-void* SafeCast(const char*, void* ptr);
+void* SafeCast(void* vtable, void* ptr);
 /* Delete a object without free memory. */
 #define DeleteAt(p) OrderDestruct(p)
 
 #define StaticCast(type, ptr) (type*)(ptr)
 #define ReinterpretCast(type, ptr)
-#define DynamicCast(type, ptr) StaticCast(type, SafeCast(#type, ptr))
+#define DynamicCast(type, ptr) StaticCast(type, SafeCast(&g_##type##Vtable, ptr))
+#define IsTypeOf(type, ptr) (NULL != DynamicCast(type, ptr))
+#define GetTypeName(ptr) \
+    ((NULL != ptr && NULL != (*(RTTI**)ptr) && NULL != (*(RTTI**)ptr)->__name) ? (*(RTTI**)ptr)->__name : "")
 
-#define PrintTest(fmt, ...) printf(fmt,##__VA_ARGS__)
 #define MIL_Error(err)
 #define MIL_SetError(fmt, ...) fprintf(stderr, fmt, ##__VA_ARGS__)
 
