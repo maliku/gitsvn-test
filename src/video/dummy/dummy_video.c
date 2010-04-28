@@ -37,6 +37,7 @@ DESTRUCTOR(DummyVideoDevice)
     printf("DummyVideoDevice %p destructed...\n", self);
 }
 
+#if 0
 int DummyVideoDevice_X_videoInit(_Self(VideoDevice), MIL_PixelFormat *vformat)
 {
     printf("DummyVideoDevice::videoInit vformat=%p\n", vformat);
@@ -166,38 +167,39 @@ int DummyVideoDevice_X_GL_MakeCurrent(_Self(VideoDevice))
 void DummyVideoDevice_X_GL_SwapBuffers(_Self(VideoDevice))
 {
 }
-
+#endif
 
 VIRTUAL_METHOD_REGBEGIN(DummyVideoDevice, VideoDevice)
 
     DESTRUCTOR_REGISTER(DummyVideoDevice)
-    METHOD_REGISTER(DummyVideoDevice, videoInit)
-    METHOD_REGISTER(DummyVideoDevice, listModes)
-    METHOD_REGISTER(DummyVideoDevice, setVideoMode)
-    METHOD_REGISTER(DummyVideoDevice, toggleFullScreen)
-    METHOD_REGISTER(DummyVideoDevice, updateMouse)
-    METHOD_REGISTER(DummyVideoDevice, createYUVOverlay)
-    METHOD_REGISTER(DummyVideoDevice, setColors)
-    METHOD_REGISTER(DummyVideoDevice, updateRects)
-    METHOD_REGISTER(DummyVideoDevice, videoQuit)
-    METHOD_REGISTER(DummyVideoDevice, allocHWSurface)
-    METHOD_REGISTER(DummyVideoDevice, checkHWBlit)
-    METHOD_REGISTER(DummyVideoDevice, fillHWRect)
-    METHOD_REGISTER(DummyVideoDevice, setHWColorKey)
-    METHOD_REGISTER(DummyVideoDevice, setHWAlpha)
-    METHOD_REGISTER(DummyVideoDevice, lockHWSurface)
-    METHOD_REGISTER(DummyVideoDevice, unlockHWSurface)
-    METHOD_REGISTER(DummyVideoDevice, flipHWSurface)
-    METHOD_REGISTER(DummyVideoDevice, freeHWSurface)
-    METHOD_REGISTER(DummyVideoDevice, setGamma)
-    METHOD_REGISTER(DummyVideoDevice, getGamma)
-    METHOD_REGISTER(DummyVideoDevice, setGammaRamp)
-    METHOD_REGISTER(DummyVideoDevice, getGammaRamp)
-    METHOD_REGISTER(DummyVideoDevice, GL_LoadLibrary)
-    METHOD_REGISTER(DummyVideoDevice, GL_GetProcAddress)
-    METHOD_REGISTER(DummyVideoDevice, GL_GetAttribute)
-    METHOD_REGISTER(DummyVideoDevice, GL_MakeCurrent)
-    METHOD_REGISTER(DummyVideoDevice, GL_SwapBuffers)
+/*     METHOD_REGISTER(DummyVideoDevice, videoInit)
+ *     METHOD_REGISTER(DummyVideoDevice, listModes)
+ *     METHOD_REGISTER(DummyVideoDevice, setVideoMode)
+ *     METHOD_REGISTER(DummyVideoDevice, toggleFullScreen)
+ *     METHOD_REGISTER(DummyVideoDevice, updateMouse)
+ *     METHOD_REGISTER(DummyVideoDevice, createYUVOverlay)
+ *     METHOD_REGISTER(DummyVideoDevice, setColors)
+ *     METHOD_REGISTER(DummyVideoDevice, updateRects)
+ *     METHOD_REGISTER(DummyVideoDevice, videoQuit)
+ *     METHOD_REGISTER(DummyVideoDevice, allocHWSurface)
+ *     METHOD_REGISTER(DummyVideoDevice, checkHWBlit)
+ *     METHOD_REGISTER(DummyVideoDevice, fillHWRect)
+ *     METHOD_REGISTER(DummyVideoDevice, setHWColorKey)
+ *     METHOD_REGISTER(DummyVideoDevice, setHWAlpha)
+ *     METHOD_REGISTER(DummyVideoDevice, lockHWSurface)
+ *     METHOD_REGISTER(DummyVideoDevice, unlockHWSurface)
+ *     METHOD_REGISTER(DummyVideoDevice, flipHWSurface)
+ *     METHOD_REGISTER(DummyVideoDevice, freeHWSurface)
+ *     METHOD_REGISTER(DummyVideoDevice, setGamma)
+ *     METHOD_REGISTER(DummyVideoDevice, getGamma)
+ *     METHOD_REGISTER(DummyVideoDevice, setGammaRamp)
+ *     METHOD_REGISTER(DummyVideoDevice, getGammaRamp)
+ *     METHOD_REGISTER(DummyVideoDevice, GL_LoadLibrary)
+ *     METHOD_REGISTER(DummyVideoDevice, GL_GetProcAddress)
+ *     METHOD_REGISTER(DummyVideoDevice, GL_GetAttribute)
+ *     METHOD_REGISTER(DummyVideoDevice, GL_MakeCurrent)
+ *     METHOD_REGISTER(DummyVideoDevice, GL_SwapBuffers)
+ */
 
 VIRTUAL_METHOD_REGEND
 

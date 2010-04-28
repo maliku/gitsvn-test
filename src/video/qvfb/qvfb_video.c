@@ -191,6 +191,7 @@ void QVFbVideoDevice_X_videoQuit(_Self(VideoDevice))
     shmdt(((QVFbVideoDevice*)self)->hw_data->shmrgn);
 }
 
+#if 0
 int QVFbVideoDevice_X_allocHWSurface(_Self(VideoDevice), MIL_Surface *surface)
 {
     return -1;
@@ -275,6 +276,7 @@ int QVFbVideoDevice_X_GL_MakeCurrent(_Self(VideoDevice))
 void QVFbVideoDevice_X_GL_SwapBuffers(_Self(VideoDevice))
 {
 }
+#endif
 
 VIRTUAL_METHOD_REGBEGIN(QVFbVideoDevice, VideoDevice)
 
@@ -288,24 +290,25 @@ VIRTUAL_METHOD_REGBEGIN(QVFbVideoDevice, VideoDevice)
     METHOD_REGISTER(QVFbVideoDevice, setColors)
     METHOD_REGISTER(QVFbVideoDevice, updateRects)
     METHOD_REGISTER(QVFbVideoDevice, videoQuit)
-    METHOD_REGISTER(QVFbVideoDevice, allocHWSurface)
-    METHOD_REGISTER(QVFbVideoDevice, checkHWBlit)
-    METHOD_REGISTER(QVFbVideoDevice, fillHWRect)
-    METHOD_REGISTER(QVFbVideoDevice, setHWColorKey)
-    METHOD_REGISTER(QVFbVideoDevice, setHWAlpha)
-    METHOD_REGISTER(QVFbVideoDevice, lockHWSurface)
-    METHOD_REGISTER(QVFbVideoDevice, unlockHWSurface)
-    METHOD_REGISTER(QVFbVideoDevice, flipHWSurface)
-    METHOD_REGISTER(QVFbVideoDevice, freeHWSurface)
-    METHOD_REGISTER(QVFbVideoDevice, setGamma)
-    METHOD_REGISTER(QVFbVideoDevice, getGamma)
-    METHOD_REGISTER(QVFbVideoDevice, setGammaRamp)
-    METHOD_REGISTER(QVFbVideoDevice, getGammaRamp)
-    METHOD_REGISTER(QVFbVideoDevice, GL_LoadLibrary)
-    METHOD_REGISTER(QVFbVideoDevice, GL_GetProcAddress)
-    METHOD_REGISTER(QVFbVideoDevice, GL_GetAttribute)
-    METHOD_REGISTER(QVFbVideoDevice, GL_MakeCurrent)
-    METHOD_REGISTER(QVFbVideoDevice, GL_SwapBuffers)
+/*     METHOD_REGISTER(QVFbVideoDevice, allocHWSurface)
+ *     METHOD_REGISTER(QVFbVideoDevice, checkHWBlit)
+ *     METHOD_REGISTER(QVFbVideoDevice, fillHWRect)
+ *     METHOD_REGISTER(QVFbVideoDevice, setHWColorKey)
+ *     METHOD_REGISTER(QVFbVideoDevice, setHWAlpha)
+ *     METHOD_REGISTER(QVFbVideoDevice, lockHWSurface)
+ *     METHOD_REGISTER(QVFbVideoDevice, unlockHWSurface)
+ *     METHOD_REGISTER(QVFbVideoDevice, flipHWSurface)
+ *     METHOD_REGISTER(QVFbVideoDevice, freeHWSurface)
+ *     METHOD_REGISTER(QVFbVideoDevice, setGamma)
+ *     METHOD_REGISTER(QVFbVideoDevice, getGamma)
+ *     METHOD_REGISTER(QVFbVideoDevice, setGammaRamp)
+ *     METHOD_REGISTER(QVFbVideoDevice, getGammaRamp)
+ *     METHOD_REGISTER(QVFbVideoDevice, GL_LoadLibrary)
+ *     METHOD_REGISTER(QVFbVideoDevice, GL_GetProcAddress)
+ *     METHOD_REGISTER(QVFbVideoDevice, GL_GetAttribute)
+ *     METHOD_REGISTER(QVFbVideoDevice, GL_MakeCurrent)
+ *     METHOD_REGISTER(QVFbVideoDevice, GL_SwapBuffers)
+ */
 
 VIRTUAL_METHOD_REGEND
 

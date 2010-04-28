@@ -78,6 +78,18 @@ struct _##type {\
 /* Macro for call virtual member function of object. */
 #define	_VC(pobj)	(((pobj)->__super).__vptr)
 
+#if defined(__GNUC__) && __GNUC__ >= 4
+#error ---------
+#define _vf(p, func) ({ \
+        RTTI* tmp = *(RTTI**)p; \
+        if (NULL == _VC(p)->func) { \
+            while (NULL != tmp) { \
+                if (NULL != (_VC(p)->func = _VC(_MC(p)->OT(tmp))->func)) break; \
+                tmp = *(RTTI**)tmp; \
+            } \
+        } \
+        _VC(p)->func; })
+#else
 #define _vf6(p, func) ( _VC(p)->func ? _VC(p)->func : NULL/* Too more depth of inheritance hierarchy! */ )
 #define _vf5(p, func) ( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf6(_MC(p)->OT((*(RTTI**)(p))), func)) )
 #define _vf4(p, func) ( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf5(_MC(p)->OT((*(RTTI**)(p))), func)) )
@@ -85,10 +97,11 @@ struct _##type {\
 #define _vf2(p, func) ( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf3(_MC(p)->OT((*(RTTI**)(p))), func)) )
 #define _vf1(p, func) ( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf2(_MC(p)->OT((*(RTTI**)(p))), func)) )
 #define _vf(p, func)  ( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf1(_MC(p)->OT((*(RTTI**)(p))), func)) )
+#endif
 
 /* The macro can verify validity of virtual method pointer with a object;
  * If the virtual method pointer is null, it's will be assigned to the same name method of super class. */
-#define VirtualMethodVerify(p, func) assert(_vf(p, func))
+#define VirtualMethodVerify(p, func) assert(p && _vf(p, func))
 
 #define	_m(member)	(self->member)
 #define	_tm(type, member)	(((type*)self)->member)
