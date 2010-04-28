@@ -22,13 +22,17 @@ __inline__ void Delete(void *ptr)
 
 __inline__ void* SafeCast(void* vtable, void* ptr)
 {
+/*     printf("vtable=%p, ptr=%p\n", vtable, ptr);
+ */
     if (NULL != ptr) {
         RTTI* tmp = *(RTTI**)ptr;
         while (tmp) {
+/*             printf("------cur =%p, name = %s.\n", tmp, tmp->__name);
+ */
             if (vtable == tmp) {
                 return ptr;
             }
-            tmp = tmp->__base;
+            /*tmp = *(RTTI**)tmp;*/ /* As same as */ tmp = tmp->__base;
         }
     }
     return NULL;

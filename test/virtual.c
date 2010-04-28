@@ -54,7 +54,7 @@ void METHOD_NAMED(MySub, vtest)(_SELF, int in)
 
 VIRTUAL_METHOD_REGBEGIN(MySub, MyBase)
     DESTRUCTOR_REGISTER(MySub)
-METHOD_REGISTER(MySub, vtest)
+//METHOD_REGISTER(MySub, vtest)
     VIRTUAL_METHOD_REGEND
 
 METHOD_REGBEGIN(MySub)
@@ -65,13 +65,14 @@ int main()
 {
     MyBase* base = (MyBase*)New(MyBase);
     assert(NULL == DynamicCast(MySub, base));
-    _VC(base)->vtest(base, 123);
+    _VC(base)->vtest(base, 456);
     Delete(base);
     printf("=========================\n");
     MyBase* sub = (MyBase*)New(MySub);
-    assert(NULL != DynamicCast(MySub, sub));
+    assert(NULL != DynamicCast(MyBase, sub));
     puts(GetTypeName(sub));
-    _VC(sub)->vtest(sub, 456);
+    VirtualMethodVerify(sub, vtest);
+    _VC(sub)->vtest(sub, 123);
     Delete(sub);
 
     return 0;

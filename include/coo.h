@@ -78,11 +78,30 @@ struct _##type {\
 /* Macro for call virtual member function of object. */
 #define	_VC(pobj)	(((pobj)->__super).__vptr)
 
+#define _vf6(p, func) ( _VC(p)->func ? _VC(p)->func : NULL/* Too more depth of inheritance hierarchy! */ )
+#define _vf5(p, func) ( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf6(_MC(p)->OT((*(RTTI**)(p))), func)) )
+#define _vf4(p, func) ( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf5(_MC(p)->OT((*(RTTI**)(p))), func)) )
+#define _vf3(p, func) ( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf4(_MC(p)->OT((*(RTTI**)(p))), func)) )
+#define _vf2(p, func) ( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf3(_MC(p)->OT((*(RTTI**)(p))), func)) )
+#define _vf1(p, func) ( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf2(_MC(p)->OT((*(RTTI**)(p))), func)) )
+#define _vf(p, func)  ( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf1(_MC(p)->OT((*(RTTI**)(p))), func)) )
+
+/* The macro can verify validity of virtual method pointer with a object;
+ * If the virtual method pointer is null, it's will be assigned to the same name method of super class. */
+#define VirtualMethodVerify(p, func) assert(_vf(p, func))
+
 #define	_m(member)	(self->member)
-#define	_member(member)	_m(member)
 #define	_tm(type, member)	(((type*)self)->member)
-#define _mc(pobj, method, ...) _MC(pobj)->method(pobj, ##__VA_ARGS__)
-#define _vc(pobj, method, ...) _VC(pobj)->method(pobj, ##__VA_ARGS__)
+#define _mc(pobj, method, ...) (_MC(pobj)->method ? _MC(pobj)->method((pobj), ##__VA_ARGS__) : 0)
+#define _vc(pobj, method, ...) _vf(pobj, method)((pobj), ##__VA_ARGS__)
+#if 0
+static inline void def(void* self, int i)
+{
+    puts("hahahahhahahah");
+}
+#define _c5(pobj, method) (_VC(pobj)->method ? printf("=%p\n", (*(RTTI**)pobj)) : /*printf("==%s\n", (*(RTTI**)pobj)->__name)*/_c6((typeof(pobj))((*(RTTI**)pobj)), method))
+#define _c6(pobj, method) (_VC(pobj)->method ? printf("==%s\n", (*(RTTI**)pobj)->__name) : printf("==%s\n", (*(RTTI**)pobj)->__name))
+#endif
 		
 #define PRIVATE_BEGIN(type) \
     char __ [sizeof(struct _##type##_private {
@@ -105,7 +124,8 @@ struct _##type {\
 /* Macro for member function declare begin. */
 #define METHOD_DECLARE_BEGIN(type) \
     struct __##type##Mtable {\
-        type * (*type)(type*); /* The constructor can't declare as virtual function because it's need type info. */
+        type* (*OT)(_SELF); \
+        type* (*type)(type*); /* The constructor can't declare as virtual function because it's need type info. */
 
 /* Macro for member function declare end. */
 #define	METHOD_DECLARE_END }*__mptr;
@@ -140,7 +160,9 @@ VIRTUAL_METHOD_REGEND
 #define MAKE_PURE_VIRTUAL_CLASS(type) VIRTUAL_METHOD_REGISTER_PLACEHOLDER(type, NonBase)
 
 #define METHOD_REGBEGIN(type) \
-struct __##type##Mtable g_##type##Mtable = {
+__inline__ type* type##_X_OT(_SELF) { return (type*)self; } \
+struct __##type##Mtable g_##type##Mtable = { \
+    type##_X_OT,
 
 #define METHOD_REGEND };
 
