@@ -70,7 +70,7 @@ struct _##type {\
 #define	_CSelf(type)	const type* self		/* 'this' pointer for COO framework */
 #define	_Rhs(type)	type* rhs		/* 'rhs' pointer for COO framework */
 #define	_SELF   _Self(void)		/* 'this' pointer for COO framework */
-#define	_CSELF   _CSelf(void)		/* 'this' pointer for COO framework */
+#define	_CSELF  _CSelf(void)		/* 'this' pointer for COO framework */
 #define	_RHS	_Rhs(void)		/* 'rhs' pointer for COO framework */
 
 /* Macro for call member function of object. */
@@ -79,7 +79,6 @@ struct _##type {\
 #define	_VC(pobj)	(((pobj)->__super).__vptr)
 
 #if defined(__GNUC__) && __GNUC__ >= 4
-#error ---------
 #define _vf(p, func) ({ \
         RTTI* tmp = *(RTTI**)p; \
         if (NULL == _VC(p)->func) { \
@@ -105,17 +104,31 @@ struct _##type {\
 
 #define	_m(member)	(self->member)
 #define	_tm(type, member)	(((type*)self)->member)
-#define _mc(pobj, method, ...) (_MC(pobj)->method ? _MC(pobj)->method((pobj), ##__VA_ARGS__) : 0)
+
+#define _mc(pobj, method, ...) (_MC(pobj)->method ? _MC(pobj)->method((pobj), ##__VA_ARGS__) : assert(0))
+#define _mc0(pobj, method) (_MC(pobj)->method ? _MC(pobj)->method((pobj)) : assert(0))
+#define _mc1(pobj, method, arg1) (_MC(pobj)->method ? _MC(pobj)->method((pobj), arg1) : assert(0))
+#define _mc2(pobj, method, arg1, arg2) (_MC(pobj)->method ? _MC(pobj)->method((pobj), arg1, arg2) : assert(0))
+#define _mc3(pobj, method, arg1, arg2, arg3) (_MC(pobj)->method ? _MC(pobj)->method((pobj), arg1, arg2, arg3) : assert(0))
+#define _mc4(pobj, method, arg1, arg2, arg3, arg4) (_MC(pobj)->method ? _MC(pobj)->method((pobj), arg1, arg2, arg3, arg4) : assert(0))
+#define _mc5(pobj, method, arg1, arg2, arg3, arg4, arg5) (_MC(pobj)->method ? _MC(pobj)->method((pobj), arg1, arg2, arg3, arg4, arg5) : assert(0))
+#define _mc6(pobj, method, arg1, arg2, arg3, arg4, arg5, arg6) (_MC(pobj)->method ? _MC(pobj)->method((pobj), arg1, arg2, arg3, arg4, arg5, arg6) : assert(0))
+#define _mc7(pobj, method, arg1, arg2, arg3, arg4, arg5, arg6, arg7) (_MC(pobj)->method ? _MC(pobj)->method((pobj), arg1, arg2, arg3, arg4, arg5, arg6, arg7) : assert(0))
+#define _mc8(pobj, method, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) (_MC(pobj)->method ? _MC(pobj)->method((pobj), arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) : assert(0))
+#define _mc9(pobj, method, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) (_MC(pobj)->method ? _MC(pobj)->method((pobj), arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) : assert(0))
+
 #define _vc(pobj, method, ...) _vf(pobj, method)((pobj), ##__VA_ARGS__)
-#if 0
-static inline void def(void* self, int i)
-{
-    puts("hahahahhahahah");
-}
-#define _c5(pobj, method) (_VC(pobj)->method ? printf("=%p\n", (*(RTTI**)pobj)) : /*printf("==%s\n", (*(RTTI**)pobj)->__name)*/_c6((typeof(pobj))((*(RTTI**)pobj)), method))
-#define _c6(pobj, method) (_VC(pobj)->method ? printf("==%s\n", (*(RTTI**)pobj)->__name) : printf("==%s\n", (*(RTTI**)pobj)->__name))
-#endif
-		
+#define _vc0(pobj, method) _vf(pobj, method)((pobj))
+#define _vc1(pobj, method, arg1) _vf(pobj, method)((pobj), arg1)
+#define _vc2(pobj, method, arg1, arg2) _vf(pobj, method)((pobj), arg1, arg2)
+#define _vc3(pobj, method, arg1, arg2, arg3) _vf(pobj, method)((pobj), arg1, arg2, arg3)
+#define _vc4(pobj, method, arg1, arg2, arg3, arg4) _vf(pobj, method)((pobj), arg1, arg2, arg3, arg4)
+#define _vc5(pobj, method, arg1, arg2, arg3, arg4, arg5) _vf(pobj, method)((pobj), arg1, arg2, arg3, arg4, arg5)
+#define _vc6(pobj, method, arg1, arg2, arg3, arg4, arg5, arg6) _vf(pobj, method)((pobj), arg1, arg2, arg3, arg4, arg5, arg6)
+#define _vc7(pobj, method, arg1, arg2, arg3, arg4, arg5, arg6, arg7) _vf(pobj, method)((pobj), arg1, arg2, arg3, arg4, arg5, arg6, arg7)
+#define _vc8(pobj, method, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) _vf(pobj, method)((pobj), arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)
+#define _vc9(pobj, method, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) _vf(pobj, method)((pobj), arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)
+
 #define PRIVATE_BEGIN(type) \
     char __ [sizeof(struct _##type##_private {
 
@@ -159,11 +172,12 @@ type##Vtable g_##type##Vtable = {\
     type##OrderConstruct,\
     type##Predestructor,
 
-#ifdef C99 /* TODO: Replace to real c99 macro. */
+#if defined(__GNUC__) && __GNUC__ >= 4
 #define	METHOD_REGISTER(type, func) .func = type##_X_##func,
 #else
 #define	METHOD_REGISTER(type, func) type##_X_##func,
 #endif
+
 #define VIRTUAL_METHOD_REGEND };
 
 #define VIRTUAL_METHOD_REGISTER_PLACEHOLDER(type, basetype) \

@@ -2,6 +2,6 @@ INCLUDES = -I../../include -I../include -I../
 
 noinst_LTLIBRARIES = libkernel.la
 
-libkernel_la_SOURCES = application.c
+libkernel_la_SOURCES = application.c signals.c
 
-EXTRA_DIST = application.c
+EXTRA_DIST = application.c signals.c

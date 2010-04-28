@@ -58,7 +58,7 @@ int main()
     MyBase* base = (MyBase*)New(MyBase);
     time(&start);
     for (i = 0; i < TEST_COUNT; i++) {
-        _vc(base, virtual_method);
+        _vc0(base, virtual_method);
     }
     time(&end);
     diff = difftime(end, start);

@@ -96,28 +96,25 @@ typedef struct MIL_PixelFormat {
 CLASS(MIL_Surface) 
 {
     VIRTUAL_METHOD_DECLARE_BEGIN(MIL_Surface)
-    int  (*lock)(_Self(MIL_Surface));
-    void (*unlock)(_Self(MIL_Surface));
-    int  (*setColorKey)(_Self(MIL_Surface), Uint32 flag, Uint32 key);
-    int  (*setAlpha)(_Self(MIL_Surface), Uint32 flag, Uint8 alpha);
-    void (*setClipRect)(_Self(MIL_Surface), const MIL_Rect *rect);
-    void (*getClipRect)(_Self(MIL_Surface), MIL_Rect *rect);
-    int  (*blitSurface)(_Self(MIL_Surface), MIL_Rect *srcrect, MIL_Surface *dst, MIL_Rect *dstrect);
-    int  (*fillRect)(_Self(MIL_Surface), MIL_Rect *dstrect, Uint32 color);
-    int  (*saveBMP)(_Self(MIL_Surface), const char *file);
-    MIL_Surface* (*displayFormat)(_Self(MIL_Surface));
-    MIL_Surface* (*displayFormatAlpha)(_Self(MIL_Surface));
-    MIL_Surface* (*convert)(_Self(MIL_Surface), MIL_PixelFormat *fmt, Uint32 flags);
+    void* (*lock)(_SELF);
+    void (*unlock)(_SELF);
+    int  (*setColorKey)(_SELF, Uint32 flag, Uint32 key);
+    int  (*setAlpha)(_SELF, Uint32 flag, Uint8 alpha);
+    void (*setClipRect)(_SELF, const MIL_Rect *rect);
+    void (*getClipRect)(_SELF, MIL_Rect *rect);
+    int  (*blitSurface)(_SELF, MIL_Rect *srcrect, MIL_Surface *dst, MIL_Rect *dstrect);
+    int  (*fillRect)(_SELF, MIL_Rect *dstrect, Uint32 color);
+    int  (*saveBMP)(_SELF, const char *file);
+    MIL_Surface* (*displayFormat)(_SELF);
+    MIL_Surface* (*displayFormatAlpha)(_SELF);
+    MIL_Surface* (*convert)(_SELF, MIL_PixelFormat *fmt, Uint32 flags);
 
-    Uint32 (*getWidth)(_CSelf(MIL_Surface));
-    Uint32 (*getHeight)(_CSelf(MIL_Surface));
-    Uint32 (*getPitch)(_CSelf(MIL_Surface));
-    Uint32 (*getFlags)(_CSelf(MIL_Surface));
-
-    void (*setWidth)(_Self(MIL_Surface), Uint32 w);
-    void (*setHeight)(_Self(MIL_Surface), Uint32 h);
-    void (*setPitch)(_Self(MIL_Surface), Uint32 pitch);
-    void (*setFlags)(_Self(MIL_Surface), Uint32 flags);
+    Uint32 (*getWidth)(_CSELF);
+    Uint32 (*getHeight)(_CSELF);
+    Uint32 (*getPitch)(_CSELF);
+    Uint32 (*getFlags)(_CSELF);
+    Uint8 (*getBitsPerPixel)(_CSELF);
+    Uint8 (*getBytesPerPixel)(_CSELF);
 
     VIRTUAL_METHOD_DECLARE_END
 

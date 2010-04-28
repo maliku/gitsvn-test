@@ -124,10 +124,10 @@ MIL_Surface* QVFbVideoDevice_X_setVideoMode(_Self(VideoDevice),
         MIL_Surface *current, int width, int height, int bpp, Uint32 flags)
 {
     /* Set up the mode framebuffer */
-    _VC(current)->setFlags(current, MIL_HWSURFACE | MIL_FULLSCREEN);
-    _VC(current)->setWidth(current, ((QVFbVideoDevice*)self)->hw_data->hdr->width);
-    _VC(current)->setHeight(current, ((QVFbVideoDevice*)self)->hw_data->hdr->height);
-    _VC(current)->setPitch(current, ((QVFbVideoDevice*)self)->hw_data->hdr->linestep);
+    ((Surface*)current)->flags = (MIL_HWSURFACE | MIL_FULLSCREEN);
+    ((Surface*)current)->w = ((QVFbVideoDevice*)self)->hw_data->hdr->width;
+    ((Surface*)current)->h = ((QVFbVideoDevice*)self)->hw_data->hdr->height;
+    ((Surface*)current)->pitch = ((QVFbVideoDevice*)self)->hw_data->hdr->linestep;
     ((Surface*)current)->pixels = ((QVFbVideoDevice*)self)->hw_data->shmrgn + 
         ((QVFbVideoDevice*)self)->hw_data->hdr->dataoffset;
 

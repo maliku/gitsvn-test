@@ -9,24 +9,30 @@
 
 #include "surface.h"
 #include "video_device.h"
+#include "signals.h"
 #include "application.h"
 
 MAKE_PURE_VIRTUAL_CLASS(MIL_Application)
 METHOD_REGISTER_PLACEHOLDER(MIL_Application)
 
+//    SIGNAL(int(*)(), 0x11)
 CONSTRUCTOR(Application)
 {
     Surface *s = New(Surface);
     VideoDevice* vd = CreateVideoDevice("qvfb");
 
     if (NULL != vd) {
-        _VC(vd)->setVideoMode(vd, (MIL_Surface*)s, 240, 320, 32, 0);
+        _VC(vd)->setVideoMode(vd, (MIL_Surface*)s, 640, 480, 32, 0);
         if (NULL != s->pixels) {
-            MIL_Rect rc = {0, 0, 240, 320};
+            MIL_Rect rc = {0, 0, 640, 480};
             int i, j;
-            for (i = 0; i < 320; ++i)
-                for (j = 0; j < 240; ++j)
-                    *(Uint32*)(((char*)s->pixels) + i * _VC(s)->getPitch((MIL_Surface*)s) + j) = i;
+            char *pixels = (char*)s->pixels;
+//            printf("pitch = %d.\n", _vc0((MIL_Surface*)s, getBytesPerPixel));
+            for (i = 0; i < 480; ++i)
+            {
+                memset(pixels, i % 255, 4 * 640);
+                pixels += _vc0((MIL_Surface*)s, getPitch);
+            }
             _VC(vd)->updateRects(vd, 1, &rc);
             puts("draw");
             getchar();

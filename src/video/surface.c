@@ -21,82 +21,72 @@ DESTRUCTOR(Surface)
 {
 }
 
-int  METHOD_NAMED(Surface, lock)(_Self(MIL_Surface))
+void* Surface_X_lock(_SELF)
 {}
 
-void METHOD_NAMED(Surface, unlock)(_Self(MIL_Surface))
+void Surface_X_unlock(_SELF)
 {}
 
-int  METHOD_NAMED(Surface, setColorKey)(_Self(MIL_Surface), Uint32 flag, Uint32 key)
+int  Surface_X_setColorKey(_SELF, Uint32 flag, Uint32 key)
 {}
 
-int  METHOD_NAMED(Surface, setAlpha)(_Self(MIL_Surface), Uint32 flag, Uint8 alpha)
+int  Surface_X_setAlpha(_SELF, Uint32 flag, Uint8 alpha)
 {}
 
-void METHOD_NAMED(Surface, setClipRect)(_Self(MIL_Surface), const MIL_Rect *rect)
+void Surface_X_setClipRect(_SELF, const MIL_Rect *rect)
 {}
 
-void METHOD_NAMED(Surface, getClipRect)(_Self(MIL_Surface), MIL_Rect *rect)
+void Surface_X_getClipRect(_SELF, MIL_Rect *rect)
 {}
 
-int  METHOD_NAMED(Surface, blitSurface)(_Self(MIL_Surface), MIL_Rect *srcrect, MIL_Surface *dst, MIL_Rect *dstrect)
+int  Surface_X_blitSurface(_SELF, MIL_Rect *srcrect, MIL_Surface *dst, MIL_Rect *dstrect)
 {}
 
-int  METHOD_NAMED(Surface, fillRect)(_Self(MIL_Surface), MIL_Rect *dstrect, Uint32 color)
+int  Surface_X_fillRect(_SELF, MIL_Rect *dstrect, Uint32 color)
 {}
 
-int  METHOD_NAMED(Surface, saveBMP)(_Self(MIL_Surface), const char *file)
+int  Surface_X_saveBMP(_SELF, const char *file)
 {}
 
-MIL_Surface* METHOD_NAMED(Surface, displayFormat)(_Self(MIL_Surface))
+MIL_Surface* Surface_X_displayFormat(_SELF)
 {}
 
-MIL_Surface* METHOD_NAMED(Surface, displayFormatAlpha)(_Self(MIL_Surface))
+MIL_Surface* Surface_X_displayFormatAlpha(_SELF)
 {}
 
-MIL_Surface* METHOD_NAMED(Surface, convert)(_Self(MIL_Surface), MIL_PixelFormat *fmt, Uint32 flags)
+MIL_Surface* Surface_X_convert(_SELF, MIL_PixelFormat *fmt, Uint32 flags)
 {
     return NULL;
 }
 
-Uint32 METHOD_NAMED(Surface, getWidth)(_CSelf(MIL_Surface))
+Uint32 Surface_X_getWidth(_CSELF)
 {
     return ((const Surface*)self)->w;
 }
 
-Uint32 METHOD_NAMED(Surface, getHeight)(_CSelf(MIL_Surface))
+Uint32 Surface_X_getHeight(_CSELF)
 {
     return ((const Surface*)self)->h;
 }
 
-Uint32 METHOD_NAMED(Surface, getPitch)(_CSelf(MIL_Surface))
+Uint32 Surface_X_getPitch(_CSELF)
 {
     return ((const Surface*)self)->pitch;
 }
 
-Uint32 METHOD_NAMED(Surface, getFlags)(_CSelf(MIL_Surface))
+Uint32 Surface_X_getFlags(_CSELF)
 {
     return ((const Surface*)self)->flags;
 }
 
-void METHOD_NAMED(Surface, setWidth)(_Self(MIL_Surface), Uint32 w)
+Uint8 Surface_X_getBitsPerPixel(_CSELF)
 {
-    ((Surface*)self)->w = w;
+    return ((const Surface*)self)->format->BitsPerPixel;
 }
 
-void METHOD_NAMED(Surface, setHeight)(_Self(MIL_Surface), Uint32 h)
+Uint8 Surface_X_getBytesPerPixel(_CSELF)
 {
-    ((Surface*)self)->h = h;
-}
-
-void METHOD_NAMED(Surface, setPitch)(_Self(MIL_Surface), Uint32 pitch)
-{
-    ((Surface*)self)->pitch = pitch;
-}
-
-void METHOD_NAMED(Surface, setFlags)(_Self(MIL_Surface), Uint32 flags)
-{
-    ((Surface*)self)->flags = flags;
+    return ((const Surface*)self)->format->BytesPerPixel;
 }
 
 VIRTUAL_METHOD_REGBEGIN(Surface, MIL_Surface)
@@ -118,11 +108,8 @@ METHOD_REGISTER(Surface, getWidth)
 METHOD_REGISTER(Surface, getHeight)
 METHOD_REGISTER(Surface, getPitch)
 METHOD_REGISTER(Surface, getFlags)
-
-METHOD_REGISTER(Surface, setWidth)
-METHOD_REGISTER(Surface, setHeight)
-METHOD_REGISTER(Surface, setPitch)
-METHOD_REGISTER(Surface, setFlags)
+METHOD_REGISTER(Surface, getBitsPerPixel)
+METHOD_REGISTER(Surface, getBytesPerPixel)
 
 VIRTUAL_METHOD_REGEND 
 
