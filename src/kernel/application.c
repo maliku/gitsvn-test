@@ -15,11 +15,18 @@
 MAKE_PURE_VIRTUAL_CLASS(MIL_Application)
 METHOD_REGISTER_PLACEHOLDER(MIL_Application)
 
-//    SIGNAL(int(*)(), 0x11)
+void cbfunc(void* arg)
+{
+    printf("I got the signal = %p\n", arg);
+}
+
 CONSTRUCTOR(Application)
 {
     Surface *s = New(Surface);
     VideoDevice* vd = CreateVideoDevice("qvfb");
+    SignalSimple* sig = New(SignalSimple);
+    _VC(sig)->connect(sig, cbfunc);
+    _VC(sig)->emit(sig, 0xfefe);
 
     if (NULL != vd) {
         _VC(vd)->setVideoMode(vd, (MIL_Surface*)s, 640, 480, 32, 0);

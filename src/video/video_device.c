@@ -52,7 +52,7 @@ VideoDevice* CreateVideoDevice(const char* driver_name)
 		}
 	}
 	if ( video == NULL ) {
-		MIL_SetError("No available video device");
+		MIL_SetError("No available video device\n");
 		return(NULL);
 	}
 	return (g_current_video = video);

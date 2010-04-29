@@ -1,4 +1,5 @@
 
+[2010-04-29]: Add Signal for signal-slots pattern.
 [2010-04-28]: Add virtual method verify macro for reuse virtual method of super class.
 [2010-04-25]: Add class type safe cast operation.
 [2010-04-24]: Add video device create factory; Add FrameBuffer video device.
