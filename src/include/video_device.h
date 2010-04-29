@@ -3,7 +3,7 @@
  * @Synopsis abstract graphics layer.
  * @author DongKai
  * @version 1.0
- * @date 2010年03月23日 22时50分46秒 
+ * @date 2010-03-23 22:50:46 
  *  Organization: http://www.ds0101.net
  */
 

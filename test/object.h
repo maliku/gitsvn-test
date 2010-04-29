@@ -4,7 +4,7 @@
  * @author DongKai
  * @version 1.0
  * @date 02/22/2010 06:39:43 PM 
- *  Company: Beijing Feynman Software Technology Co., Ltd.
+ *  Organization: http://www.ds0101.net
  */
 
 #ifndef __OBJECT_H__

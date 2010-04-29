@@ -3,7 +3,7 @@
  * @Synopsis  
  * @author DongKai
  * @version 1.0
- * @date 2010年03月07日 20时30分12秒 
+ * @date 2010-03-07 20-30-12 
  *  Organization: http://www.ds0101.net
  */
 

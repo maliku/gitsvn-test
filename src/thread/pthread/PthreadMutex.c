@@ -3,7 +3,7 @@
  * @Synopsis Mutex implementation for pthread. 
  * @author DongKai
  * @version 1.0
- * @date 2010年03月13日
+ * @date 2010-03-13
  *  Organization: http://www.ds0101.net
  */
 

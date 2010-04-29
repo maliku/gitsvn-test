@@ -3,7 +3,7 @@
  * @Synopsis MIL_mutex base class. 
  * @author DongKai
  * @version 1.0
- * @date 2010年03月13日 16时44分24秒 
+ * @date 2010-03-13 16:44:24 
  *  Organization: http://www.ds0101.net
  */
 

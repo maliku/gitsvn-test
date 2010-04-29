@@ -3,8 +3,8 @@
  * @Synopsis for Application 
  * @author DongKai
  * @version 1.0
- * @date 2010年04月09日
- *  Company: Beijing Feynman Software Technology Co., Ltd.
+ * @date 2010-04-09
+ *  Organization: http://www.ds0101.net
  */
 
 #include "surface.h"
@@ -23,7 +23,7 @@ void cbfunc(void* arg)
 CONSTRUCTOR(Application)
 {
     Surface *s = New(Surface);
-    VideoDevice* vd = CreateVideoDevice("qvfb");
+    VideoDevice* vd = CreateVideoDevice("dummy");
     SignalSimple* sig = New(SignalSimple);
     _VC(sig)->connect(sig, cbfunc);
     _VC(sig)->emit(sig, 0xfefe);

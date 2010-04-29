@@ -3,8 +3,8 @@
  * @Synopsis  
  * @author DongKai
  * @version 1.0
- * @date 2010年03月16日 10时34分05秒 
- *  Company: Beijing Feynman Software Technology Co., Ltd.
+ * @date 2010-03-16 10:34:05 
+ *  Organization: http://www.ds0101.net
  */
 
 #ifndef  DUMMYVIDEO_INC

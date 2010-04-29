@@ -3,8 +3,8 @@
  * @Synopsis  
  * @author DongKai
  * @version 1.0
- * @date 2010年02月22日 17时25分25秒 
- *  Company: Beijing Feynman Software Technology Co., Ltd.
+ * @date 2010-02-22 17:25:25 
+ *  Organization: http://www.ds0101.net
  */
 
 

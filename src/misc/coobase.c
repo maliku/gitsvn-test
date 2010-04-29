@@ -4,7 +4,7 @@
  * @author DongKai
  * @version 1.0
  * @date 03/04/2010
- *  Company: Beijing Feynman Software Technology Co., Ltd.
+ *  Organization: http://www.ds0101.net
  */
 
 #include "coobase.h"
