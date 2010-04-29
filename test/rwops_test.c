@@ -3,7 +3,7 @@
  * @Synopsis RWops test. 
  * @author DongKai
  * @version 1.0
- * @date 2010年03月08日
+ * @date 2010-03-08
  *  Organization: http://www.ds0101.net
  */
 #include <string.h>

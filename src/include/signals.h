@@ -28,8 +28,8 @@ STRUCT
 
 STRUCT
 {
-    SlotNode slot;
-    struct  list_head slots_list;
+    SlotNode slot_head;
+    struct  list_head sub_slots;
     Sint32  id;
 } SlotsGroup;
 
@@ -37,9 +37,9 @@ CLASS(Signal)
 {
     VIRTUAL_METHOD_DECLARE_BEGIN(Signal)    
         int  (*connect)(_SELF, void* slot);
-        void (*connectToGroup)(_SELF, Sint32 group, void* slot);
+        int  (*connectToGroup)(_SELF, Sint32 group, void* slot);
         int  (*disconnect)(_SELF, Sint32 group);
-        int  (*emit)(_SELF, ...);
+        void*  (*emit)(_SELF, ...);
         Uint32 (*num_slots)(_SELF);
         MIL_bool (*empty)(_SELF);
     VIRTUAL_METHOD_DECLARE_END
@@ -53,6 +53,7 @@ CLASS(Signal)
 
 CLASS_INHERIT_BEGIN(SignalSimple, Signal)
     METHOD_DECLARE_BEGIN(SignalSimple)
+    void* (*travel)(_SELF, SlotNode*, void*);
     METHOD_DECLARE_END
 CLASS_INHERIT_END
 

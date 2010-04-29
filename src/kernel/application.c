@@ -17,16 +17,40 @@ METHOD_REGISTER_PLACEHOLDER(MIL_Application)
 
 void cbfunc(void* arg)
 {
-    printf("I got the signal = %p\n", arg);
+    printf("A.I got the signal = %p\n", arg);
+}
+void cbfunc2(void* arg)
+{
+    printf("B.I got the signal = %p\n", arg);
+}
+void cbfunc3(void* arg)
+{
+    printf("C.I got the signal = %p\n", arg);
 }
 
+void cbfunc4(void* arg)
+{
+    printf("D.I got the signal = %p\n", arg);
+}
+void cbfunc5(void* arg)
+{
+    printf("E.I got the signal = %p\n", arg);
+}
 CONSTRUCTOR(Application)
 {
     Surface *s = New(Surface);
     VideoDevice* vd = CreateVideoDevice("qvfb");
     SignalSimple* sig = New(SignalSimple);
-    _VC(sig)->connect(sig, cbfunc);
-    _VC(sig)->connect(sig, cbfunc);
+    _VC(sig)->connect(sig, cbfunc5);
+    _VC(sig)->connectToGroup(sig, 15, cbfunc3);
+    _VC(sig)->connectToGroup(sig, 5, cbfunc2);
+    _VC(sig)->connectToGroup(sig, 20, cbfunc4);
+    _VC(sig)->connectToGroup(sig, 20, cbfunc);
+    _VC(sig)->connectToGroup(sig, 20, cbfunc2);
+    _VC(sig)->connectToGroup(sig, 20, cbfunc3);
+    _VC(sig)->connectToGroup(sig, 1, cbfunc);
+    _VC(sig)->connectToGroup(sig, -1, cbfunc5);
+    _VC(sig)->connectToGroup(sig, -1, cbfunc);
     _VC(sig)->emit(sig, 0xfefe);
 
     if (NULL != vd) {

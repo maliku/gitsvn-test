@@ -3,7 +3,7 @@
  * @Synopsis  
  * @author DongKai
  * @version 1.0
- * @date 2010年04月09日
+ * @date 2010-04-09
  *  Organization: http://www.ds0101.net
  */
 
