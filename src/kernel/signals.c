@@ -62,7 +62,7 @@ Uint32 Signal_X_num_slots(_SELF)
 
 MIL_bool Signal_X_empty(_SELF)
 {
-    return MIL_FALSE;
+    return list_empty_careful((struct list_head*)(&_tm(Signal, slots)));
 }
 
 VIRTUAL_METHOD_REGBEGIN(Signal, NonBase)

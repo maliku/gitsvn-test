@@ -23,8 +23,9 @@ void cbfunc(void* arg)
 CONSTRUCTOR(Application)
 {
     Surface *s = New(Surface);
-    VideoDevice* vd = CreateVideoDevice("dummy");
+    VideoDevice* vd = CreateVideoDevice("qvfb");
     SignalSimple* sig = New(SignalSimple);
+    _VC(sig)->connect(sig, cbfunc);
     _VC(sig)->connect(sig, cbfunc);
     _VC(sig)->emit(sig, 0xfefe);
 
@@ -34,7 +35,6 @@ CONSTRUCTOR(Application)
             MIL_Rect rc = {0, 0, 640, 480};
             int i, j;
             char *pixels = (char*)s->pixels;
-//            printf("pitch = %d.\n", _vc0((MIL_Surface*)s, getBytesPerPixel));
             for (i = 0; i < 480; ++i)
             {
                 memset(pixels, i % 255, 4 * 640);

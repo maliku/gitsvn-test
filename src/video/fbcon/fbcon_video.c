@@ -6,6 +6,10 @@
  * @date 2010-04-20
  *  Organization: http://www.ds0101.net
  */
+#include "MIL_config.h"
+
+#if MIL_VIDEO_DRIVER_FBCON
+
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -2209,3 +2213,5 @@ VIRTUAL_METHOD_REGEND
 METHOD_REGBEGIN(FBconVideoDevice)
     CONSTRUCTOR_REGISTER(FBconVideoDevice)
 METHOD_REGEND
+
+#endif

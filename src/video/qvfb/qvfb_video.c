@@ -6,6 +6,10 @@
  * @date 2010-04-20
  *  Organization: http://www.ds0101.net
  */
+
+#include "MIL_config.h"
+
+#if MIL_VIDEO_DRIVER_QVFB
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/types.h>
@@ -315,3 +319,6 @@ VIRTUAL_METHOD_REGEND
 METHOD_REGBEGIN(QVFbVideoDevice)
     CONSTRUCTOR_REGISTER(QVFbVideoDevice)
 METHOD_REGEND
+
+#endif
+
