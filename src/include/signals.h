@@ -44,8 +44,10 @@ CLASS(Signal)
 {
     VIRTUAL_METHOD_DECLARE_BEGIN(Signal)    
         int  (*connect)(_SELF, void* slot);
-        int  (*connectToGroup)(_SELF, Sint32 group, void* slot);
-        int  (*disconnect)(_SELF, Sint32 group);
+        int  (*connectGroup)(_SELF, Sint32 group, void* slot);
+        void (*disconnect)(_SELF);
+        void (*disconnectGroup)(_SELF, Sint32 group);
+        void (*disconnectAllGroup)(_SELF);
         void*  (*emit)(_SELF, ...);
         Uint32 (*num_slots)(_SELF);
         MIL_bool (*empty)(_SELF);
@@ -56,7 +58,7 @@ CLASS(Signal)
 
     Uint32 num_slots;
     SlotNode   slots; /* Default slots, lowest priority. */
-    SlotsGroup *group;
+    SlotsGroup group;
     MIL_mutex* mutex;
 };
 

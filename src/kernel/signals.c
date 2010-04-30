@@ -11,17 +11,13 @@
 
 CONSTRUCTOR(Signal)
 {
-    puts("Signal construction.");
     INIT_LIST_HEAD((struct list_head *)(&_m(slots)));
-    _m(group) = MIL_malloc(sizeof(*_m(group)));
-    if (NULL != _m(group)) {
-        INIT_LIST_HEAD((struct list_head *)(_m(group)));
-        INIT_LIST_HEAD((struct list_head *)(&_m(group)->sub_slots));
-        INIT_LIST_HEAD((struct list_head *)(_m(group)));
-    }
+    INIT_LIST_HEAD((struct list_head *)(&_m(group)));
+    INIT_LIST_HEAD((struct list_head *)(&_m(group).sub_slots));
 #ifdef MIL_USE_SLOT_TYPE
-    ((SlotNode*)&_m(group))->type = SLOT_GROUP;
+    ((SlotNode*)&_m(group)).type = SLOT_GROUP;
 #endif
+    _tm(Signal, group).id = ~((unsigned)-1);
     _m(num_slots) = 0;
     _m(mutex) = MIL_CreateMutex();
 
@@ -30,7 +26,8 @@ CONSTRUCTOR(Signal)
 
 DESTRUCTOR(Signal)
 {
-    _MC((Signal*)self)->travel(self, &_tm(Signal, group)->slot_head, DelSlot);
+    _VC((Signal*)self)->disconnect(self);
+    _VC((Signal*)self)->disconnectAllGroup(self);
     MIL_DestroyMutex(_tm(Signal, mutex));
 }
 
@@ -53,14 +50,14 @@ int Signal_X_connect(_SELF, void* slot)
     return -1;
 }
 
-int Signal_X_connectToGroup(_SELF, Sint32 group, void* slot)
+int Signal_X_connectGroup(_SELF, Sint32 group, void* slot)
 {
     struct list_head* i = NULL;
     MIL_bool is_break = MIL_FALSE;
 
     if (NULL != slot) {
         _VC(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
-        list_for_each(i, &_tm(Signal, group)->slot_head.list) {
+        list_for_each(i, &_tm(Signal, group).slot_head.list) {
             if (group == ((SlotsGroup*)i)->id) {
                 SlotNode* slot_new = (SlotNode*)MIL_malloc(sizeof(*slot_new));
                 if (NULL != slot_new) {
@@ -100,7 +97,7 @@ int Signal_X_connectToGroup(_SELF, Sint32 group, void* slot)
             }
             else {
                 list_add_tail((struct list_head*)group_new, 
-                        &_tm(Signal, group)->slot_head.list);
+                        &_tm(Signal, group).slot_head.list);
             }
             _VC(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
             return 0;
@@ -109,27 +106,64 @@ int Signal_X_connectToGroup(_SELF, Sint32 group, void* slot)
     return -1;
 }
 
-int Signal_X_disconnect(_SELF, Sint32 group)
+void Signal_X_disconnect(_SELF)
+{
+    struct list_head* k = NULL;
+    struct list_head* n = NULL;
+    _VC(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
+    list_for_each_safe(k, n, (struct list_head*)(&_tm(Signal, slots))) {
+        list_del(k);
+        MIL_free(k);
+    }
+    _VC(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
+}
+
+void Signal_X_disconnectGroup(_SELF, Sint32 group)
 {
 #ifdef MIL_USE_SLOT_TYPE
     if (SLOT_GROUP == _tm(Signal, group)->type)
 #endif
     {
-        struct list_head* head = (struct list_head*)(_tm(Signal, group));
+        struct list_head* head = (struct list_head*)(&_tm(Signal, group));
         struct list_head* i = NULL;
         struct list_head* k = NULL;
+        struct list_head* n = NULL;
         _VC(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
         list_for_each(i, head) {
             if (group == ((SlotsGroup*)i)->id) {
-                list_for_each(k, (struct list_head*)&((SlotsGroup*)i)->sub_slots) {
+                list_for_each_safe(k, n, (struct list_head*)&((SlotsGroup*)i)->sub_slots) {
                     list_del(k);
                 }
+                list_del(i);
+                break;
             }
         }
         _VC(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
     }
+}
 
-    return -1;
+void Signal_X_disconnectAllGroup(_SELF)
+{
+#ifdef MIL_USE_SLOT_TYPE
+    if (SLOT_GROUP == _tm(Signal, group)->type)
+#endif
+    {
+        struct list_head* i = NULL;
+        struct list_head* k = NULL;
+        struct list_head* n = NULL;
+        struct list_head* m = NULL;
+        _VC(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
+        list_for_each_safe(i, m, (struct list_head*)(&_tm(Signal, group))) {
+            list_for_each_safe(k, n, 
+                    (struct list_head*)&((SlotsGroup*)i)->sub_slots) {
+                list_del(k);
+                MIL_free(k);
+            }
+            list_del(i);
+            MIL_free(i);
+        }
+        _VC(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
+    }
 }
 
 void* Signal_X_emit(_SELF, ...)
@@ -163,7 +197,6 @@ void* Signal_X_travel(_SELF, SlotNode* head, SlotHandle node_handle)
         struct list_head* k = NULL;
         _VC(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
         list_for_each(i, (struct list_head*)(head)) {
-            printf("find the group %d.\n", ((SlotsGroup*)i)->id);
             list_for_each(k, (struct list_head*)&((SlotsGroup*)i)->sub_slots) {
                 node_handle((SlotNode*)k);
             }
@@ -180,8 +213,10 @@ void* Signal_X_travel(_SELF, SlotNode* head, SlotHandle node_handle)
 VIRTUAL_METHOD_REGBEGIN(Signal, NonBase)
     DESTRUCTOR_REGISTER(Signal)
     METHOD_REGISTER(Signal, connect)
-    METHOD_REGISTER(Signal, connectToGroup)
+    METHOD_REGISTER(Signal, connectGroup)
     METHOD_REGISTER(Signal, disconnect)
+    METHOD_REGISTER(Signal, disconnectGroup)
+    METHOD_REGISTER(Signal, disconnectAllGroup)
     METHOD_REGISTER(Signal, emit)
     METHOD_REGISTER(Signal, num_slots)
     METHOD_REGISTER(Signal, empty)
@@ -202,7 +237,7 @@ void* SignalSimple_X_emit(_SELF, ...)
     arg = va_arg(arg_ptr, void*);
     va_end(arg_ptr);
 
-    _MC((SignalSimple*)self)->travel(self, &_tm(Signal, group)->slot_head, CallSlot, arg);
+    _MC((SignalSimple*)self)->travel(self, &_tm(Signal, group).slot_head, CallSlot, arg);
     /* The default slots list has lowest priority. */
     _VC(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
     list_for_each(i, &_tm(Signal, slots).list) {
@@ -222,7 +257,6 @@ void* SignalSimple_X_travel(_SELF, SlotNode* head, SimpleSlotHandle node_handle,
         struct list_head* k = NULL;
         _VC(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
         list_for_each(i, (struct list_head*)(head)) {
-            printf("find the group %d.\n", ((SlotsGroup*)i)->id);
             list_for_each(k, (struct list_head*)&((SlotsGroup*)i)->sub_slots) {
                 node_handle((SlotNode*)k, arg);
             }
@@ -241,28 +275,21 @@ void* CallSlot(SlotNode* node, void* arg)
     return ((void* (*)(void*))(node->slot))(arg);
 }
 
-void* DelSlot(SlotNode* node)
-{
-    list_del(&node->list);
-    printf("Free node %p\n", node);
-//    MIL_free(node);
-    return NULL;
-}
-
 CONSTRUCTOR(SignalSimple)
 {
     static MIL_bool is_virtual_method_checked = MIL_FALSE;
  
     if (!is_virtual_method_checked) {
         VirtualMethodVerify(self, connect);
+        VirtualMethodVerify(self, connectGroup);
         VirtualMethodVerify(self, disconnect);
-        VirtualMethodVerify(self, connectToGroup);
+        VirtualMethodVerify(self, disconnectGroup);
+        VirtualMethodVerify(self, disconnectAllGroup);
         VirtualMethodVerify(self, emit);
         VirtualMethodVerify(self, num_slots);
         VirtualMethodVerify(self, empty);
         is_virtual_method_checked = MIL_TRUE;
     }
-    puts("SignalSimple construction.");
     return self;
 }
 
@@ -274,9 +301,13 @@ DESTRUCTOR(SignalSimple)
 VIRTUAL_METHOD_REGBEGIN(SignalSimple, Signal)
     DESTRUCTOR_REGISTER(SignalSimple)
     METHOD_PLACEHOLDER(connect)
-    METHOD_PLACEHOLDER(connectToGroup)
+    METHOD_PLACEHOLDER(connectGroup)
     METHOD_PLACEHOLDER(disconnect)
+    METHOD_PLACEHOLDER(disconnectGroup)
+    METHOD_PLACEHOLDER(disconnectAllGroup)
     METHOD_REGISTER(SignalSimple, emit)
+    METHOD_PLACEHOLDER(num_slots)
+    METHOD_PLACEHOLDER(empty)
 VIRTUAL_METHOD_REGEND
 
 METHOD_REGBEGIN(SignalSimple)

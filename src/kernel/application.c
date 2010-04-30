@@ -41,18 +41,20 @@ CONSTRUCTOR(Application)
     Surface* s = New(Surface);
     VideoDevice* vd = CreateVideoDevice("qvfb");
     SignalSimple* sig = New(SignalSimple);
-    _VC(sig)->connect(sig, cbfunc5);
-    _VC(sig)->connectToGroup(sig, 15, cbfunc3);
-    _VC(sig)->connectToGroup(sig, 5, cbfunc2);
-    _VC(sig)->connectToGroup(sig, 20, cbfunc4);
-    _VC(sig)->connectToGroup(sig, 20, cbfunc);
-    _VC(sig)->connectToGroup(sig, 20, cbfunc2);
-    _VC(sig)->connectToGroup(sig, 20, cbfunc3);
-    _VC(sig)->connectToGroup(sig, 1, cbfunc);
-    _VC(sig)->connectToGroup(sig, -1, cbfunc5);
-    _VC(sig)->connectToGroup(sig, -1, cbfunc);
+    _VC(sig)->connect(sig, cbfunc);
+    _VC(sig)->connect(sig, cbfunc2);
+    _VC(sig)->connect(sig, cbfunc3);
+    _VC(sig)->connectGroup(sig, 15, cbfunc3);
+    _VC(sig)->connectGroup(sig, 5, cbfunc2);
+    _VC(sig)->connectGroup(sig, 20, cbfunc4);
+    _VC(sig)->connectGroup(sig, 20, cbfunc);
+    _VC(sig)->connectGroup(sig, 20, cbfunc2);
+    _VC(sig)->connectGroup(sig, 20, cbfunc3);
+    _VC(sig)->connectGroup(sig, 1, cbfunc);
+    _VC(sig)->connectGroup(sig, -1, cbfunc5);
+    _VC(sig)->connectGroup(sig, -1, cbfunc);
     _VC(sig)->emit(sig, 0xfefe);
-    _vc1(sig, disconnect, -1);
+    Delete(sig);
 
     if (NULL != vd) {
         _VC(vd)->setVideoMode(vd, (MIL_Surface*)s, 640, 480, 32, 0);
