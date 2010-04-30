@@ -16,7 +16,6 @@ CONSTRUCTOR(PthreadMutex)
 	pthread_mutexattr_t attr;
 
 	/* Allocate the structure */
-	self = (PthreadMutex *)MIL_calloc(1, sizeof(*self));
 	if ( self ) {
 		pthread_mutexattr_init(&attr);
 #if MIL_THREAD_PTHREAD_RECURSIVE_MUTEX
@@ -47,7 +46,7 @@ DESTRUCTOR(PthreadMutex)
 	}
 }
 
-Sint32 METHOD_NAMED(PthreadMutex, lock)(_Self(MIL_mutex))
+Sint32 PthreadMutex_X_lock(_SELF)
 {
 	int retval;
     PthreadMutex* mutex = (PthreadMutex*)self;
@@ -87,7 +86,7 @@ Sint32 METHOD_NAMED(PthreadMutex, lock)(_Self(MIL_mutex))
 	return retval;
 }
 
-Sint32 METHOD_NAMED(PthreadMutex, unlock)(_Self(MIL_mutex))
+Sint32 PthreadMutex_X_unlock(_SELF)
 {
 	int retval;
     PthreadMutex* mutex = (PthreadMutex*)self;

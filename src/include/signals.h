@@ -13,17 +13,21 @@
 #include "MIL_mutex.h"
 #include "linux-list.h"
 
+#ifdef MIL_USE_SLOT_TYPE
 enum SlotType {
     SLOT_FUNCTION = 0,
     SLOT_OBJECT = 0,
     SLOT_GROUP = 1,
 };
+#endif
 
 STRUCT
 {
     struct list_head list;
     void* slot;
+#ifdef MIL_USE_SLOT_TYPE
     enum  SlotType type;
+#endif
 } SlotNode;
 
 STRUCT
@@ -32,6 +36,9 @@ STRUCT
     struct  list_head sub_slots;
     Sint32  id;
 } SlotsGroup;
+
+typedef void*(*SlotHandle)(SlotNode*);
+typedef void*(*SimpleSlotHandle)(SlotNode*, void*);
 
 CLASS(Signal)
 {
@@ -43,17 +50,22 @@ CLASS(Signal)
         Uint32 (*num_slots)(_SELF);
         MIL_bool (*empty)(_SELF);
     VIRTUAL_METHOD_DECLARE_END
-    METHOD_DECLARE_PLACEHOLDER(Signal)
+    METHOD_DECLARE_BEGIN(Signal)
+    void* (*travel)(_SELF, SlotNode*, SlotHandle);
+    METHOD_DECLARE_END
 
     Uint32 num_slots;
     SlotNode   slots; /* Default slots, lowest priority. */
-    SlotsGroup group;
+    SlotsGroup *group;
     MIL_mutex* mutex;
 };
 
+void* CallSlot(SlotNode*, void* arg);
+void* DelSlot(SlotNode*);
+
 CLASS_INHERIT_BEGIN(SignalSimple, Signal)
     METHOD_DECLARE_BEGIN(SignalSimple)
-    void* (*travel)(_SELF, SlotNode*, void*);
+    void* (*travel)(_SELF, SlotNode*, SimpleSlotHandle, void*);
     METHOD_DECLARE_END
 CLASS_INHERIT_END
 

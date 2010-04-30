@@ -38,7 +38,7 @@ void cbfunc5(void* arg)
 }
 CONSTRUCTOR(Application)
 {
-    Surface *s = New(Surface);
+    Surface* s = New(Surface);
     VideoDevice* vd = CreateVideoDevice("qvfb");
     SignalSimple* sig = New(SignalSimple);
     _VC(sig)->connect(sig, cbfunc5);
@@ -52,6 +52,7 @@ CONSTRUCTOR(Application)
     _VC(sig)->connectToGroup(sig, -1, cbfunc5);
     _VC(sig)->connectToGroup(sig, -1, cbfunc);
     _VC(sig)->emit(sig, 0xfefe);
+    _vc1(sig, disconnect, -1);
 
     if (NULL != vd) {
         _VC(vd)->setVideoMode(vd, (MIL_Surface*)s, 640, 480, 32, 0);

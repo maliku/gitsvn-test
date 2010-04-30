@@ -9,12 +9,12 @@
 
 #include "DummyMutex.h"
 
-Sint32 METHOD_NAMED(DummyMutex, lock)(_Self(MIL_mutex))
+Sint32 DummyMutex_X_lock(_SELF)
 {
 	return 0;
 }
 
-Sint32 METHOD_NAMED(DummyMutex, unlock)(_Self(MIL_mutex))
+Sint32 DummyMutex_X_unlock(_SELF)
 {
 	return 0;
 

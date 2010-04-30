@@ -34,7 +34,7 @@ DESTRUCTOR(Win32Mutex)
     }
 }
 
-Sint32 METHOD_NAMED(Win32Mutex, lock)(_Self(MIL_mutex))
+Sint32 METHOD_NAMED(Win32Mutex, lock)(_SELF)
 {
 	if ( WaitForSingleObject(self->id, INFINITE) == WAIT_FAILED ) {
 		MIL_SetError("Couldn't wait on mutex");
@@ -43,7 +43,7 @@ Sint32 METHOD_NAMED(Win32Mutex, lock)(_Self(MIL_mutex))
 	return(0);
 }
 
-Sint32 METHOD_NAMED(Win32Mutex, unlock)(_Self(MIL_mutex))
+Sint32 METHOD_NAMED(Win32Mutex, unlock)(_SELF)
 {
 	if ( self == NULL ) {
 		MIL_SetError("Passed a NULL mutex");

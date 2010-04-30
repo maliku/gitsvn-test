@@ -261,6 +261,7 @@ if test x$have_inttypes != xyes; then
     AC_DEFINE(uintptr_t, unsigned long, [Define uintptr_t])
 fi
 
+
 have_pthreads=no
 if test "x$use_threads" != "xno"; then
   AC_MSG_CHECKING(for pthread library)
@@ -282,6 +283,36 @@ pthread_exit (0);
             [Define if there have libpthread.])
 
 fi
+
+if test "x$have_pthreads" != "xno"; then
+# Check to see if recursive mutexes are available
+AC_MSG_CHECKING(for recursive mutexes)
+has_recursive_mutexes=no
+if test x$has_recursive_mutexes = xno; then
+    AC_TRY_COMPILE([
+                    #include <pthread.h>
+                    ],[
+                       pthread_mutexattr_t attr;
+                       pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+                       ],[
+                          has_recursive_mutexes=yes
+                          AC_DEFINE(MIL_THREAD_PTHREAD_RECURSIVE_MUTEX, 1, [pthread support recursive mutex])
+                          ])
+    fi
+    if test x$has_recursive_mutexes = xno; then
+        AC_TRY_COMPILE([
+                        #include <pthread.h>
+                        ],[
+                           pthread_mutexattr_t attr;
+                           pthread_mutexattr_setkind_np(&attr, PTHREAD_MUTEX_RECURSIVE_NP);
+                           ],[
+                              has_recursive_mutexes=yes
+                              AC_DEFINE(MIL_THREAD_PTHREAD_RECURSIVE_MUTEX_NP, 1, [pthread support recursive np mutex])
+                              ])
+        fi
+        AC_MSG_RESULT($has_recursive_mutexes)
+fi
+
 
 AC_DEFINE_UNQUOTED(MILUI_MAJOR_VERSION, $MilUI_MAJOR_VERSION,
             [Major version of MilUI])

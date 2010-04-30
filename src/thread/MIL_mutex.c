@@ -13,10 +13,13 @@
 MIL_mutex* MIL_CreateMutex()
 {
 #if MIL_THREAD_WIN32
+    puts("Create win32 mutex");
     return New(Win32Mutex);
 #elif HAVE_PTHREAD
+    puts("Create pthread mutex");
     return New(PthreadMutex);
 #else
+    puts("Create dummy mutex");
     return New(DummyMutex);
 #endif
 }

@@ -15,16 +15,15 @@
 #include <pthread.h>
 #include "MIL_mutex.h"
 
-    CLASS_INHERIT_BEGIN(PthreadMutex, MIL_mutex)
-METHOD_DECLARE_PLACEHOLDER(PthreadMutex)
+CLASS_INHERIT_BEGIN(PthreadMutex, MIL_mutex)
+    METHOD_DECLARE_PLACEHOLDER(PthreadMutex)
 
     pthread_mutex_t id;
 #if FAKE_RECURSIVE_MUTEX
     int recursive;
     pthread_t owner;
 #endif
-
-    CLASS_INHERIT_END
+CLASS_INHERIT_END
 
 #endif
 

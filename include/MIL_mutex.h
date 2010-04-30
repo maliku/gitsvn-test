@@ -26,15 +26,16 @@ extern "C" {
 /** This is the timeout value which corresponds to never time out */
 #define SDL_MUTEX_MAXWAIT	(~(Uint32)0)
 
-#if !MIL_THREAD_WIN32 && !HAVE_PTHREAD
-#define MIL_THREAD_SUPPORTED
-#endif
+/* #if !MIL_THREAD_WIN32 && !HAVE_PTHREAD
+ * #define MIL_THREAD_SUPPORTED
+ * #endif
+ */
 
 CLASS(MIL_mutex)
 {
     VIRTUAL_METHOD_DECLARE_BEGIN(MIL_mutex)
-        Sint32 (*lock)(_Self(MIL_mutex));
-        Sint32 (*unlock)(_Self(MIL_mutex));
+        Sint32 (*lock)(_SELF);
+        Sint32 (*unlock)(_SELF);
         VIRTUAL_METHOD_DECLARE_END
 
     METHOD_DECLARE_PLACEHOLDER(MIL_mutex)
