@@ -1,4 +1,9 @@
 
+[2010-05-01]: Add slots(Group) disconnect method.
+[2010-04-30]: Optimize slot list travel method: remove the recursion invoke;
+Add recursion mutex check in configure.in;
+Make signal-slot module be thread-safe.
+
 [2010-04-29]: Add Signal for signal-slots pattern.
 				Now the signal-slots mechanism support group connect operation.
 
