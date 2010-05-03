@@ -10,6 +10,7 @@
 #ifndef  SURFACE_INC
 #define  SURFACE_INC
 #include "MIL_video.h"
+#include "MIL_mutex.h"
 
 CLASS_INHERIT_BEGIN(Surface, MIL_Surface)
     METHOD_DECLARE_PLACEHOLDER(Surface)
@@ -38,6 +39,7 @@ CLASS_INHERIT_BEGIN(Surface, MIL_Surface)
 
 	/* Reference count -- used when freeing surface */
 	int refcount;				/* Read-mostly */
+    MIL_mutex* lock;
 CLASS_INHERIT_END
 
 #endif   /* ----- #ifndef SURFACE_INC  ----- */

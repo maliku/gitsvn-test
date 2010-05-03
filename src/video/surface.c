@@ -14,18 +14,25 @@ METHOD_REGISTER_PLACEHOLDER(MIL_Surface)
 
 CONSTRUCTOR(Surface)
 {
+    self->lock = (MIL_mutex*)MIL_CreateMutex();
     return self;
 }
 
 DESTRUCTOR(Surface)
 {
+    MIL_DestroyMutex(_tm(Surface, lock));
 }
 
 void* Surface_X_lock(_SELF)
-{}
+{
+    _VC(_tm(Surface, lock))->lock(self);
+    return _tm(Surface, pixels);
+}
 
 void Surface_X_unlock(_SELF)
-{}
+{
+    _VC(_tm(Surface, lock))->unlock(self);
+}
 
 int  Surface_X_setColorKey(_SELF, Uint32 flag, Uint32 key)
 {}

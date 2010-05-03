@@ -58,6 +58,15 @@ VideoDevice* CreateVideoDevice(const char* driver_name)
 	return (g_current_video = video);
 }
 
+CONSTRUCTOR(VideoDevice)
+{
+    return self;
+}
+
+DESTRUCTOR(VideoDevice)
+{
+}
+
 int VideoDevice_X_videoInit(_Self(VideoDevice), MIL_PixelFormat *vformat)
 {
     printf("VideoDevice::videoInit vformat=%p\n", vformat);
