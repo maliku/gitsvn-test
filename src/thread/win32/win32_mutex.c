@@ -7,7 +7,7 @@
  *  Organization: http://www.ds0101.net
  */
 
-#include "Win32Mutex.h"
+#include "win32_mutex.h"
 
 #if MIL_THREAD_WIN32	
 CONSTRUCTOR(Win32Mutex)
@@ -65,5 +65,10 @@ VIRTUAL_METHOD_REGEND
 METHOD_REGBEGIN(Win32Mutex)
     CONSTRUCTOR_REGISTER(Win32Mutex)
 METHOD_REGEND
+
+MIL_mutex* CreateWin32Mutex()
+{
+    return (MIL_mutex*)New(Win32Mutex);
+}
 #endif
 

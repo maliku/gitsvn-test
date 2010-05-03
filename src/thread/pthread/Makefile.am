@@ -1,7 +1,7 @@
 INCLUDES = -I../../../include -I../../include
 
-noinst_LTLIBRARIES = libpthread.la
+noinst_LTLIBRARIES = libpthreadmutex.la
 
-libpthread_la_SOURCES = PthreadMutex.c
+libpthreadmutex_la_SOURCES = pthread_mutex.c
 
-EXTRA_DIST = PthreadMutex.c
+EXTRA_DIST = pthread_mutex.c

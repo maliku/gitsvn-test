@@ -1,7 +1,7 @@
 INCLUDES = -I../../../include -I../../include
 
-noinst_LTLIBRARIES = libwin32.la
+noinst_LTLIBRARIES = libwin32_mutex.la
 
-libwin32_la_SOURCES = Win32Mutex.c
+libwin32_mutex_la_SOURCES = win32_mutex.c
 
-EXTRA_DIST = Win32Mutex.c
+EXTRA_DIST = win32_mutex.c

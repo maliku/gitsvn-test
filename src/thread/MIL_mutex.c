@@ -7,20 +7,19 @@
  *  Organization: http://www.ds0101.net
  */
 
-#include "pthread/PthreadMutex.h"
-#include "win32/Win32Mutex.h"
+#include "mutex.h"
 
 MIL_mutex* MIL_CreateMutex()
 {
 #if MIL_THREAD_WIN32
     puts("Create win32 mutex");
-    return New(Win32Mutex);
+    return CreateWin32Mutex();
 #elif HAVE_PTHREAD
     puts("Create pthread mutex");
-    return New(PthreadMutex);
+    return CreatePthreadMutex();
 #else
     puts("Create dummy mutex");
-    return New(DummyMutex);
+    return CreateDummyMutex();
 #endif
 }
 

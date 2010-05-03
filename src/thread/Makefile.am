@@ -5,8 +5,13 @@ SUBDIRS = pthread win32 dummy
 
 noinst_LTLIBRARIES = libthread.la
 
-#COMMON_LIBADD =               \
-#    libthread.la
+COMMON_LIBADD = \
+	dummy/libdummymutex.la \
+	pthread/libpthreadmutex.la \
+	win32/libwin32_mutex.la
 
-libthread_la_SOURCES = MIL_mutex.c pthread/PthreadMutex.c
+libthread_la_LIBADD =  \
+    $(COMMON_LIBADD)
+
+libthread_la_SOURCES = MIL_mutex.c
 

@@ -1,7 +1,7 @@
 INCLUDES = -I../../../include -I../../include
 
-noinst_LTLIBRARIES = libdummy.la
+noinst_LTLIBRARIES = libdummymutex.la
 
-libdummy_la_SOURCES = DummyMutex.c
+libdummymutex_la_SOURCES = dummy_mutex.c
 
-EXTRA_DIST = DummyMutex.c
+EXTRA_DIST = dummy_mutex.c

@@ -7,7 +7,7 @@
  *  Organization: http://www.ds0101.net
  */
 
-#include "PthreadMutex.h"
+#include "pthread_mutex.h"
 
 #if HAVE_PTHREAD
 
@@ -136,5 +136,10 @@ VIRTUAL_METHOD_REGEND
 METHOD_REGBEGIN(PthreadMutex)
     CONSTRUCTOR_REGISTER(PthreadMutex)
 METHOD_REGEND
+
+MIL_mutex* CreatePthreadMutex()
+{
+    return (MIL_mutex*)New(PthreadMutex);
+}
 
 #endif

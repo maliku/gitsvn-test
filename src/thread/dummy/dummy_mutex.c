@@ -7,7 +7,7 @@
  *  Organization: http://www.ds0101.net
  */
 
-#include "DummyMutex.h"
+#include "dummy_mutex.h"
 
 Sint32 DummyMutex_X_lock(_SELF)
 {
@@ -30,3 +30,7 @@ METHOD_REGBEGIN(DummyMutex)
     NON_CONSTRUCTOR
 METHOD_REGEND
 
+MIL_mutex* CreateDummyMutex()
+{
+    return (MIL_mutex*)New(DummyMutex);
+}
