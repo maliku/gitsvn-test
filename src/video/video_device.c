@@ -20,6 +20,7 @@ static VideoDeviceEntry* g_video_device_entries[] = {
 };
 VideoDevice* g_current_video;
 
+/* It's just support single device. */
 VideoDevice* CreateVideoDevice(const char* driver_name)
 {
 	VideoDevice* video = NULL;
@@ -42,7 +43,7 @@ VideoDevice* CreateVideoDevice(const char* driver_name)
 			}
 		}
 	} else {
-		for ( i=0; NULL != g_video_device_entries[i]; ++i ) {
+		for ( i = 0; NULL != g_video_device_entries[i]; ++i ) {
 			if ( NULL != g_video_device_entries[i]->create ) {
 				video = g_video_device_entries[i]->create();
 				if ( NULL != video ) { /* Find the creatable device in default */
@@ -52,14 +53,24 @@ VideoDevice* CreateVideoDevice(const char* driver_name)
 		}
 	}
 	if ( video == NULL ) {
-		MIL_SetError("No available video device\n");
-		return(NULL);
+        MIL_SetError("No available video device\n");
+        return (NULL);
 	}
 	return (g_current_video = video);
 }
 
 CONSTRUCTOR(VideoDevice)
 {
+    memset(&self->vinfo, 0, sizeof(self->vinfo));
+    memset(&self->gl_config, 0, sizeof(self->gl_config));
+    _m(name) = NULL;
+    _m(display_format_alpha_pixel) = NULL;
+    _m(screen) = _m(shadow) = _m(visible) = NULL;
+    _m(physpal) = NULL;
+    _m(gammacols) = NULL;
+    _m(offset_x) = _m(offset_y) = 0;
+    _m(handles_any_size) = 0;
+    _m(input_grab) = MIL_GRAB_OFF;
     return self;
 }
 
@@ -139,7 +150,7 @@ int VideoDevice_X_setHWAlpha(_Self(VideoDevice), MIL_Surface *surface, Uint8 val
 
 int VideoDevice_X_lockHWSurface(_Self(VideoDevice), MIL_Surface *surface)
 {
-    return -1;
+    return 0;
 }
 
 void VideoDevice_X_unlockHWSurface(_Self(VideoDevice), MIL_Surface *surface)

@@ -144,11 +144,50 @@ CLASS(VideoDevice) {
 
     const char *name;
 	/* Information about the video hardware */
-	MIL_VideoInfo info;
+	MIL_VideoInfo vinfo;
 
 	/* The pixel format used when MIL_CreateRGBSurface creates MIL_HWSURFACEs with alpha */
-	MIL_PixelFormat* displayformatalphapixel;
-	
+	MIL_PixelFormat* display_format_alpha_pixel;
+    MIL_Surface *screen;
+    MIL_Surface *shadow;
+	MIL_Surface *visible;
+
+    MIL_Palette *physpal;	/* physical palette, if != logical palette */
+    MIL_Color *gammacols;	/* gamma-corrected colours, or NULL */
+/* 	char *wm_title;
+ * 	char *wm_icon;
+ */
+	int offset_x;
+	int offset_y;
+	MIL_GrabMode input_grab;
+
+	/* Driver information flags */
+	int handles_any_size;	/* Driver handles any size video mode */
+
+	/* * * */
+	/* Data used by the GL drivers */
+	struct {
+		int red_size;
+		int green_size;
+		int blue_size;
+		int alpha_size;
+		int depth_size;
+		int buffer_size;
+		int stencil_size;
+		int double_buffer;
+		int accum_red_size;
+		int accum_green_size;
+		int accum_blue_size;
+		int accum_alpha_size;
+		int stereo;
+		int multisamplebuffers;
+		int multisamplesamples;
+		int accelerated;
+		int swap_control;
+		int driver_loaded;
+		char driver_path[256];
+		void* dll_handle;
+	} gl_config;
 };
 
 STRUCT {

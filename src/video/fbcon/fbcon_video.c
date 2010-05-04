@@ -780,11 +780,11 @@ static int FBconVideoDevice_X_videoInit(_Self(VideoDevice), MIL_PixelFormat *vfo
 		}
 	}
 
-	self->info.current_w = current_w;
-	self->info.current_h = current_h;
-	self->info.wm_available = 0;
-	self->info.hw_available = !((FBconVideoDevice*)self)->hw_data->shadow_fb;
-	self->info.video_mem = ((FBconVideoDevice*)self)->hw_data->shadow_fb ? 0 : finfo.smem_len/1024;
+	self->vinfo.current_w = current_w;
+	self->vinfo.current_h = current_h;
+	self->vinfo.wm_available = 0;
+	self->vinfo.hw_available = !((FBconVideoDevice*)self)->hw_data->shadow_fb;
+	self->vinfo.video_mem = ((FBconVideoDevice*)self)->hw_data->shadow_fb ? 0 : finfo.smem_len/1024;
 	/* Fill in our hardware acceleration capabilities */
 	if ( ((FBconVideoDevice*)self)->hw_data->mapped_io ) {
 		switch (finfo.accel) {

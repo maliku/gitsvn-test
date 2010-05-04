@@ -39,7 +39,6 @@ CLASS_INHERIT_BEGIN(Surface, MIL_Surface)
 
 	/* Reference count -- used when freeing surface */
 	int refcount;				/* Read-mostly */
-    MIL_mutex* lock;
 CLASS_INHERIT_END
 
 #endif   /* ----- #ifndef SURFACE_INC  ----- */

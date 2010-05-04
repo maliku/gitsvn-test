@@ -1,4 +1,6 @@
 
+[2010-05-04]: Fix ltmain.sh for shield a bug of libtool, this modify may be
+can't compatible with old version of libtool.
 [2010-05-01]: Add slots(Group) disconnect method.
 [2010-04-30]: Optimize slot list travel method: remove the recursion invoke;
 Add recursion mutex check in configure.in;

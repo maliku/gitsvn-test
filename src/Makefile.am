@@ -1,7 +1,7 @@
 TOP_DIR=..
 INCLUDES = -I$(TOP_DIR)/include
 
-SUBDIRS = misc stdlib thread video kernel
+SUBDIRS = misc stdlib thread video kernel gdi
 DIST_SUBDIRS = $(SUBDIRS)
 
 lib_LTLIBRARIES = libmilui.la
@@ -11,7 +11,8 @@ COMMON_LIBADD = \
 	stdlib/libstdlib.la \
 	video/libvideo.la \
 	thread/libthread.la\
-	kernel/libkernel.la
+	kernel/libkernel.la \
+	gdi/libgdi.la
 
 libmilui_la_LIBADD =  \
     $(COMMON_LIBADD)

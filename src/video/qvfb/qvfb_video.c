@@ -178,6 +178,7 @@ void QVFbVideoDevice_X_updateRects(_Self(VideoDevice), int numrects,
         RECT rc = {rects[i].x, rects[i].y, 
                         rects[i].x + rects[i].w, rects[i].y + rects[i].h};
 
+        // TODO:merge here.
 //        SetRect (&rc, rects[i].x, rects[i].y, 
 //                        rects[i].x + rects[i].w, rects[i].y + rects[i].h);
 //        if (IsRectEmpty (&bound))
@@ -195,93 +196,6 @@ void QVFbVideoDevice_X_videoQuit(_Self(VideoDevice))
     shmdt(((QVFbVideoDevice*)self)->hw_data->shmrgn);
 }
 
-#if 0
-int QVFbVideoDevice_X_allocHWSurface(_Self(VideoDevice), MIL_Surface *surface)
-{
-    return -1;
-}
-
-int QVFbVideoDevice_X_checkHWBlit(_Self(VideoDevice), MIL_Surface *src, MIL_Surface *dst)
-{
-    return -1;
-}
-
-int QVFbVideoDevice_X_fillHWRect(_Self(VideoDevice), MIL_Surface *dst, MIL_Rect *rect, Uint32 color)
-{
-    return -1;
-}
-
-int QVFbVideoDevice_X_setHWColorKey(_Self(VideoDevice), MIL_Surface *surface, Uint32 key)
-{
-    return -1;
-}
-int QVFbVideoDevice_X_setHWAlpha(_Self(VideoDevice), MIL_Surface *surface, Uint8 value)
-{
-}
-
-int QVFbVideoDevice_X_lockHWSurface(_Self(VideoDevice), MIL_Surface *surface)
-{
-    return -1;
-}
-
-void QVFbVideoDevice_X_unlockHWSurface(_Self(VideoDevice), MIL_Surface *surface)
-{
-}
-
-int QVFbVideoDevice_X_flipHWSurface(_Self(VideoDevice), MIL_Surface *surface)
-{
-    return -1;
-}
-
-void QVFbVideoDevice_X_freeHWSurface(_Self(VideoDevice), MIL_Surface *surface)
-{
-}
-
-int QVFbVideoDevice_X_setGamma(_Self(VideoDevice), float red, float green, float blue)
-{
-    return -1;
-}
-
-int QVFbVideoDevice_X_getGamma(_Self(VideoDevice), float *red, float *green, float *blue)
-{
-    return -1;
-}
-
-int QVFbVideoDevice_X_setGammaRamp(_Self(VideoDevice), Uint16 *ramp)
-{
-    return -1;
-}
-
-int QVFbVideoDevice_X_getGammaRamp(_Self(VideoDevice), Uint16 *ramp)
-{
-    return -1;
-}
-
-int QVFbVideoDevice_X_GL_LoadLibrary(_Self(VideoDevice), const char *path)
-{
-    return -1;
-}
-
-void* QVFbVideoDevice_X_GL_GetProcAddress(_Self(VideoDevice), const char *proc)
-{
-    return NULL;
-}
-
-int QVFbVideoDevice_X_GL_GetAttribute(_Self(VideoDevice), MIL_GLattr attrib, int* value)
-{
-    return -1;
-}
-
-int QVFbVideoDevice_X_GL_MakeCurrent(_Self(VideoDevice))
-{
-    return -1;
-}
-
-void QVFbVideoDevice_X_GL_SwapBuffers(_Self(VideoDevice))
-{
-}
-#endif
-
 VIRTUAL_METHOD_REGBEGIN(QVFbVideoDevice, VideoDevice)
 
     DESTRUCTOR_REGISTER(QVFbVideoDevice)
@@ -294,26 +208,6 @@ VIRTUAL_METHOD_REGBEGIN(QVFbVideoDevice, VideoDevice)
     METHOD_REGISTER(QVFbVideoDevice, setColors)
     METHOD_REGISTER(QVFbVideoDevice, updateRects)
     METHOD_REGISTER(QVFbVideoDevice, videoQuit)
-/*     METHOD_REGISTER(QVFbVideoDevice, allocHWSurface)
- *     METHOD_REGISTER(QVFbVideoDevice, checkHWBlit)
- *     METHOD_REGISTER(QVFbVideoDevice, fillHWRect)
- *     METHOD_REGISTER(QVFbVideoDevice, setHWColorKey)
- *     METHOD_REGISTER(QVFbVideoDevice, setHWAlpha)
- *     METHOD_REGISTER(QVFbVideoDevice, lockHWSurface)
- *     METHOD_REGISTER(QVFbVideoDevice, unlockHWSurface)
- *     METHOD_REGISTER(QVFbVideoDevice, flipHWSurface)
- *     METHOD_REGISTER(QVFbVideoDevice, freeHWSurface)
- *     METHOD_REGISTER(QVFbVideoDevice, setGamma)
- *     METHOD_REGISTER(QVFbVideoDevice, getGamma)
- *     METHOD_REGISTER(QVFbVideoDevice, setGammaRamp)
- *     METHOD_REGISTER(QVFbVideoDevice, getGammaRamp)
- *     METHOD_REGISTER(QVFbVideoDevice, GL_LoadLibrary)
- *     METHOD_REGISTER(QVFbVideoDevice, GL_GetProcAddress)
- *     METHOD_REGISTER(QVFbVideoDevice, GL_GetAttribute)
- *     METHOD_REGISTER(QVFbVideoDevice, GL_MakeCurrent)
- *     METHOD_REGISTER(QVFbVideoDevice, GL_SwapBuffers)
- */
-
 VIRTUAL_METHOD_REGEND
 
 METHOD_REGBEGIN(QVFbVideoDevice)
