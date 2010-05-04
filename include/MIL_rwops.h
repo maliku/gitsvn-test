@@ -105,6 +105,14 @@ extern DECLSPEC MIL_RWops * MILCALL MIL_RWFromConstMem(const void *mem, int size
  * extern DECLSPEC void MILCALL MIL_FreeRW(MIL_RWops *area);
  */
 
+/** @name Seek Reference Points */
+/*@{*/
+#define RW_SEEK_SET	0	/**< Seek from the beginning of data */
+#define RW_SEEK_CUR	1	/**< Seek relative to current read point */
+#define RW_SEEK_END	2	/**< Seek relative to the end of data */
+/*@}*/
+
+
 /* Macros to easily read and write from an MIL_RWops structure */
 #define MIL_RWseek(ctx, offset, whence)	_VC(ctx)->seek(ctx, offset, whence)
 #define MIL_RWtell(ctx)			_VC(ctx)->seek(ctx, 0, SEEK_CUR)

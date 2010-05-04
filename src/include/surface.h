@@ -12,7 +12,31 @@
 #include "MIL_video.h"
 #include "MIL_mutex.h"
 
-CLASS_INHERIT_BEGIN(Surface, MIL_Surface)
+CLASS(Surface)
+{
+    VIRTUAL_METHOD_DECLARE_BEGIN(Surface)
+    void* (*lock)(_SELF);
+    void (*unlock)(_SELF);
+    int  (*setColorKey)(_SELF, Uint32 flag, Uint32 key);
+    int  (*setAlpha)(_SELF, Uint32 flag, Uint8 alpha);
+    void (*setClipRect)(_SELF, const MIL_Rect *rect);
+    void (*getClipRect)(_SELF, MIL_Rect *rect);
+    int  (*blitSurface)(_SELF, MIL_Rect *srcrect, Surface *dst, MIL_Rect *dstrect);
+    int  (*fillRect)(_SELF, MIL_Rect *dstrect, Uint32 color);
+    int  (*saveBMP)(_SELF, const char *file);
+    Surface* (*displayFormat)(_SELF);
+    Surface* (*displayFormatAlpha)(_SELF);
+    Surface* (*convert)(_SELF, MIL_PixelFormat *fmt, Uint32 flags);
+
+    Uint32 (*getWidth)(_CSELF);
+    Uint32 (*getHeight)(_CSELF);
+    Uint32 (*getPitch)(_CSELF);
+    Uint32 (*getFlags)(_CSELF);
+    Uint8 (*getBitsPerPixel)(_CSELF);
+    Uint8 (*getBytesPerPixel)(_CSELF);
+
+    VIRTUAL_METHOD_DECLARE_END
+
     METHOD_DECLARE_PLACEHOLDER(Surface)
     
     Uint32 flags;				/* Read-only */
@@ -39,7 +63,7 @@ CLASS_INHERIT_BEGIN(Surface, MIL_Surface)
 
 	/* Reference count -- used when freeing surface */
 	int refcount;				/* Read-mostly */
-CLASS_INHERIT_END
+}
 
 #endif   /* ----- #ifndef SURFACE_INC  ----- */
 

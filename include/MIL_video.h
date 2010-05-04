@@ -90,6 +90,7 @@ typedef struct MIL_PixelFormat {
 	Uint8  alpha;
 } MIL_PixelFormat;
 
+#if 0
 /** This structure should be treated as read-only, except for 'pixels',
  *  which, if not NULL, contains the raw pixel data for the surface.
  */
@@ -120,25 +121,26 @@ CLASS(MIL_Surface)
 
     METHOD_DECLARE_PLACEHOLDER(MIL_Surface)
 };
+#endif
 
 /** @name MIL_Surface Flags
  *  These are the currently supported flags for the MIL_surface
  */
 /*@{*/
 
-/** Available for MIL_CreateRGBSurface() or MIL_SetVideoMode() */
+/** Available for CreateRGBSurface() or SetVideoMode() */
 /*@{*/
-#define MIL_SWSURFACE	0x00000000	/**< Surface is in system memory */
-#define MIL_HWSURFACE	0x00000001	/**< Surface is in video memory */
+#define MIL_SWSURFACE	0x00000000	/**< MIL_Surface is in system memory */
+#define MIL_HWSURFACE	0x00000001	/**< MIL_Surface is in video memory */
 #define MIL_ASYNCBLIT	0x00000004	/**< Use asynchronous blits if possible */
 /*@}*/
 
 /** Available for MIL_SetVideoMode() */
 /*@{*/
 #define MIL_ANYFORMAT	0x10000000	/**< Allow any video depth/pixel-format */
-#define MIL_HWPALETTE	0x20000000	/**< Surface has exclusive palette */
+#define MIL_HWPALETTE	0x20000000	/**< MIL_Surface has exclusive palette */
 #define MIL_DOUBLEBUF	0x40000000	/**< Set up double-buffered video mode */
-#define MIL_FULLSCREEN	0x80000000	/**< Surface is a full screen display */
+#define MIL_FULLSCREEN	0x80000000	/**< MIL_Surface is a full screen display */
 #define MIL_OPENGL      0x00000002      /**< Create an OpenGL rendering context */
 #define MIL_OPENGLBLIT	0x0000000A	/**< Create an OpenGL rendering context and use it for blitting */
 #define MIL_RESIZABLE	0x00000010	/**< This video mode may be resized */
@@ -150,9 +152,9 @@ CLASS(MIL_Surface)
 #define MIL_HWACCEL	0x00000100	/**< Blit uses hardware acceleration */
 #define MIL_SRCCOLORKEY	0x00001000	/**< Blit uses a source color key */
 #define MIL_RLEACCELOK	0x00002000	/**< Private flag */
-#define MIL_RLEACCEL	0x00004000	/**< Surface is RLE encoded */
+#define MIL_RLEACCEL	0x00004000	/**< MIL_Surface is RLE encoded */
 #define MIL_SRCALPHA	0x00010000	/**< Blit uses source alpha blending */
-#define MIL_PREALLOC	0x01000000	/**< Surface uses preallocated memory */
+#define MIL_PREALLOC	0x01000000	/**< MIL_Surface uses preallocated memory */
 /*@}*/
 
 /*@}*/
@@ -161,10 +163,6 @@ CLASS(MIL_Surface)
 #define MIL_MUSTLOCK(surface)	\
   (surface->offset ||		\
   ((surface->flags & (MIL_HWSURFACE|MIL_ASYNCBLIT|MIL_RLEACCEL)) != 0))
-
-/** typedef for private surface blitting functions */
-typedef int (*MIL_blit)(MIL_Surface *src, MIL_Rect *srcrect,
-			MIL_Surface *dst, MIL_Rect *dstrect);
 
 
 /** Useful for determining the video hardware capabilities */

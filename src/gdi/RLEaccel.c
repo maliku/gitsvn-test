@@ -86,8 +86,8 @@
  *   beginning of an opaque line.
  */
 
-#include "MIL_video.h"
-#include "MIL_sysvideo.h"
+#include "surface.h"
+//#include "MIL_sysvideo.h"
 #include "blit.h"
 #include "RLEaccel.h"
 
@@ -779,7 +779,7 @@ do {							\
  * This takes care of the case when the surface is clipped on the left and/or
  * right. Top clipping has already been taken care of.
  */
-static void RLEClipBlit(int w, Uint8 *srcbuf, MIL_Surface *dst,
+static void RLEClipBlit(int w, Uint8 *srcbuf, Surface *dst,
 			Uint8 *dstbuf, MIL_Rect *srcrect, unsigned alpha)
 {
     MIL_PixelFormat *fmt = dst->format;
@@ -836,8 +836,8 @@ static void RLEClipBlit(int w, Uint8 *srcbuf, MIL_Surface *dst,
 
 
 /* blit a colorkeyed RLE surface */
-int MIL_RLEBlit(MIL_Surface *src, MIL_Rect *srcrect,
-		MIL_Surface *dst, MIL_Rect *dstrect)
+int MIL_RLEBlit(Surface *src, MIL_Rect *srcrect,
+		Surface *dst, MIL_Rect *dstrect)
 {
 	Uint8 *dstbuf;
 	Uint8 *srcbuf;
@@ -1011,7 +1011,7 @@ typedef struct {
 } RLEDestFormat;
 
 /* blit a pixel-alpha RLE surface clipped at the right and/or left edges */
-static void RLEAlphaClipBlit(int w, Uint8 *srcbuf, MIL_Surface *dst,
+static void RLEAlphaClipBlit(int w, Uint8 *srcbuf, Surface *dst,
 			     Uint8 *dstbuf, MIL_Rect *srcrect)
 {
     MIL_PixelFormat *df = dst->format;
@@ -1103,8 +1103,8 @@ static void RLEAlphaClipBlit(int w, Uint8 *srcbuf, MIL_Surface *dst,
 }
 
 /* blit a pixel-alpha RLE surface */
-int MIL_RLEAlphaBlit(MIL_Surface *src, MIL_Rect *srcrect,
-		     MIL_Surface *dst, MIL_Rect *dstrect)
+int MIL_RLEAlphaBlit(Surface *src, MIL_Rect *srcrect,
+		     Surface *dst, MIL_Rect *dstrect)
 {
     int x, y;
     int w = src->w;
@@ -1396,9 +1396,9 @@ static int uncopy_32(Uint32 *dst, void *src, int n,
     ((unsigned)((((pixel) & fmt->Amask) >> fmt->Ashift) - 1U) < 254U)
 
 /* convert surface to be quickly alpha-blittable onto dest, if possible */
-static int RLEAlphaSurface(MIL_Surface *surface)
+static int RLEAlphaSurface(Surface *surface)
 {
-    MIL_Surface *dest;
+    Surface *dest;
     MIL_PixelFormat *df;
     int maxsize = 0;
     int max_opaque_run;
@@ -1639,7 +1639,7 @@ static getpix_func getpixes[4] = {
     getpix_8, getpix_16, getpix_24, getpix_32
 };
 
-static int RLEColorkeySurface(MIL_Surface *surface)
+static int RLEColorkeySurface(Surface *surface)
 {
         Uint8 *rlebuf, *dst;
 	int maxn;
@@ -1770,7 +1770,7 @@ static int RLEColorkeySurface(MIL_Surface *surface)
 	return(0);
 }
 
-int MIL_RLESurface(MIL_Surface *surface)
+int MIL_RLESurface(Surface *surface)
 {
 	int retcode;
 
@@ -1822,7 +1822,7 @@ int MIL_RLESurface(MIL_Surface *surface)
  * completely transparent pixels will be lost, and colour and alpha depth
  * may have been reduced (when encoding for 16bpp targets).
  */
-static MIL_bool UnRLEAlpha(MIL_Surface *surface)
+static MIL_bool UnRLEAlpha(Surface *surface)
 {
     Uint8 *srcbuf;
     Uint32 *dst;
@@ -1894,7 +1894,7 @@ static MIL_bool UnRLEAlpha(MIL_Surface *surface)
     return(MIL_TRUE);
 }
 
-void MIL_UnRLESurface(MIL_Surface *surface, int recode)
+void MIL_UnRLESurface(Surface *surface, int recode)
 {
     if ( (surface->flags & MIL_RLEACCEL) == MIL_RLEACCEL ) {
 	surface->flags &= ~MIL_RLEACCEL;

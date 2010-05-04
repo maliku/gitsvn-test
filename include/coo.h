@@ -280,6 +280,9 @@ void* SafeCast(void* vtable, void* ptr);
 
 #define MIL_Error(err)
 #define MIL_SetError(fmt, ...) fprintf(stderr, fmt, ##__VA_ARGS__)
+#define MIL_GetError()  ""
+#define MIL_ClearError() 
+#define MIL_OutOfMemory() 
 
 #ifdef __cplusplus
 }

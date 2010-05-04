@@ -25,7 +25,7 @@
 
 #include "MIL_endian.h"
 #include "MIL_video.h"
-//#include "MIL_sysvideo.h"
+#include "surface.h"
 #include "blit.h"
 #include "pixels.h"
 #include "RLEaccel.h"
@@ -34,7 +34,7 @@
 /*
  * Allocate a pixel format structure and fill it according to the given info.
  */
-MIL_PixelFormat *MIL_AllocFormat(int bpp,
+MIL_PixelFormat* MIL_AllocFormat(int bpp,
 			Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
 {
 	MIL_PixelFormat *format;
@@ -221,7 +221,8 @@ MIL_PixelFormat *MIL_AllocFormat(int bpp,
 	}
 	return(format);
 }
-MIL_PixelFormat *MIL_ReallocFormat(MIL_Surface *surface, int bpp,
+
+MIL_PixelFormat *MIL_ReallocFormat(Surface *surface, int bpp,
 			Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
 {
 	if ( surface->format ) {
@@ -235,7 +236,7 @@ MIL_PixelFormat *MIL_ReallocFormat(MIL_Surface *surface, int bpp,
 /*
  * Change any previous mappings from/to the new surface format
  */
-void MIL_FormatChanged(MIL_Surface *surface)
+void MIL_FormatChanged(Surface *surface)
 {
 	static int format_version = 0;
 	++format_version;
@@ -288,7 +289,7 @@ void MIL_DitherColors(MIL_Color *colors, int bpp)
 /* 
  * Calculate the pad-aligned scanline width of a surface
  */
-Uint16 MIL_CalculatePitch(MIL_Surface *surface)
+Uint16 MIL_CalculatePitch(Surface *surface)
 {
 	Uint16 pitch;
 
@@ -539,7 +540,7 @@ void MIL_InvalidateMap(MIL_BlitMap *map)
 		map->table = NULL;
 	}
 }
-int MIL_MapSurface (MIL_Surface *src, MIL_Surface *dst)
+int MIL_MapSurface (Surface *src, Surface *dst)
 {
 	MIL_PixelFormat *srcfmt;
 	MIL_PixelFormat *dstfmt;
