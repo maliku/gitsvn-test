@@ -46,13 +46,27 @@ MIL_bool MIL_IntersectRect(const MIL_Rect *A, const MIL_Rect *B, MIL_Rect *inter
 	return (intersection->w && intersection->h);
 }
 
+/*
+ * Get the current information about the video hardware
+ */
+const MIL_VideoInfo *MIL_GetVideoInfo(void)
+{
+	const MIL_VideoInfo *info;
+
+	info = NULL;
+	if ( ACT_VIDEO_DEVICE ) {
+		info = &ACT_VIDEO_DEVICE->vinfo;
+	}
+	return(info);
+}
+
 CONSTRUCTOR(Surface)
 {
     _m(flags) = 0;
     _m(format) = NULL;
     _m(w) = _m(h) = _m(pitch) = 0;
     _m(pixels) = NULL;
-    _m(offset) = NULL;
+    _m(offset) = 0;
     _m(hwdata) = NULL;
     _m(locked) = 0;
     _m(map) = 0;
@@ -116,7 +130,6 @@ void* Surface_X_lock(_SELF)
 			}
 		}
 		if ( surface->flags & MIL_RLEACCEL ) {
-            // TODO: and here
 			MIL_UnRLESurface(surface, 1);
 			surface->flags |= MIL_RLEACCEL;	/* save accel'd state */
 		}
@@ -144,10 +157,9 @@ void Surface_X_unlock(_SELF)
 
 	/* Unlock hardware or accelerated surfaces */
 	if ( surface->flags & (MIL_HWSURFACE|MIL_ASYNCBLIT) ) {
-        // TODO: merge here.
-//		VideoDevice *video = ACT_VIDEO_DEVICE;
-//		VideoDevice *this  = ACT_VIDEO_DEVICE;
-//		video->UnlockHWSurface(this, surface);
+		VideoDevice *video = ACT_VIDEO_DEVICE;
+		VideoDevice *this  = ACT_VIDEO_DEVICE;
+		_vc1(video, unlockHWSurface, surface);
 	} else {
 		/* Update RLE encoded surface with new data */
 		if ( (surface->flags & MIL_RLEACCEL) == MIL_RLEACCEL ) {
@@ -298,9 +310,113 @@ Surface* Surface_X_displayFormat(_SELF)
 Surface* Surface_X_displayFormatAlpha(_SELF)
 {}
 
-Surface* Surface_X_convert(_SELF, MIL_PixelFormat *fmt, Uint32 flags)
+Surface* Surface_X_convert(_SELF, MIL_PixelFormat *format, Uint32 flags)
 {
-    return NULL;
+	Surface* convert = NULL;
+    Surface* surface = (Surface*)self;
+	Uint32 colorkey = 0;
+	Uint8 alpha = 0;
+	Uint32 surface_flags;
+	MIL_Rect bounds;
+
+	/* Check for empty destination palette! (results in empty image) */
+	if ( format->palette != NULL ) {
+		int i;
+		for ( i=0; i<format->palette->ncolors; ++i ) {
+			if ( (format->palette->colors[i].r != 0) ||
+			     (format->palette->colors[i].g != 0) ||
+			     (format->palette->colors[i].b != 0) )
+				break;
+		}
+		if ( i == format->palette->ncolors ) {
+			MIL_SetError("Empty destination palette");
+			return(NULL);
+		}
+	}
+
+	/* Only create hw surfaces with alpha channel if hw alpha blits
+	   are supported */
+	if(format->Amask != 0 && (flags & MIL_HWSURFACE)) {
+		const MIL_VideoInfo *vi = MIL_GetVideoInfo();
+		if(!vi || !vi->blit_hw_A)
+			flags &= ~MIL_HWSURFACE;
+	}
+
+	/* Create a new surface with the desired format */
+	convert = CreateRGBSurface(flags,
+				surface->w, surface->h, format->BitsPerPixel,
+		format->Rmask, format->Gmask, format->Bmask, format->Amask);
+	if ( convert == NULL ) {
+		return(NULL);
+	}
+
+	/* Copy the palette if any */
+	if ( format->palette && convert->format->palette ) {
+		MIL_memcpy(convert->format->palette->colors,
+				format->palette->colors,
+				format->palette->ncolors*sizeof(MIL_Color));
+		convert->format->palette->ncolors = format->palette->ncolors;
+	}
+
+	/* Save the original surface color key and alpha */
+	surface_flags = surface->flags;
+	if ( (surface_flags & MIL_SRCCOLORKEY) == MIL_SRCCOLORKEY ) {
+		/* Convert colourkeyed surfaces to RGBA if requested */
+		if((flags & MIL_SRCCOLORKEY) != MIL_SRCCOLORKEY
+		   && format->Amask) {
+			surface_flags &= ~MIL_SRCCOLORKEY;
+		} else {
+			colorkey = surface->format->colorkey;
+			_vc2(surface, setColorKey, 0, 0);
+		}
+	}
+	if ( (surface_flags & MIL_SRCALPHA) == MIL_SRCALPHA ) {
+		/* Copy over the alpha channel to RGBA if requested */
+		if ( format->Amask ) {
+			surface->flags &= ~MIL_SRCALPHA;
+		} else {
+			alpha = surface->format->alpha;
+			_vc2(surface, setAlpha, 0, 0);
+		}
+	}
+
+	/* Copy over the image data */
+	bounds.x = 0;
+	bounds.y = 0;
+	bounds.w = surface->w;
+	bounds.h = surface->h;
+	MIL_LowerBlit(surface, &bounds, convert, &bounds);
+
+	/* Clean up the original surface, and update converted surface */
+	if ( convert != NULL ) {
+		_vc1(convert, setClipRect, &surface->clip_rect);
+	}
+	if ( (surface_flags & MIL_SRCCOLORKEY) == MIL_SRCCOLORKEY ) {
+		Uint32 cflags = surface_flags&(MIL_SRCCOLORKEY|MIL_RLEACCELOK);
+		if ( convert != NULL ) {
+			Uint8 keyR, keyG, keyB;
+
+			MIL_GetRGB(colorkey,surface->format,&keyR,&keyG,&keyB);
+			_vc2(convert, setColorKey, cflags|(flags&MIL_RLEACCELOK),
+				MIL_MapRGB(convert->format, keyR, keyG, keyB));
+		}
+		_vc2(surface, setColorKey, cflags, colorkey);
+	}
+	if ( (surface_flags & MIL_SRCALPHA) == MIL_SRCALPHA ) {
+		Uint32 aflags = surface_flags&(MIL_SRCALPHA|MIL_RLEACCELOK);
+		if ( convert != NULL ) {
+		        _vc2(convert, setAlpha, aflags|(flags&MIL_RLEACCELOK),
+				alpha);
+		}
+		if ( format->Amask ) {
+			surface->flags |= MIL_SRCALPHA;
+		} else {
+			_vc2(surface, setAlpha, aflags, alpha);
+		}
+	}
+
+	/* We're ready to go! */
+	return(convert);
 }
 
 Uint32 Surface_X_getWidth(_CSELF)

@@ -61,6 +61,7 @@ CONSTRUCTOR(Application)
         if (NULL != screen->pixels) {
             MIL_Rect rc = {0, 0, 640, 480};
             MIL_Rect rcbmp = {0, 0, 300, 300};
+            MIL_Rect rcdst = {50, 50, 300, 300};
             MIL_RWops* ops = MIL_RWFromFile("lena32.bmp", "rb");
             Surface* bmp = MIL_LoadBMP_RW(ops, 1);
             int i, j;
@@ -72,7 +73,7 @@ CONSTRUCTOR(Application)
             }
             if (NULL != bmp) {
                 puts("bitblit.");
-                _vc3(bmp, blitSurface, &rcbmp, screen, &rcbmp);
+                _vc3(bmp, blitSurface, &rcbmp, screen, &rcdst);
             }
             _VC(vd)->updateRects(vd, 1, &rc);
             getchar();

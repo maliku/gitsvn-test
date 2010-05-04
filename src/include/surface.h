@@ -67,5 +67,8 @@ CLASS(Surface)
 	int refcount;				/* Read-mostly */
 };
 
+Surface * CreateRGBSurface (Uint32 flags,
+			int width, int height, int depth,
+			Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask);
 #endif   /* ----- #ifndef SURFACE_INC  ----- */
 
