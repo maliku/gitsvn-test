@@ -89,7 +89,7 @@ MIL_Rect** VideoDevice_X_listModes(_Self(VideoDevice), MIL_PixelFormat *format, 
     return NULL;
 }
 
-MIL_Surface* VideoDevice_X_setVideoMode(_Self(VideoDevice), MIL_Surface* current,
+Surface* VideoDevice_X_setVideoMode(_Self(VideoDevice), Surface* current,
 			int width, int height, int bpp, Uint32 flags)
 {
     return NULL;
@@ -105,7 +105,7 @@ void VideoDevice_X_updateMouse(_Self(VideoDevice))
 }
 
 MIL_Overlay* VideoDevice_X_createYUVOverlay(_Self(VideoDevice), int width, int height,
-                                 Uint32 format, MIL_Surface *display)
+                                 Uint32 format, Surface *display)
 {
     return NULL;
 }
@@ -124,45 +124,45 @@ void VideoDevice_X_videoQuit(_Self(VideoDevice))
 {
 }
 
-int VideoDevice_X_allocHWSurface(_Self(VideoDevice), MIL_Surface *surface)
+int VideoDevice_X_allocHWSurface(_Self(VideoDevice), Surface *surface)
 {
     return -1;
 }
 
-int VideoDevice_X_checkHWBlit(_Self(VideoDevice), MIL_Surface *src, MIL_Surface *dst)
+int VideoDevice_X_checkHWBlit(_Self(VideoDevice), Surface *src, Surface *dst)
 {
     return -1;
 }
 
-int VideoDevice_X_fillHWRect(_Self(VideoDevice), MIL_Surface *dst, MIL_Rect *rect, Uint32 color)
+int VideoDevice_X_fillHWRect(_Self(VideoDevice), Surface *dst, MIL_Rect *rect, Uint32 color)
 {
     return -1;
 }
 
-int VideoDevice_X_setHWColorKey(_Self(VideoDevice), MIL_Surface *surface, Uint32 key)
+int VideoDevice_X_setHWColorKey(_Self(VideoDevice), Surface *surface, Uint32 key)
 {
     return -1;
 }
-int VideoDevice_X_setHWAlpha(_Self(VideoDevice), MIL_Surface *surface, Uint8 value)
+int VideoDevice_X_setHWAlpha(_Self(VideoDevice), Surface *surface, Uint8 value)
 {
     return -1;
 }
 
-int VideoDevice_X_lockHWSurface(_Self(VideoDevice), MIL_Surface *surface)
+int VideoDevice_X_lockHWSurface(_Self(VideoDevice), Surface *surface)
 {
     return 0;
 }
 
-void VideoDevice_X_unlockHWSurface(_Self(VideoDevice), MIL_Surface *surface)
+void VideoDevice_X_unlockHWSurface(_Self(VideoDevice), Surface *surface)
 {
 }
 
-int VideoDevice_X_flipHWSurface(_Self(VideoDevice), MIL_Surface *surface)
+int VideoDevice_X_flipHWSurface(_Self(VideoDevice), Surface *surface)
 {
     return -1;
 }
 
-void VideoDevice_X_freeHWSurface(_Self(VideoDevice), MIL_Surface *surface)
+void VideoDevice_X_freeHWSurface(_Self(VideoDevice), Surface *surface)
 {
 }
 

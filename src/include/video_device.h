@@ -12,6 +12,7 @@
 
 #include "coo.h"
 #include "MIL_video.h"
+#include "surface.h"
 
 CLASS(VideoDevice) {
     VIRTUAL_METHOD_DECLARE_BEGIN(VideoDevice) 
@@ -36,7 +37,7 @@ CLASS(VideoDevice) {
 	   surface if necessary.  If a new mode is returned, this function
 	   should take care of cleaning up the current mode.
 	 */
-	MIL_Surface* (*setVideoMode)(_Self(VideoDevice), MIL_Surface *current,
+	Surface* (*setVideoMode)(_Self(VideoDevice), Surface *current,
 				int width, int height, int bpp, Uint32 flags);
 
 	/* Toggle the fullscreen mode */
@@ -53,7 +54,7 @@ CLASS(VideoDevice) {
 	   scaling on display.
 	 */
 	MIL_Overlay* (*createYUVOverlay)(_Self(VideoDevice), int width, int height,
-	                                 Uint32 format, MIL_Surface *display);
+	                                 Uint32 format, Surface *display);
 
     /* Sets the color entries { firstcolor .. (firstcolor+ncolors-1) }
 	   of the physical palette to those in 'colors'. If the device is
@@ -80,31 +81,31 @@ CLASS(VideoDevice) {
 	/* Hardware acceleration functions */
 
 	/* Allocates a surface in video memory */
-	int (*allocHWSurface)(_Self(VideoDevice), MIL_Surface* surface);
+	int (*allocHWSurface)(_Self(VideoDevice), Surface* surface);
 
 	/* Sets the hardware accelerated blit function, if any, based
 	   on the current flags of the surface (colorkey, alpha, etc.)
 	 */
-	int (*checkHWBlit)(_Self(VideoDevice), MIL_Surface *src, MIL_Surface *dst);
+	int (*checkHWBlit)(_Self(VideoDevice), Surface *src, Surface *dst);
 
 	/* Fills a surface rectangle with the given color */
-	int (*fillHWRect)(_Self(VideoDevice), MIL_Surface *dst, MIL_Rect *rect, Uint32 color);
+	int (*fillHWRect)(_Self(VideoDevice), Surface *dst, MIL_Rect *rect, Uint32 color);
 
 	/* Sets video mem colorkey and accelerated blit function */
-	int (*setHWColorKey)(_Self(VideoDevice), MIL_Surface *surface, Uint32 key);
+	int (*setHWColorKey)(_Self(VideoDevice), Surface *surface, Uint32 key);
 
 	/* Sets per surface hardware alpha value */
-	int (*setHWAlpha)(_Self(VideoDevice), MIL_Surface *surface, Uint8 value);
+	int (*setHWAlpha)(_Self(VideoDevice), Surface *surface, Uint8 value);
 
 	/* Returns a readable/writable surface */
-	int (*lockHWSurface)(_Self(VideoDevice), MIL_Surface* surface);
-	void (*unlockHWSurface)(_Self(VideoDevice), MIL_Surface* surface);
+	int (*lockHWSurface)(_Self(VideoDevice), Surface* surface);
+	void (*unlockHWSurface)(_Self(VideoDevice), Surface* surface);
 
 	/* Performs hardware flipping */
-	int (*flipHWSurface)(_Self(VideoDevice), MIL_Surface *surface);
+	int (*flipHWSurface)(_Self(VideoDevice), Surface *surface);
 
 	/* Frees a previously allocated video surface */
-	void (*freeHWSurface)(_Self(VideoDevice), MIL_Surface *surface);
+	void (*freeHWSurface)(_Self(VideoDevice), Surface *surface);
 
 	/* Set the gamma correction directly (emulated with gamma ramps) */
 	int (*setGamma)(_Self(VideoDevice), float red, float green, float blue);
@@ -148,9 +149,9 @@ CLASS(VideoDevice) {
 
 	/* The pixel format used when MIL_CreateRGBSurface creates MIL_HWSURFACEs with alpha */
 	MIL_PixelFormat* display_format_alpha_pixel;
-    MIL_Surface *screen;
-    MIL_Surface *shadow;
-	MIL_Surface *visible;
+    Surface *screen;
+    Surface *shadow;
+	Surface *visible;
 
     MIL_Palette *physpal;	/* physical palette, if != logical palette */
     MIL_Color *gammacols;	/* gamma-corrected colours, or NULL */

@@ -38,7 +38,7 @@ void cbfunc5(void* arg)
 }
 CONSTRUCTOR(Application)
 {
-    Surface* s = New(Surface);
+    Surface* screen = New(Surface);
     VideoDevice* vd = CreateVideoDevice("qvfb");
     SignalSimple* sig = New(SignalSimple);
     _VC(sig)->connect(sig, cbfunc);
@@ -57,18 +57,24 @@ CONSTRUCTOR(Application)
     Delete(sig);
 
     if (NULL != vd) {
-        _VC(vd)->setVideoMode(vd, (MIL_Surface*)s, 640, 480, 32, 0);
-        if (NULL != s->pixels) {
+        _VC(vd)->setVideoMode(vd, (Surface*)screen, 640, 480, 16, 0);
+        if (NULL != screen->pixels) {
             MIL_Rect rc = {0, 0, 640, 480};
+            MIL_Rect rcbmp = {0, 0, 300, 300};
+            MIL_RWops* ops = MIL_RWFromFile("lena32.bmp", "rb");
+            Surface* bmp = MIL_LoadBMP_RW(ops, 1);
             int i, j;
-            char *pixels = (char*)s->pixels;
+            char *pixels = (char*)screen->pixels;
             for (i = 0; i < 480; ++i)
             {
                 memset(pixels, i % 255, 4 * 640);
-                pixels += _vc0((MIL_Surface*)s, getPitch);
+                pixels += _vc0((Surface*)screen, getPitch);
+            }
+            if (NULL != bmp) {
+                puts("bitblit.");
+                _vc3(bmp, blitSurface, &rcbmp, screen, &rcbmp);
             }
             _VC(vd)->updateRects(vd, 1, &rc);
-            puts("draw");
             getchar();
         }
     }

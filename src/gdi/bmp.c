@@ -212,7 +212,7 @@ Surface * MIL_LoadBMP_RW(MIL_RWops *src, int freesrc)
 	}
 
 	/* Create a compatible surface, note that the colors are RGB ordered */
-	surface = (Surface*)MIL_CreateRGBSurface(MIL_SWSURFACE,
+	surface = (Surface*)CreateRGBSurface(MIL_SWSURFACE,
 			biWidth, biHeight, biBitCount, Rmask, Gmask, Bmask, 0);
 	if ( surface == NULL ) {
 		was_error = MIL_TRUE;
@@ -338,7 +338,7 @@ done:
 			MIL_RWseek(src, fp_offset, RW_SEEK_SET);
 		}
 		if ( surface ) {
-			MIL_FreeSurface(surface);
+			Delete(surface);
 		}
 		surface = NULL;
 	}
@@ -402,7 +402,7 @@ int MIL_SaveBMP_RW (Surface *saveme, MIL_RWops *dst, int freedst)
 			MIL_Rect bounds;
 
 			/* Convert to 24 bits per pixel */
-			surface = (Surface*)MIL_CreateRGBSurface(MIL_SWSURFACE,
+			surface = (Surface*)CreateRGBSurface(MIL_SWSURFACE,
 					saveme->w, saveme->h, 24,
 #if MIL_BYTEORDER == MIL_LIL_ENDIAN
 					0x00FF0000, 0x0000FF00, 0x000000FF,
@@ -417,7 +417,7 @@ int MIL_SaveBMP_RW (Surface *saveme, MIL_RWops *dst, int freedst)
 				bounds.h = saveme->h;
 				if ( MIL_LowerBlit(saveme, &bounds, surface,
 							&bounds) < 0 ) {
-					MIL_FreeSurface(surface);
+					Delete(surface);
 					MIL_SetError(
 					"Couldn't convert image to 24 bpp");
 					surface = NULL;
@@ -426,7 +426,7 @@ int MIL_SaveBMP_RW (Surface *saveme, MIL_RWops *dst, int freedst)
 		}
 	}
 
-	if ( surface && (MIL_LockSurface(surface) == 0) ) {
+	if ( surface && (_vc0(surface, lock) == 0) ) {
 		const int bw = surface->w*surface->format->BytesPerPixel;
 
 		/* Set the BMP file header values */
@@ -527,9 +527,9 @@ int MIL_SaveBMP_RW (Surface *saveme, MIL_RWops *dst, int freedst)
 		}
 
 		/* Close it up.. */
-		MIL_UnlockSurface(surface);
+		_vc0(surface, unlock);
 		if ( surface != saveme ) {
-			MIL_FreeSurface(surface);
+			Delete(surface);
 		}
 	}
 

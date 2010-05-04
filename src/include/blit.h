@@ -25,6 +25,7 @@
 #define _MIL_BLIT_H
 
 #include "MIL_endian.h"
+#include "surface.h"
 
 /* The structure passed to the low level blit functions */
 typedef struct {
@@ -44,6 +45,10 @@ typedef struct {
 
 /* The type definition for the low level blit functions */
 typedef void (*MIL_loblit)(MIL_BlitInfo *info);
+
+/** typedef for private surface blitting functions */
+typedef int (*MIL_blit)(Surface *src, MIL_Rect *srcrect,
+			Surface *dst, MIL_Rect *dstrect);
 
 /* This is the private info structure for software accelerated blits */
 struct private_swaccel {
@@ -65,7 +70,6 @@ typedef struct MIL_BlitMap {
 	   an invalid mapping */
         unsigned int format_version;
 } MIL_BlitMap;
-
 
 /* Functions found in MIL_blit.c */
 extern int MIL_CalculateBlit(Surface *surface);

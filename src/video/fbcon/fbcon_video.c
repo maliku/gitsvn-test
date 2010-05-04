@@ -464,7 +464,7 @@ static void FB_VGA16Update(_Self(VideoDevice), int numrects, MIL_Rect *rects);
 #endif
 
 #ifdef VGA16_FBCON_SUPPORT
-static MIL_Surface *FB_SetVGA16Mode(_Self(VideoDevice), MIL_Surface *cur,
+static Surface *FB_SetVGA16Mode(_Self(VideoDevice), Surface *cur,
 				int width, int height, int bpp, Uint32 flags)
 {
 	struct fb_fix_screeninfo finfo;
@@ -492,12 +492,9 @@ static MIL_Surface *FB_SetVGA16Mode(_Self(VideoDevice), MIL_Surface *cur,
 	fprintf(stderr, "Printing actual vinfo:\n");
 	print_vinfo(&vinfo);
 #endif
-    /* TODO: Realloc format. */
-#if 0
 	if ( ! MIL_ReallocFormat(current, bpp, 0, 0, 0, 0) ) {
 		return(NULL);
 	}
-#endif
 	current->format->palette->ncolors = 16;
 
 	/* Get the fixed information about the console hardware.
@@ -1110,9 +1107,9 @@ static void FB_FreeHWSurfaces(_Self(VideoDevice))
 	((FBconVideoDevice*)self)->hw_data->surfaces.next = NULL;
 }
 
-static int FB_InitHWSurfaces(_Self(VideoDevice), MIL_Surface *screen, char *base, int size);
-static MIL_Surface* FBconVideoDevice_X_setVideoMode(_Self(VideoDevice), 
-        MIL_Surface *cur, int width, int height, int bpp, Uint32 flags)
+static int FB_InitHWSurfaces(_Self(VideoDevice), Surface *screen, char *base, int size);
+static Surface* FBconVideoDevice_X_setVideoMode(_Self(VideoDevice), 
+        Surface *cur, int width, int height, int bpp, Uint32 flags)
 {
 	struct fb_fix_screeninfo finfo;
 	struct fb_var_screeninfo vinfo;
@@ -1215,13 +1212,10 @@ static MIL_Surface* FBconVideoDevice_X_setVideoMode(_Self(VideoDevice),
 		Bmask <<= 1;
 		Bmask |= (0x00000001<<vinfo.blue.offset);
 	} 
-    /* TODO: Realloc Format. */
-#if 0
 	if ( ! MIL_ReallocFormat(current, vinfo.bits_per_pixel,
 	                                  Rmask, Gmask, Bmask, 0) ) {
 		return(NULL);
 	}
-#endif
 
 	/* Get the fixed information about the console hardware.
 	   This is necessary since finfo.line_length changes.
@@ -1338,7 +1332,7 @@ void FB_DumpHWSurfaces(_Self(VideoDevice))
 }
 #endif
 
-static int FB_InitHWSurfaces(_Self(VideoDevice), MIL_Surface *screen, char *base, int size)
+static int FB_InitHWSurfaces(_Self(VideoDevice), Surface *screen, char *base, int size)
 {
 	vidmem_bucket *bucket;
 
@@ -1372,7 +1366,7 @@ static int FB_InitHWSurfaces(_Self(VideoDevice), MIL_Surface *screen, char *base
 }
 
 
-static int FBconVideoDevice_X_allocHWSurface(_Self(VideoDevice), MIL_Surface *sur)
+static int FBconVideoDevice_X_allocHWSurface(_Self(VideoDevice), Surface *sur)
 {
 	vidmem_bucket *bucket;
 	int size;
@@ -1385,11 +1379,11 @@ static int FBconVideoDevice_X_allocHWSurface(_Self(VideoDevice), MIL_Surface *su
        to be the same.  Others have interesting alignment restrictions.
        Until someone who knows these details looks at the code...
        */
-    if ( surface->pitch > _VC(screen)->getPitch((MIL_Surface*)screen) ) {
-        MIL_SetError("MIL_Surface requested wider than screen");
+    if ( surface->pitch > _VC(screen)->getPitch((Surface*)screen) ) {
+        MIL_SetError("Surface requested wider than screen");
         return(-1);
     }
-    surface->pitch = _VC(screen)->getPitch((MIL_Surface*)screen);
+    surface->pitch = _VC(screen)->getPitch((Surface*)screen);
     size = surface->h * surface->pitch;
 #ifdef FBCON_DEBUG
     fprintf(stderr, "Allocating bucket of %d bytes\n", size);
@@ -1450,7 +1444,7 @@ static int FBconVideoDevice_X_allocHWSurface(_Self(VideoDevice), MIL_Surface *su
 	surface->hwdata = (struct private_hwdata *)bucket;
 	return(0);
 }
-static void FBconVideoDevice_X_freeHWSurface(_Self(VideoDevice), MIL_Surface *sur)
+static void FBconVideoDevice_X_freeHWSurface(_Self(VideoDevice), Surface *sur)
 {
 	vidmem_bucket *bucket, *freeable;
     Surface* surface = (Surface*)sur;
@@ -1500,7 +1494,7 @@ static void FBconVideoDevice_X_freeHWSurface(_Self(VideoDevice), MIL_Surface *su
 	surface->hwdata = NULL;
 }
 
-static int FBconVideoDevice_X_lockHWSurface(_Self(VideoDevice), MIL_Surface *sur)
+static int FBconVideoDevice_X_lockHWSurface(_Self(VideoDevice), Surface *sur)
 {
     Surface* surface = (Surface*)sur;
 	if ( ((FBconVideoDevice*)self)->hw_data->switched_away ) {
@@ -1520,7 +1514,7 @@ static int FBconVideoDevice_X_lockHWSurface(_Self(VideoDevice), MIL_Surface *sur
 	return(0);
 }
 
-static void FBconVideoDevice_X_unlockHWSurface(_Self(VideoDevice), MIL_Surface* surface)
+static void FBconVideoDevice_X_unlockHWSurface(_Self(VideoDevice), Surface* surface)
 {
 	if ( (Surface*)surface == ((FBconVideoDevice*)self)->screen ) {
         MIL_mutex* mutex = ((FBconVideoDevice*)self)->hw_data->hw_lock;
@@ -1528,7 +1522,7 @@ static void FBconVideoDevice_X_unlockHWSurface(_Self(VideoDevice), MIL_Surface* 
 	}
 }
 
-static int FBconVideoDevice_X_flipHWSurface(_Self(VideoDevice), MIL_Surface *sur)
+static int FBconVideoDevice_X_flipHWSurface(_Self(VideoDevice), Surface *sur)
 {
     Surface* surface = (Surface*)sur;
 
@@ -2110,26 +2104,26 @@ void FBconVideoDevice_X_updateMouse(_Self(VideoDevice))
 }
 
 MIL_Overlay* FBconVideoDevice_X_createYUVOverlay(_Self(VideoDevice), int width, int height,
-                                 Uint32 format, MIL_Surface *display)
+                                 Uint32 format, Surface *display)
 {
     return NULL;
 }
 
-int FBconVideoDevice_X_checkHWBlit(_Self(VideoDevice), MIL_Surface *src, MIL_Surface *dst)
+int FBconVideoDevice_X_checkHWBlit(_Self(VideoDevice), Surface *src, Surface *dst)
 {
     return -1;
 }
 
-int FBconVideoDevice_X_fillHWRect(_Self(VideoDevice), MIL_Surface *dst, MIL_Rect *rect, Uint32 color)
+int FBconVideoDevice_X_fillHWRect(_Self(VideoDevice), Surface *dst, MIL_Rect *rect, Uint32 color)
 {
     return -1;
 }
 
-int FBconVideoDevice_X_setHWColorKey(_Self(VideoDevice), MIL_Surface *surface, Uint32 key)
+int FBconVideoDevice_X_setHWColorKey(_Self(VideoDevice), Surface *surface, Uint32 key)
 {
     return -1;
 }
-int FBconVideoDevice_X_setHWAlpha(_Self(VideoDevice), MIL_Surface *surface, Uint8 value)
+int FBconVideoDevice_X_setHWAlpha(_Self(VideoDevice), Surface *surface, Uint8 value)
 {
 }
 

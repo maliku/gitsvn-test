@@ -22,9 +22,9 @@
 #include "MIL_config.h"
 
 #include "video_device.h"
+#include "blit.h"
 #include "surface.h"
 //#include "MIL_sysvideo.h"
-#include "blit.h"
 #include "RLEaccel.h"
 #include "pixels.h"
 
@@ -54,7 +54,7 @@ static int MIL_SoftBlit(Surface *src, MIL_Rect *srcrect,
 	/* Lock the destination if it's in hardware */
 	dst_locked = 0;
 	if ( MIL_MUSTLOCK(dst) ) {
-		if ( MIL_LockSurface(dst) < 0 ) {
+		if ( _vc0(dst, lock) < 0 ) {
 			okay = 0;
 		} else {
 			dst_locked = 1;
@@ -63,7 +63,7 @@ static int MIL_SoftBlit(Surface *src, MIL_Rect *srcrect,
 	/* Lock the source if it's in hardware */
 	src_locked = 0;
 	if ( MIL_MUSTLOCK(src) ) {
-		if ( MIL_LockSurface(src) < 0 ) {
+		if ( _vc0(src, lock) < 0 ) {
 			okay = 0;
 		} else {
 			src_locked = 1;
@@ -100,10 +100,10 @@ static int MIL_SoftBlit(Surface *src, MIL_Rect *srcrect,
 
 	/* We need to unlock the surfaces if they're locked */
 	if ( dst_locked ) {
-		MIL_UnlockSurface(dst);
+		_vc0(dst, unlock);
 	}
 	if ( src_locked ) {
-		MIL_UnlockSurface(src);
+		_vc0(src, unlock);
 	}
 	/* Blit is done! */
 	return(okay ? 0 : -1);
@@ -276,7 +276,7 @@ int MIL_CalculateBlit(Surface *surface)
 		if ( hw_blit_ok ) {
 			VideoDevice *video = ACT_VIDEO_DEVICE;
 			VideoDevice *this  = ACT_VIDEO_DEVICE;
-			_vc2(video, checkHWBlit, (MIL_Surface*)surface, (MIL_Surface*)surface->map->dst);
+			_vc2(video, checkHWBlit, (Surface*)surface, (Surface*)surface->map->dst);
 		}
 	}
 	
@@ -287,7 +287,7 @@ int MIL_CalculateBlit(Surface *surface)
 			if ( ACT_VIDEO_DEVICE->vinfo.blit_hw_A ) {
 				VideoDevice *video = ACT_VIDEO_DEVICE;
 				VideoDevice *this  = ACT_VIDEO_DEVICE;
-                _vc2(video, checkHWBlit, (MIL_Surface*)surface, (MIL_Surface*)surface->map->dst);
+                _vc2(video, checkHWBlit, (Surface*)surface, (Surface*)surface->map->dst);
 			}
 	}
 
@@ -359,3 +359,49 @@ int MIL_CalculateBlit(Surface *surface)
 	return(0);
 }
 
+/* 
+ * Set up a blit between two surfaces -- split into three parts:
+ * The upper part, MIL_UpperBlit(), performs clipping and rectangle 
+ * verification.  The lower part is a pointer to a low level
+ * accelerated blitting function.
+ *
+ * These parts are separated out and each used internally by this 
+ * library in the optimimum places.  They are exported so that if
+ * you know exactly what you are doing, you can optimize your code
+ * by calling the one(s) you need.
+ */
+int MIL_LowerBlit (Surface *src, MIL_Rect *srcrect,
+				Surface *dst, MIL_Rect *dstrect)
+{
+	MIL_blit do_blit;
+	MIL_Rect hw_srcrect;
+	MIL_Rect hw_dstrect;
+
+	/* Check to make sure the blit mapping is valid */
+	if ( (src->map->dst != dst) ||
+             (src->map->dst->format_version != src->map->format_version) ) {
+		if ( MIL_MapSurface(src, dst) < 0 ) {
+			return(-1);
+		}
+	}
+
+	/* Figure out which blitter to use */
+	if ( (src->flags & MIL_HWACCEL) == MIL_HWACCEL ) {
+		if ( src == ACT_VIDEO_DEVICE->screen ) {
+			hw_srcrect = *srcrect;
+			hw_srcrect.x += ACT_VIDEO_DEVICE->offset_x;
+			hw_srcrect.y += ACT_VIDEO_DEVICE->offset_y;
+			srcrect = &hw_srcrect;
+		}
+		if ( dst == ACT_VIDEO_DEVICE->screen ) {
+			hw_dstrect = *dstrect;
+			hw_dstrect.x += ACT_VIDEO_DEVICE->offset_x;
+			hw_dstrect.y += ACT_VIDEO_DEVICE->offset_y;
+			dstrect = &hw_dstrect;
+		}
+		do_blit = src->map->hw_blit;
+	} else {
+		do_blit = src->map->sw_blit;
+	}
+	return(do_blit(src, srcrect, dst, dstrect));
+}

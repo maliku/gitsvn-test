@@ -53,32 +53,10 @@ DESTRUCTOR(QVFbVideoDevice)
     MIL_free(((QVFbVideoDevice*)self)->hw_data);
 }
 
-int QVFbVideoDevice_X_videoInit(_Self(VideoDevice), MIL_PixelFormat *vformat)
+static int format_calc(MIL_PixelFormat* vformat, int bpp)
 {
-    char file [MIL_MAX_PATH];
-    int display = 0;
-    key_t key;
-    int shmid = 0;
-    QVFbHardwareDependent* data = ((QVFbVideoDevice*)self)->hw_data;
-
-//    if (GetMgEtcIntValue ("qvfb", "display", &display) < 0)
-//        display = 0;
-
-    sprintf (file, QT_VFB_MOUSE_PIPE, display);
-    key = ftok (file, 'b');
-
-    shmid = shmget (key, 0, 0);
-    if (shmid != -1)
-        data->shmrgn = (unsigned char *)shmat(shmid, 0, 0);
-
-    if ((int)data->shmrgn == -1 || data->shmrgn == NULL) {
-        MIL_SetError ("VIDEO>QVFb: Unable to attach to virtual FrameBuffer server.\n");
-        return -1;
-    }
-
-     data->hdr = (QVFbHeader *) data->shmrgn;
-
-    vformat->BitsPerPixel = data->hdr->depth;
+    if (NULL == vformat) return -1;
+    vformat->BitsPerPixel = bpp;
     switch (vformat->BitsPerPixel) {
 #ifdef _MIL_SHADOW
         case 1:
@@ -88,7 +66,6 @@ int QVFbVideoDevice_X_videoInit(_Self(VideoDevice), MIL_PixelFormat *vformat)
 #endif
         case 8:
             vformat->BytesPerPixel = 1;
-            data->hdr->numcols = 256;
             break;
         case 12:
             vformat->BitsPerPixel = 16;
@@ -114,7 +91,39 @@ int QVFbVideoDevice_X_videoInit(_Self(VideoDevice), MIL_PixelFormat *vformat)
             MIL_SetError("VIDEO>QVFb: Not supported depth\n");
             return -1;
     }
+    return 0;
+}
 
+int QVFbVideoDevice_X_videoInit(_Self(VideoDevice), MIL_PixelFormat *vformat)
+{
+    char file [MIL_MAX_PATH];
+    int display = 0;
+    key_t key;
+    int shmid = 0;
+    QVFbHardwareDependent* data = ((QVFbVideoDevice*)self)->hw_data;
+
+//    if (GetMgEtcIntValue ("qvfb", "display", &display) < 0)
+//        display = 0;
+
+    sprintf (file, QT_VFB_MOUSE_PIPE, display);
+    key = ftok (file, 'b');
+
+    shmid = shmget (key, 0, 0);
+    if (shmid != -1)
+        data->shmrgn = (unsigned char *)shmat(shmid, 0, 0);
+
+    if ((int)data->shmrgn == -1 || data->shmrgn == NULL) {
+        MIL_SetError ("VIDEO>QVFb: Unable to attach to virtual FrameBuffer server.\n");
+        return -1;
+    }
+
+    data->hdr = (QVFbHeader *) data->shmrgn;
+
+    vformat->BitsPerPixel = data->hdr->depth;
+    format_calc(vformat, data->hdr->depth);
+    if (8 == vformat->BitsPerPixel) {
+        data->hdr->numcols = 256;
+    }
     return 0;
 }
 
@@ -124,8 +133,8 @@ MIL_Rect** QVFbVideoDevice_X_listModes(_Self(VideoDevice),
     return (MIL_Rect **) -1;
 }
 
-MIL_Surface* QVFbVideoDevice_X_setVideoMode(_Self(VideoDevice), 
-        MIL_Surface *current, int width, int height, int bpp, Uint32 flags)
+Surface* QVFbVideoDevice_X_setVideoMode(_Self(VideoDevice), 
+        Surface *current, int width, int height, int bpp, Uint32 flags)
 {
     /* Set up the mode framebuffer */
     ((Surface*)current)->flags = (MIL_HWSURFACE | MIL_FULLSCREEN);
@@ -134,7 +143,14 @@ MIL_Surface* QVFbVideoDevice_X_setVideoMode(_Self(VideoDevice),
     ((Surface*)current)->pitch = ((QVFbVideoDevice*)self)->hw_data->hdr->linestep;
     ((Surface*)current)->pixels = ((QVFbVideoDevice*)self)->hw_data->shmrgn + 
         ((QVFbVideoDevice*)self)->hw_data->hdr->dataoffset;
-
+    ((Surface*)current)->clip_rect.x = 0; 
+    ((Surface*)current)->clip_rect.y = 0; 
+    ((Surface*)current)->clip_rect.w = ((Surface*)current)->w; 
+    ((Surface*)current)->clip_rect.h = ((Surface*)current)->h; 
+    if ( ! MIL_ReallocFormat(current, bpp, 0, 0, 0, 0) ) {
+        return(NULL);
+	}
+    format_calc(((Surface*)current)->format, bpp);
     return current;
 }
 
@@ -148,7 +164,7 @@ void QVFbVideoDevice_X_updateMouse(_Self(VideoDevice))
 }
 
 MIL_Overlay* QVFbVideoDevice_X_createYUVOverlay(_Self(VideoDevice), int width, int height,
-                                 Uint32 format, MIL_Surface *display)
+                                 Uint32 format, Surface *display)
 {
     return NULL;
 }

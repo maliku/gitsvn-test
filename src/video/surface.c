@@ -10,9 +10,55 @@
 #include "video_device.h"
 #include "surface.h"
 
+/*
+ * A function to calculate the intersection of two rectangles:
+ * return true if the rectangles intersect, false otherwise
+ */
+static __inline__
+MIL_bool MIL_IntersectRect(const MIL_Rect *A, const MIL_Rect *B, MIL_Rect *intersection)
+{
+	int Amin, Amax, Bmin, Bmax;
+
+	/* Horizontal intersection */
+	Amin = A->x;
+	Amax = Amin + A->w;
+	Bmin = B->x;
+	Bmax = Bmin + B->w;
+	if(Bmin > Amin)
+	        Amin = Bmin;
+	intersection->x = Amin;
+	if(Bmax < Amax)
+	        Amax = Bmax;
+	intersection->w = Amax - Amin > 0 ? Amax - Amin : 0;
+
+	/* Vertical intersection */
+	Amin = A->y;
+	Amax = Amin + A->h;
+	Bmin = B->y;
+	Bmax = Bmin + B->h;
+	if(Bmin > Amin)
+	        Amin = Bmin;
+	intersection->y = Amin;
+	if(Bmax < Amax)
+	        Amax = Bmax;
+	intersection->h = Amax - Amin > 0 ? Amax - Amin : 0;
+
+	return (intersection->w && intersection->h);
+}
+
 CONSTRUCTOR(Surface)
 {
-    self->locked = 0;
+    _m(flags) = 0;
+    _m(format) = NULL;
+    _m(w) = _m(h) = _m(pitch) = 0;
+    _m(pixels) = NULL;
+    _m(offset) = NULL;
+    _m(hwdata) = NULL;
+    _m(locked) = 0;
+    _m(map) = 0;
+    _m(format_version) = 0;
+    _m(refcount) = 0;
+    memset(&_m(clip_rect), 0, sizeof(_m(clip_rect)));
     return self;
 }
 
@@ -23,34 +69,34 @@ DESTRUCTOR(Surface)
 	/* Free anything that's not NULL, and not the screen surface */
 //	if ((surface == NULL) ||
 //	    (ACT_VIDEO_DEVICE &&
-//	    ((surface == MIL_ShadowSurface)||(surface == MIL_VideoSurface)))) {
+//	    ((surface == MIL_ShadowSurface)||(surface == ACT_VIDEO_DEVICE->screen)))) {
 //		return;
 //	}
 	if ( --surface->refcount > 0 ) {
 		return;
 	}
 	while ( surface->locked > 0 ) {
-		MIL_UnlockSurface(surface);
+		_vc0(surface, unlock);
 	}
 	if ( (surface->flags & MIL_RLEACCEL) == MIL_RLEACCEL ) {
-//	        MIL_UnRLESurface(surface, 0);
+	        MIL_UnRLESurface(surface, 0);
 	}
 	if ( surface->format ) {
-//		MIL_FreeFormat(surface->format);
+		MIL_FreeFormat(surface->format);
 		surface->format = NULL;
 	}
 	if ( surface->map != NULL ) {
-//		MIL_FreeBlitMap(surface->map);
+		MIL_FreeBlitMap(surface->map);
 		surface->map = NULL;
 	}
 	if ( surface->hwdata ) {
-//		MIL_VideoDevice *video = ACT_VIDEO_DEVICE;
-//		MIL_VideoDevice *this  = ACT_VIDEO_DEVICE;
-//		video->FreeHWSurface(this, surface);
+		VideoDevice *video = ACT_VIDEO_DEVICE;
+		VideoDevice *this  = ACT_VIDEO_DEVICE;
+		_vc1(video, freeHWSurface, surface);
 	}
 	if ( surface->pixels &&
 	     ((surface->flags & MIL_PREALLOC) != MIL_PREALLOC) ) {
-//		MIL_free(surface->pixels);
+		MIL_free(surface->pixels);
 	}
 #ifdef CHECK_LEAKS
 	--surfaces_allocated;
@@ -63,16 +109,15 @@ void* Surface_X_lock(_SELF)
 	if ( ! surface->locked ) {
 		/* Perform the lock */
 		if ( surface->flags & (MIL_HWSURFACE|MIL_ASYNCBLIT) ) {
-            // TODO: Merge here.
-//			MIL_VideoDevice *video = ACT_VIDEO_DEVICE;
-//			MIL_VideoDevice *this  = ACT_VIDEO_DEVICE;
-//			if ( video->LockHWSurface(this, surface) < 0 ) {
-//				return(NULL);
-//			}
+			VideoDevice *video = ACT_VIDEO_DEVICE;
+			VideoDevice *this  = ACT_VIDEO_DEVICE;
+			if ( _vc1(video, lockHWSurface, surface) < 0 ) {
+				return(NULL);
+			}
 		}
 		if ( surface->flags & MIL_RLEACCEL ) {
             // TODO: and here
-//			MIL_UnRLESurface(surface, 1);
+			MIL_UnRLESurface(surface, 1);
 			surface->flags |= MIL_RLEACCEL;	/* save accel'd state */
 		}
 		/* This needs to be done here in case pixels changes value */
@@ -100,8 +145,8 @@ void Surface_X_unlock(_SELF)
 	/* Unlock hardware or accelerated surfaces */
 	if ( surface->flags & (MIL_HWSURFACE|MIL_ASYNCBLIT) ) {
         // TODO: merge here.
-//		MIL_VideoDevice *video = ACT_VIDEO_DEVICE;
-//		MIL_VideoDevice *this  = ACT_VIDEO_DEVICE;
+//		VideoDevice *video = ACT_VIDEO_DEVICE;
+//		VideoDevice *this  = ACT_VIDEO_DEVICE;
 //		video->UnlockHWSurface(this, surface);
 	} else {
 		/* Update RLE encoded surface with new data */
@@ -118,8 +163,29 @@ int  Surface_X_setColorKey(_SELF, Uint32 flag, Uint32 key)
 int  Surface_X_setAlpha(_SELF, Uint32 flag, Uint8 alpha)
 {}
 
-void Surface_X_setClipRect(_SELF, const MIL_Rect *rect)
-{}
+MIL_bool Surface_X_setClipRect(_SELF, const MIL_Rect *rect)
+{
+	MIL_Rect full_rect;
+    Surface* surface = (Surface*)self;
+
+	/* Don't do anything if there's no surface to act on */
+	if ( ! surface ) {
+		return MIL_FALSE;
+	}
+
+	/* Set up the full surface rectangle */
+	full_rect.x = 0;
+	full_rect.y = 0;
+	full_rect.w = surface->w;
+	full_rect.h = surface->h;
+
+	/* Set the clipping rectangle */
+	if ( ! rect ) {
+		surface->clip_rect = full_rect;
+		return 1;
+	}
+	return MIL_IntersectRect(rect, &full_rect, &surface->clip_rect);
+}
 
 void Surface_X_getClipRect(_SELF, MIL_Rect *rect)
 {	
@@ -129,21 +195,95 @@ void Surface_X_getClipRect(_SELF, MIL_Rect *rect)
     }
 }
 
-int  Surface_X_blitSurface(_SELF, MIL_Rect *srcrect, MIL_Surface *dst, MIL_Rect *dstrect)
+int  Surface_X_blitSurface(_SELF, MIL_Rect *srcrect, Surface *dst, MIL_Rect *dstrect)
 {
-    Surface* ssrc = (Surface*)self;
-    Surface* sdst = (Surface*)dst;
+    MIL_Rect fulldst;
+	int srcx, srcy, w, h;
+    Surface* src = (Surface*)self;
 	/* Make sure the surfaces aren't locked */
-	if ( ! ssrc || ! sdst ) {
+	if ( ! src || ! dst ) {
 		MIL_SetError("MIL_UpperBlit: passed a NULL surface");
 		return(-1);
 	}
-	if ( ssrc->locked || sdst->locked ) {
+	if ( src->locked || dst->locked ) {
 		MIL_SetError("Surfaces must not be locked during blit");
 		return(-1);
 	}
-    // TODO: compelete here.
-    return 0;
+
+	/* If the destination rectangle is NULL, use the entire dest surface */
+	if ( dstrect == NULL ) {
+	        fulldst.x = fulldst.y = 0;
+		dstrect = &fulldst;
+	}
+
+	/* clip the source rectangle to the source surface */
+	if(srcrect) {
+	        int maxw, maxh;
+	
+		srcx = srcrect->x;
+		w = srcrect->w;
+		if(srcx < 0) {
+		        w += srcx;
+			dstrect->x -= srcx;
+			srcx = 0;
+		}
+		maxw = src->w - srcx;
+		if(maxw < w)
+			w = maxw;
+
+		srcy = srcrect->y;
+		h = srcrect->h;
+		if(srcy < 0) {
+		        h += srcy;
+			dstrect->y -= srcy;
+			srcy = 0;
+		}
+		maxh = src->h - srcy;
+		if(maxh < h)
+			h = maxh;
+	    
+	} else {
+	        srcx = srcy = 0;
+		w = src->w;
+		h = src->h;
+	}
+
+	/* clip the destination rectangle against the clip rectangle */
+	{
+	        MIL_Rect *clip = &dst->clip_rect;
+		int dx, dy;
+
+		dx = clip->x - dstrect->x;
+		if(dx > 0) {
+			w -= dx;
+			dstrect->x += dx;
+			srcx += dx;
+		}
+		dx = dstrect->x + w - clip->x - clip->w;
+		if(dx > 0)
+			w -= dx;
+
+		dy = clip->y - dstrect->y;
+		if(dy > 0) {
+			h -= dy;
+			dstrect->y += dy;
+			srcy += dy;
+		}
+		dy = dstrect->y + h - clip->y - clip->h;
+		if(dy > 0)
+			h -= dy;
+	}
+
+	if(w > 0 && h > 0) {
+	        MIL_Rect sr;
+	        sr.x = srcx;
+		sr.y = srcy;
+		sr.w = dstrect->w = w;
+		sr.h = dstrect->h = h;
+		return MIL_LowerBlit(src, &sr, dst, dstrect);
+	}
+	dstrect->w = dstrect->h = 0;
+	return 0;
 }
 
 int  Surface_X_fillRect(_SELF, MIL_Rect *dstrect, Uint32 color)
@@ -152,13 +292,13 @@ int  Surface_X_fillRect(_SELF, MIL_Rect *dstrect, Uint32 color)
 int  Surface_X_saveBMP(_SELF, const char *file)
 {}
 
-MIL_Surface* Surface_X_displayFormat(_SELF)
+Surface* Surface_X_displayFormat(_SELF)
 {}
 
-MIL_Surface* Surface_X_displayFormatAlpha(_SELF)
+Surface* Surface_X_displayFormatAlpha(_SELF)
 {}
 
-MIL_Surface* Surface_X_convert(_SELF, MIL_PixelFormat *fmt, Uint32 flags)
+Surface* Surface_X_convert(_SELF, MIL_PixelFormat *fmt, Uint32 flags)
 {
     return NULL;
 }
@@ -193,7 +333,7 @@ Uint8 Surface_X_getBytesPerPixel(_CSELF)
     return ((const Surface*)self)->format->BytesPerPixel;
 }
 
-VIRTUAL_METHOD_REGBEGIN(Surface, MIL_Surface)
+VIRTUAL_METHOD_REGBEGIN(Surface, NonBase)
     DESTRUCTOR_REGISTER(Surface)
 METHOD_REGISTER(Surface, lock)
 METHOD_REGISTER(Surface, unlock)
@@ -305,12 +445,12 @@ Surface * CreateRGBSurface (Uint32 flags,
 	surface->hwdata = NULL;
 	surface->locked = 0;
 	surface->map = NULL;
-	MIL_SetClipRect(surface, NULL);
+	_vc1(surface, setClipRect, NULL);
 	MIL_FormatChanged(surface);
 
 	/* Get the pixels */
 	if ( ((flags&MIL_HWSURFACE) == MIL_SWSURFACE) || 
-				(_vc1(video, allocHWSurface, (MIL_Surface*)surface) < 0) ) {
+				(_vc1(video, allocHWSurface, (Surface*)surface) < 0) ) {
 		if ( surface->w && surface->h ) {
 			surface->pixels = MIL_malloc(surface->h*surface->pitch);
 			if ( surface->pixels == NULL ) {
@@ -336,4 +476,190 @@ Surface * CreateRGBSurface (Uint32 flags,
 	++surfaces_allocated;
 #endif
 	return(surface);
+}
+
+/* 
+ * This function performs a fast fill of the given rectangle with 'color'
+ */
+int MIL_FillRect(Surface *dst, MIL_Rect *dstrect, Uint32 color)
+{
+	VideoDevice *video = ACT_VIDEO_DEVICE;
+	VideoDevice *this  = ACT_VIDEO_DEVICE;
+	int x, y;
+	Uint8 *row;
+
+    /* TODO: Will to support palette? */
+#if 0
+	/* This function doesn't work on surfaces < 8 bpp */
+	if ( dst->format->BitsPerPixel < 8 ) {
+		switch(dst->format->BitsPerPixel) {
+		    case 1:
+			return MIL_FillRect1(dst, dstrect, color);
+			break;
+		    case 4:
+			return MIL_FillRect4(dst, dstrect, color);
+			break;
+		    default:
+			MIL_SetError("Fill rect on unsupported surface format");
+			return(-1);
+			break;
+		}
+	}
+#endif
+
+	/* If 'dstrect' == NULL, then fill the whole surface */
+	if ( dstrect ) {
+		/* Perform clipping */
+		if ( !MIL_IntersectRect(dstrect, &dst->clip_rect, dstrect) ) {
+			return(0);
+		}
+	} else {
+		dstrect = &dst->clip_rect;
+	}
+
+	/* Check for hardware acceleration */
+	if ( ((dst->flags & MIL_HWSURFACE) == MIL_HWSURFACE) &&
+					video->vinfo.blit_fill ) {
+		MIL_Rect hw_rect;
+		if ( dst == ACT_VIDEO_DEVICE->screen ) {
+			hw_rect = *dstrect;
+			hw_rect.x += ACT_VIDEO_DEVICE->offset_x;
+			hw_rect.y += ACT_VIDEO_DEVICE->offset_y;
+			dstrect = &hw_rect;
+		}
+		return(_vc3(video, fillHWRect, dst, dstrect, color));
+	}
+
+	/* Perform software fill */
+	if ( _vc0(dst, lock) != 0 ) {
+		return(-1);
+	}
+	row = (Uint8 *)dst->pixels+dstrect->y*dst->pitch+
+			dstrect->x*dst->format->BytesPerPixel;
+	if ( dst->format->palette || (color == 0) ) {
+		x = dstrect->w*dst->format->BytesPerPixel;
+		if ( !color && !((uintptr_t)row&3) && !(x&3) && !(dst->pitch&3) ) {
+			int n = x >> 2;
+			for ( y=dstrect->h; y; --y ) {
+				MIL_memset4(row, 0, n);
+				row += dst->pitch;
+			}
+		} else {
+#ifdef __powerpc__
+			/*
+			 * MIL_memset() on PPC (both glibc and codewarrior) uses
+			 * the dcbz (Data Cache Block Zero) instruction, which
+			 * causes an alignment exception if the destination is
+			 * uncachable, so only use it on software surfaces
+			 */
+			if((dst->flags & MIL_HWSURFACE) == MIL_HWSURFACE) {
+				if(dstrect->w >= 8) {
+					/*
+					 * 64-bit stores are probably most
+					 * efficient to uncached video memory
+					 */
+					double fill;
+					MIL_memset(&fill, color, (sizeof fill));
+					for(y = dstrect->h; y; y--) {
+						Uint8 *d = row;
+						unsigned n = x;
+						unsigned nn;
+						Uint8 c = color;
+						double f = fill;
+						while((unsigned long)d
+						      & (sizeof(double) - 1)) {
+							*d++ = c;
+							n--;
+						}
+						nn = n / (sizeof(double) * 4);
+						while(nn) {
+							((double *)d)[0] = f;
+							((double *)d)[1] = f;
+							((double *)d)[2] = f;
+							((double *)d)[3] = f;
+							d += 4*sizeof(double);
+							nn--;
+						}
+						n &= ~(sizeof(double) * 4 - 1);
+						nn = n / sizeof(double);
+						while(nn) {
+							*(double *)d = f;
+							d += sizeof(double);
+							nn--;
+						}
+						n &= ~(sizeof(double) - 1);
+						while(n) {
+							*d++ = c;
+							n--;
+						}
+						row += dst->pitch;
+					}
+				} else {
+					/* narrow boxes */
+					for(y = dstrect->h; y; y--) {
+						Uint8 *d = row;
+						Uint8 c = color;
+						int n = x;
+						while(n) {
+							*d++ = c;
+							n--;
+						}
+						row += dst->pitch;
+					}
+				}
+			} else
+#endif /* __powerpc__ */
+			{
+				for(y = dstrect->h; y; y--) {
+					MIL_memset(row, color, x);
+					row += dst->pitch;
+				}
+			}
+		}
+	} else {
+		switch (dst->format->BytesPerPixel) {
+		    case 2:
+			for ( y=dstrect->h; y; --y ) {
+				Uint16 *pixels = (Uint16 *)row;
+				Uint16 c = (Uint16)color;
+				Uint32 cc = (Uint32)c << 16 | c;
+				int n = dstrect->w;
+				if((uintptr_t)pixels & 3) {
+					*pixels++ = c;
+					n--;
+				}
+				if(n >> 1)
+					MIL_memset4(pixels, cc, n >> 1);
+				if(n & 1)
+					pixels[n - 1] = c;
+				row += dst->pitch;
+			}
+			break;
+
+		    case 3:
+			#if MIL_BYTEORDER == MIL_BIG_ENDIAN
+				color <<= 8;
+			#endif
+			for ( y=dstrect->h; y; --y ) {
+				Uint8 *pixels = row;
+				for ( x=dstrect->w; x; --x ) {
+					MIL_memcpy(pixels, &color, 3);
+					pixels += 3;
+				}
+				row += dst->pitch;
+			}
+			break;
+
+		    case 4:
+			for(y = dstrect->h; y; --y) {
+				MIL_memset4(row, color, dstrect->w);
+				row += dst->pitch;
+			}
+			break;
+		}
+	}
+	_vc0(dst, unlock);
+
+	/* We're done! */
+	return(0);
 }
