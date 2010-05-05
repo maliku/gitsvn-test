@@ -31,6 +31,9 @@ CLASS(Surface)
     Surface* (*displayFormat)(_SELF);
     Surface* (*displayFormatAlpha)(_SELF);
     Surface* (*convert)(_SELF, PixelFormat *fmt, Uint32 flags);
+    PixelFormat* (*reallocFormat)(_SELF, int bpp,
+            Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask);
+    void (*formatChanged)(_SELF);
 
     Uint32 (*getWidth)(_CSELF);
     Uint32 (*getHeight)(_CSELF);
@@ -38,6 +41,8 @@ CLASS(Surface)
     Uint32 (*getFlags)(_CSELF);
     Uint8 (*getBitsPerPixel)(_CSELF);
     Uint8 (*getBytesPerPixel)(_CSELF);
+    Uint32 (*calculatePitch)(_SELF);
+    int (*mapSurface)(_SELF, Surface *dst);
 
     VIRTUAL_METHOD_DECLARE_END
 

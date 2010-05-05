@@ -380,7 +380,7 @@ int MIL_LowerBlit (Surface *src, MIL_Rect *srcrect,
 	/* Check to make sure the blit mapping is valid */
 	if ( (src->map->dst != dst) ||
              (src->map->dst->format_version != src->map->format_version) ) {
-		if ( MIL_MapSurface(src, dst) < 0 ) {
+		if ( _vc1(src, mapSurface, dst) < 0 ) {
 			return(-1);
 		}
 	}

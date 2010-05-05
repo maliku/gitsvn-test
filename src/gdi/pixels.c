@@ -32,33 +32,6 @@
 #include "RLEaccel.h"
 
 /* Helper functions */
-
-
-MIL_PixelFormat *MIL_ReallocFormat(Surface *surface, int bpp,
-			Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
-{
-	if ( surface->format ) {
-		Delete(surface->format);
-		MIL_FormatChanged(surface);
-	}
-	surface->format = (PixelFormat*)MIL_AllocFormat(bpp, Rmask, Gmask, Bmask, Amask);
-	return (MIL_PixelFormat*)surface->format;
-}
-
-/*
- * Change any previous mappings from/to the new surface format
- */
-void MIL_FormatChanged(Surface *surface)
-{
-	static int format_version = 0;
-	++format_version;
-	if ( format_version < 0 ) { /* It wrapped... */
-		format_version = 1;
-	}
-	surface->format_version = format_version;
-	MIL_InvalidateMap(surface->map);
-}
-
 #if 0
 /*
  * Free a previously allocated format structure
@@ -102,28 +75,7 @@ void MIL_DitherColors(MIL_Color *colors, int bpp)
 		colors[i].b = b;
 	}
 }
-/* 
- * Calculate the pad-aligned scanline width of a surface
- */
-Uint16 MIL_CalculatePitch(Surface *surface)
-{
-	Uint16 pitch;
 
-	/* Surface should be 4-byte aligned for speed */
-	pitch = surface->w*surface->format->BytesPerPixel;
-	switch (surface->format->BitsPerPixel) {
-		case 1:
-			pitch = (pitch+7)/8;
-			break;
-		case 4:
-			pitch = (pitch+1)/2;
-			break;
-		default:
-			break;
-	}
-	pitch = (pitch + 3) & ~3;	/* 4-byte aligning */
-	return(pitch);
-}
 /*
  * Match an RGB value to a particular palette index
  */
@@ -360,81 +312,7 @@ void MIL_InvalidateMap(MIL_BlitMap *map)
 		map->table = NULL;
 	}
 }
-int MIL_MapSurface(Surface *src, Surface *dst)
-{
-	PixelFormat *srcfmt;
-	PixelFormat *dstfmt;
-	MIL_BlitMap *map;
 
-	/* Clear out any previous mapping */
-	map = src->map;
-	if ( (src->flags & MIL_RLEACCEL) == MIL_RLEACCEL ) {
-		MIL_UnRLESurface(src, 1);
-	}
-	MIL_InvalidateMap(map);
-
-	/* Figure out what kind of mapping we're doing */
-	map->identity = 0;
-	srcfmt = src->format;
-	dstfmt = dst->format;
-	switch (srcfmt->BytesPerPixel) {
-	    case 1:
-		switch (dstfmt->BytesPerPixel) {
-		    case 1:
-			/* Palette --> Palette */
-			/* If both MIL_HWSURFACE, assume have same palette */
-			if ( ((src->flags & MIL_HWSURFACE) == MIL_HWSURFACE) &&
-			     ((dst->flags & MIL_HWSURFACE) == MIL_HWSURFACE) ) {
-				map->identity = 1;
-			} else {
-				map->table = Map1to1(srcfmt->palette,
-					dstfmt->palette, &map->identity);
-			}
-			if ( ! map->identity ) {
-				if ( map->table == NULL ) {
-					return(-1);
-				}
-			}
-			if (srcfmt->BitsPerPixel!=dstfmt->BitsPerPixel)
-				map->identity = 0;
-			break;
-
-		    default:
-			/* Palette --> BitField */
-			map->table = _vc1(srcfmt, map1toN, (MIL_PixelFormat*)dstfmt);
-			if ( map->table == NULL ) {
-				return(-1);
-			}
-			break;
-		}
-		break;
-	default:
-		switch (dstfmt->BytesPerPixel) {
-		    case 1:
-			/* BitField --> Palette */
-			map->table = _vc2(srcfmt, mapNto1, (MIL_PixelFormat*)dstfmt, &map->identity);
-			if ( ! map->identity ) {
-				if ( map->table == NULL ) {
-					return(-1);
-				}
-			}
-			map->identity = 0;	/* Don't optimize to copy */
-			break;
-		    default:
-			/* BitField --> BitField */
-			if ( FORMAT_EQUAL(srcfmt, dstfmt) )
-				map->identity = 1;
-			break;
-		}
-		break;
-	}
-
-	map->dst = dst;
-	map->format_version = dst->format_version;
-
-	/* Choose your blitters wisely */
-	return(MIL_CalculateBlit(src));
-}
 void MIL_FreeBlitMap(MIL_BlitMap *map)
 {
 	if ( map ) {

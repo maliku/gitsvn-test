@@ -497,7 +497,7 @@ static Surface *FB_SetVGA16Mode(_Self(VideoDevice), Surface *cur,
 	fprintf(stderr, "Printing actual vinfo:\n");
 	print_vinfo(&vinfo);
 #endif
-	if ( ! MIL_ReallocFormat(current, bpp, 0, 0, 0, 0) ) {
+	if ( ! _vc5(current, reallocFormat, bpp, 0, 0, 0, 0) ) {
 		return(NULL);
 	}
 	current->format->palette->ncolors = 16;
@@ -1218,7 +1218,7 @@ static Surface* FBconVideoDevice_X_setVideoMode(_Self(VideoDevice),
 		Bmask <<= 1;
 		Bmask |= (0x00000001<<vinfo.blue.offset);
 	} 
-	if ( ! MIL_ReallocFormat(current, vinfo.bits_per_pixel,
+	if ( ! _vc5(current, reallocFormat, vinfo.bits_per_pixel,
 	                                  Rmask, Gmask, Bmask, 0) ) {
 		return(NULL);
 	}

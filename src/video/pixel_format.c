@@ -14,6 +14,21 @@ METHOD_REGISTER_PLACEHOLDER(MIL_PixelFormat)
 
 CONSTRUCTOR(PixelFormat)
 {
+    static MIL_bool method_verify = MIL_FALSE;
+    if (!method_verify) {
+        VirtualMethodVerify(self, mapRGB);
+        VirtualMethodVerify(self, mapRGBA);
+        VirtualMethodVerify(self, getRGB);
+        VirtualMethodVerify(self, getRGBA);
+        VirtualMethodVerify(self, mapNto1);
+        VirtualMethodVerify(self, map1toN);
+        VirtualMethodVerify(self, getBitsPerPixel);
+        VirtualMethodVerify(self, getBytesPerPixel);
+        VirtualMethodVerify(self, getAlpha);
+        VirtualMethodVerify(self, getColorKey);
+        method_verify = MIL_TRUE;
+    }
+
     _m(palette) = NULL;
     _m(BitsPerPixel) = 0;
 	_m(BytesPerPixel) = 0;

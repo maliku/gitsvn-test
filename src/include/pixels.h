@@ -26,19 +26,19 @@
 #include "blit.h"
 
 /* Pixel format functions */
-MIL_PixelFormat* MIL_ReallocFormat(Surface *surface, int bpp,
-		Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask);
-extern void MIL_FormatChanged(Surface *surface);
+//MIL_PixelFormat* MIL_ReallocFormat(Surface *surface, int bpp,
+//		Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask);
+//extern void MIL_FormatChanged(Surface *surface);
 //extern void MIL_FreeFormat(MIL_PixelFormat *format);
 
 /* Blit mapping functions */
 extern MIL_BlitMap* MIL_AllocBlitMap(void);
 extern void MIL_InvalidateMap(MIL_BlitMap *map);
-extern int MIL_MapSurface (Surface *src, Surface *dst);
+//extern int MIL_MapSurface (Surface *src, Surface *dst);
 extern void MIL_FreeBlitMap(MIL_BlitMap *map);
 
 /* Miscellaneous functions */
-extern Uint16 MIL_CalculatePitch(Surface *surface);
+//extern Uint16 MIL_CalculatePitch(Surface *surface);
 extern void MIL_DitherColors(MIL_Color *colors, int bpp);
 extern Uint8 MIL_FindColor(MIL_Palette *pal, Uint8 r, Uint8 g, Uint8 b);
 extern void MIL_ApplyGamma(Uint16 *gamma, MIL_Color *colors, MIL_Color *output, int ncolors);

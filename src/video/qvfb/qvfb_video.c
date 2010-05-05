@@ -151,7 +151,7 @@ Surface* QVFbVideoDevice_X_setVideoMode(_Self(VideoDevice),
     ((Surface*)current)->clip_rect.y = 0; 
     ((Surface*)current)->clip_rect.w = ((Surface*)current)->w; 
     ((Surface*)current)->clip_rect.h = ((Surface*)current)->h; 
-    if ( ! MIL_ReallocFormat(current, bpp, 0, 0, 0, 0) ) {
+    if ( ! _vc5(current, reallocFormat, bpp, 0, 0, 0, 0) ) {
         return(NULL);
 	}
     format_calc(((Surface*)current)->format, bpp);

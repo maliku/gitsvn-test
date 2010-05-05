@@ -494,6 +494,133 @@ Surface* Surface_X_convert(_SELF, PixelFormat *format, Uint32 flags)
 	return(convert);
 }
 
+PixelFormat* Surface_X_reallocFormat(_SELF, int bpp,
+        Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
+{
+    Surface* surface = (Surface*)self;
+	if ( surface->format ) {
+		Delete(surface->format);
+		_vc0(surface, formatChanged);
+	}
+	surface->format = (PixelFormat*)MIL_AllocFormat(bpp, Rmask, Gmask, Bmask, Amask);
+	return surface->format;
+}
+
+/*
+ * Change any previous mappings from/to the new surface format
+ */
+void Surface_X_formatChanged(_SELF)
+{
+	static int format_version = 0;
+    Surface* surface = (Surface*)self;
+	++format_version;
+	if ( format_version < 0 ) { /* It wrapped... */
+		format_version = 1;
+	}
+	surface->format_version = format_version;
+	MIL_InvalidateMap(surface->map);
+}
+
+/* 
+ * Calculate the pad-aligned scanline width of a surface
+ */
+Uint32 Surface_X_calculatePitch(_SELF)
+{
+	Uint32 pitch;
+    Surface* surface = (Surface*)self;
+
+	/* Surface should be 4-byte aligned for speed */
+	pitch = surface->w*surface->format->BytesPerPixel;
+	switch (surface->format->BitsPerPixel) {
+		case 1:
+			pitch = (pitch+7)/8;
+			break;
+		case 4:
+			pitch = (pitch+1)/2;
+			break;
+		default:
+			break;
+	}
+	pitch = (pitch + 3) & ~3;	/* 4-byte aligning */
+}
+
+int Surface_X_mapSurface(_SELF, Surface *dst)
+{
+    Surface* src = (Surface*)self;
+	PixelFormat *srcfmt;
+	PixelFormat *dstfmt;
+	MIL_BlitMap *map;
+
+	/* Clear out any previous mapping */
+	map = src->map;
+	if ( (src->flags & MIL_RLEACCEL) == MIL_RLEACCEL ) {
+		MIL_UnRLESurface(src, 1);
+	}
+	MIL_InvalidateMap(map);
+
+	/* Figure out what kind of mapping we're doing */
+	map->identity = 0;
+	srcfmt = src->format;
+	dstfmt = dst->format;
+	switch (srcfmt->BytesPerPixel) {
+	    case 1:
+		switch (dstfmt->BytesPerPixel) {
+		    case 1:
+			/* Palette --> Palette */
+			/* If both MIL_HWSURFACE, assume have same palette */
+			if ( ((src->flags & MIL_HWSURFACE) == MIL_HWSURFACE) &&
+			     ((dst->flags & MIL_HWSURFACE) == MIL_HWSURFACE) ) {
+				map->identity = 1;
+			} else {
+				map->table = Map1to1(srcfmt->palette,
+					dstfmt->palette, &map->identity);
+			}
+			if ( ! map->identity ) {
+				if ( map->table == NULL ) {
+					return(-1);
+				}
+			}
+			if (srcfmt->BitsPerPixel!=dstfmt->BitsPerPixel)
+				map->identity = 0;
+			break;
+
+		    default:
+			/* Palette --> BitField */
+			map->table = _vc1(srcfmt, map1toN, (MIL_PixelFormat*)dstfmt);
+			if ( map->table == NULL ) {
+				return(-1);
+			}
+			break;
+		}
+		break;
+	default:
+		switch (dstfmt->BytesPerPixel) {
+		    case 1:
+			/* BitField --> Palette */
+			map->table = _vc2(srcfmt, mapNto1, (MIL_PixelFormat*)dstfmt, &map->identity);
+			if ( ! map->identity ) {
+				if ( map->table == NULL ) {
+					return(-1);
+				}
+			}
+			map->identity = 0;	/* Don't optimize to copy */
+			break;
+		    default:
+			/* BitField --> BitField */
+			if ( FORMAT_EQUAL(srcfmt, dstfmt) )
+				map->identity = 1;
+			break;
+		}
+		break;
+	}
+
+	map->dst = dst;
+	map->format_version = dst->format_version;
+
+	/* Choose your blitters wisely */
+	return(MIL_CalculateBlit(src));
+}
+
 Uint32 Surface_X_getWidth(_CSELF)
 {
     return ((const Surface*)self)->w;
@@ -526,24 +653,28 @@ Uint8 Surface_X_getBytesPerPixel(_CSELF)
 
 VIRTUAL_METHOD_REGBEGIN(Surface, NonBase)
     DESTRUCTOR_REGISTER(Surface)
-METHOD_REGISTER(Surface, lock)
-METHOD_REGISTER(Surface, unlock)
-METHOD_REGISTER(Surface, setColorKey)
-METHOD_REGISTER(Surface, setAlpha)
-METHOD_REGISTER(Surface, setClipRect)
-METHOD_REGISTER(Surface, getClipRect)
-METHOD_REGISTER(Surface, blitSurface)
-METHOD_REGISTER(Surface, fillRect)
-METHOD_REGISTER(Surface, saveBMP)
-METHOD_REGISTER(Surface, displayFormat)
-METHOD_REGISTER(Surface, displayFormatAlpha)
-METHOD_REGISTER(Surface, convert)
+    METHOD_REGISTER(Surface, lock)
+    METHOD_REGISTER(Surface, unlock)
+    METHOD_REGISTER(Surface, setColorKey)
+    METHOD_REGISTER(Surface, setAlpha)
+    METHOD_REGISTER(Surface, setClipRect)
+    METHOD_REGISTER(Surface, getClipRect)
+    METHOD_REGISTER(Surface, blitSurface)
+    METHOD_REGISTER(Surface, fillRect)
+    METHOD_REGISTER(Surface, saveBMP)
+    METHOD_REGISTER(Surface, displayFormat)
+    METHOD_REGISTER(Surface, displayFormatAlpha)
+    METHOD_REGISTER(Surface, convert)
+    METHOD_REGISTER(Surface, reallocFormat)
+    METHOD_REGISTER(Surface, formatChanged)
 
-METHOD_REGISTER(Surface, getWidth)
-METHOD_REGISTER(Surface, getHeight)
-METHOD_REGISTER(Surface, getPitch)
-METHOD_REGISTER(Surface, getFlags)
-METHOD_REGISTER(Surface, getBitsPerPixel)
+    METHOD_REGISTER(Surface, getWidth)
+    METHOD_REGISTER(Surface, getHeight)
+    METHOD_REGISTER(Surface, getPitch)
+    METHOD_REGISTER(Surface, getFlags)
+    METHOD_REGISTER(Surface, getBitsPerPixel)
+    METHOD_REGISTER(Surface, calculatePitch)
+    METHOD_REGISTER(Surface, mapSurface)
 METHOD_REGISTER(Surface, getBytesPerPixel)
 
 VIRTUAL_METHOD_REGEND 
@@ -630,14 +761,14 @@ Surface * CreateRGBSurface (Uint32 flags,
 	}
 	surface->w = width;
 	surface->h = height;
-	surface->pitch = MIL_CalculatePitch(surface);
+	surface->pitch = _vc0(surface, calculatePitch);
 	surface->pixels = NULL;
 	surface->offset = 0;
 	surface->hwdata = NULL;
 	surface->locked = 0;
 	surface->map = NULL;
 	_vc1(surface, setClipRect, NULL);
-	MIL_FormatChanged(surface);
+	_vc0(surface, formatChanged);
 
 	/* Get the pixels */
 	if ( ((flags&MIL_HWSURFACE) == MIL_SWSURFACE) || 
