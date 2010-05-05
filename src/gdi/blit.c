@@ -237,7 +237,7 @@ int MIL_CalculateBlit(Surface *surface)
 
 	/* Clean everything out to start */
 	if ( (surface->flags & MIL_RLEACCEL) == MIL_RLEACCEL ) {
-		MIL_UnRLESurface(surface, 1);
+		_vc1(surface, UnRLE, 1);
 	}
 	surface->map->sw_blit = NULL;
 
@@ -345,10 +345,10 @@ int MIL_CalculateBlit(Surface *surface)
 	        if(surface->map->identity
 		   && (blit_index == 1
 		       || (blit_index == 3 && !surface->format->Amask))) {
-		        if ( MIL_RLESurface(surface) == 0 )
+		        if ( _vc0(surface, RLE) == 0 )
 			        surface->map->sw_blit = MIL_RLEBlit;
 		} else if(blit_index == 2 && surface->format->Amask) {
-		        if ( MIL_RLESurface(surface) == 0 )
+		        if ( _vc0(surface, RLE) == 0 )
 			        surface->map->sw_blit = MIL_RLEAlphaBlit;
 		}
 	}

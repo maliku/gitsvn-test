@@ -42,7 +42,9 @@ CLASS(Surface)
     Uint8 (*getBitsPerPixel)(_CSELF);
     Uint8 (*getBytesPerPixel)(_CSELF);
     Uint32 (*calculatePitch)(_SELF);
-    int (*mapSurface)(_SELF, Surface *dst);
+    int  (*mapSurface)(_SELF, Surface *dst);
+    int  (*RLE)(_SELF);
+    void (*UnRLE)(_SELF, int recode);
 
     VIRTUAL_METHOD_DECLARE_END
 

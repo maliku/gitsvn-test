@@ -1396,7 +1396,7 @@ static int uncopy_32(Uint32 *dst, void *src, int n,
     ((unsigned)((((pixel) & fmt->Amask) >> fmt->Ashift) - 1U) < 254U)
 
 /* convert surface to be quickly alpha-blittable onto dest, if possible */
-static int RLEAlphaSurface(Surface *surface)
+int RLEAlphaSurface(Surface *surface)
 {
     Surface *dest;
     PixelFormat *df;
@@ -1639,10 +1639,10 @@ static getpix_func getpixes[4] = {
     getpix_8, getpix_16, getpix_24, getpix_32
 };
 
-static int RLEColorkeySurface(Surface *surface)
+int RLEColorkeySurface(Surface *surface)
 {
-        Uint8 *rlebuf, *dst;
-	int maxn;
+    Uint8 *rlebuf, *dst;
+    int maxn;
 	int y;
 	Uint8 *srcbuf, *curbuf, *lastline;
 	int maxsize = 0;
@@ -1769,7 +1769,7 @@ static int RLEColorkeySurface(Surface *surface)
 
 	return(0);
 }
-
+#if 0
 int MIL_RLESurface(Surface *surface)
 {
 	int retcode;
@@ -1815,6 +1815,7 @@ int MIL_RLESurface(Surface *surface)
 
 	return(0);
 }
+#endif
 
 /*
  * Un-RLE a surface with pixel alpha
@@ -1822,7 +1823,7 @@ int MIL_RLESurface(Surface *surface)
  * completely transparent pixels will be lost, and colour and alpha depth
  * may have been reduced (when encoding for 16bpp targets).
  */
-static MIL_bool UnRLEAlpha(Surface *surface)
+MIL_bool UnRLEAlpha(Surface *surface)
 {
     Uint8 *srcbuf;
     Uint32 *dst;
@@ -1893,51 +1894,53 @@ static MIL_bool UnRLEAlpha(Surface *surface)
     /* Make the compiler happy */
     return(MIL_TRUE);
 }
-
+#if 0
 void MIL_UnRLESurface(Surface *surface, int recode)
 {
     if ( (surface->flags & MIL_RLEACCEL) == MIL_RLEACCEL ) {
-	surface->flags &= ~MIL_RLEACCEL;
+        surface->flags &= ~MIL_RLEACCEL;
 
-	if(recode && (surface->flags & MIL_PREALLOC) != MIL_PREALLOC
-	   && (surface->flags & MIL_HWSURFACE) != MIL_HWSURFACE) {
-	    if((surface->flags & MIL_SRCCOLORKEY) == MIL_SRCCOLORKEY) {
-		MIL_Rect full;
-		unsigned alpha_flag;
+        if(recode && (surface->flags & MIL_PREALLOC) != MIL_PREALLOC
+                && (surface->flags & MIL_HWSURFACE) != MIL_HWSURFACE) {
+            if((surface->flags & MIL_SRCCOLORKEY) == MIL_SRCCOLORKEY) {
+                MIL_Rect full;
+                unsigned alpha_flag;
 
-		/* re-create the original surface */
-		surface->pixels = MIL_malloc(surface->h * surface->pitch);
-		if ( !surface->pixels ) {
-			/* Oh crap... */
-			surface->flags |= MIL_RLEACCEL;
-			return;
-		}
+                /* re-create the original surface */
+                surface->pixels = MIL_malloc(surface->h * surface->pitch);
+                if ( !surface->pixels ) {
+                    /* Oh crap... */
+                    surface->flags |= MIL_RLEACCEL;
+                    return;
+                }
 
-		/* fill it with the background colour */
-		MIL_FillRect(surface, NULL, surface->format->colorkey);
+                /* fill it with the background colour */
+                MIL_FillRect(surface, NULL, surface->format->colorkey);
 
-		/* now render the encoded surface */
-		full.x = full.y = 0;
-		full.w = surface->w;
-		full.h = surface->h;
-		alpha_flag = surface->flags & MIL_SRCALPHA;
-		surface->flags &= ~MIL_SRCALPHA; /* opaque blit */
-		MIL_RLEBlit(surface, &full, surface, &full);
-		surface->flags |= alpha_flag;
-	    } else {
-		if ( !UnRLEAlpha(surface) ) {
-		    /* Oh crap... */
-		    surface->flags |= MIL_RLEACCEL;
-		    return;
-		}
-	    }
-	}
+                /* now render the encoded surface */
+                full.x = full.y = 0;
+                full.w = surface->w;
+                full.h = surface->h;
+                alpha_flag = surface->flags & MIL_SRCALPHA;
+                surface->flags &= ~MIL_SRCALPHA; /* opaque blit */
+                MIL_RLEBlit(surface, &full, surface, &full);
+                surface->flags |= alpha_flag;
+            } else {
+                if ( !UnRLEAlpha(surface) ) {
+                    /* Oh crap... */
+                    surface->flags |= MIL_RLEACCEL;
+                    return;
+                }
+            }
+        }
 
-	if ( surface->map && surface->map->sw_data->aux_data ) {
-	    MIL_free(surface->map->sw_data->aux_data);
-	    surface->map->sw_data->aux_data = NULL;
-	}
+        if ( surface->map && surface->map->sw_data->aux_data ) {
+            MIL_free(surface->map->sw_data->aux_data);
+            surface->map->sw_data->aux_data = NULL;
+        }
     }
 }
+#endif
+
 
 

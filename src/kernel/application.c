@@ -62,7 +62,8 @@ CONSTRUCTOR(Application)
             MIL_Rect rc = {0, 0, 640, 480};
             MIL_Rect rcbmp = {0, 0, 300, 300};
             MIL_Rect rcdst = {50, 50, 300, 300};
-            MIL_RWops* ops = MIL_RWFromFile("res/lena32.bmp", "rb");
+
+            MIL_RWops* ops = MIL_RWFromFile("res/mil.bmp", "rb");
             Surface* bmp = MIL_LoadBMP_RW(ops, 1);
             int i, j;
             char *pixels = (char*)screen->pixels;
@@ -75,12 +76,15 @@ CONSTRUCTOR(Application)
             getchar();
             if (NULL != bmp) {
                 Surface* convert = _vc2(bmp, convert, screen->format, screen->flags);
-                _vc2(convert, setAlpha, MIL_SRCALPHA, 10);
+                _vc2(convert, setColorKey, MIL_SRCCOLORKEY, 0);
+//                _vc2(convert, setAlpha, MIL_SRCALPHA, 5);
                 for (j = 0; j < 400; ++j) {
                     rcdst.x = j;
                     _vc3(convert, blitSurface, &rcbmp, screen, &rcdst);
                     _VC(vd)->updateRects(vd, 1, &rc);
                 }
+                Delete(bmp);
+                Delete(convert);
             }
         }
     }

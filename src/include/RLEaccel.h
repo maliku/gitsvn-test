@@ -23,9 +23,12 @@
 
 /* Useful functions and variables from MIL_RLEaccel.c */
 
-extern int MIL_RLESurface(Surface *surface);
+//extern int MIL_RLESurface(Surface *surface);
 extern int MIL_RLEBlit(Surface *src, MIL_Rect *srcrect,
                        Surface *dst, MIL_Rect *dstrect);
 extern int MIL_RLEAlphaBlit(Surface *src, MIL_Rect *srcrect,
 			    Surface *dst, MIL_Rect *dstrect);
-extern void MIL_UnRLESurface(Surface *surface, int recode);
+//extern void MIL_UnRLESurface(Surface *surface, int recode);
+int RLEAlphaSurface(Surface *surface);
+int RLEColorkeySurface(Surface *surface);
+MIL_bool UnRLEAlpha(Surface *surface);

@@ -11,6 +11,7 @@
 #include "surface.h"
 #include "pixel_format.h"
 #include "pixels.h"
+#include "RLEaccel.h"
 
 /*
  * A function to calculate the intersection of two rectangles:
@@ -95,7 +96,7 @@ DESTRUCTOR(Surface)
 		_vc0(surface, unlock);
 	}
 	if ( (surface->flags & MIL_RLEACCEL) == MIL_RLEACCEL ) {
-	        MIL_UnRLESurface(surface, 0);
+	        _vc1(surface, UnRLE, 0);
 	}
 	if ( surface->format ) {
 		Delete(surface->format);
@@ -132,7 +133,7 @@ void* Surface_X_lock(_SELF)
 			}
 		}
 		if ( surface->flags & MIL_RLEACCEL ) {
-			MIL_UnRLESurface(surface, 1);
+			_vc1(surface, UnRLE, 1);
 			surface->flags |= MIL_RLEACCEL;	/* save accel'd state */
 		}
 		/* This needs to be done here in case pixels changes value */
@@ -193,7 +194,7 @@ int  Surface_X_setColorKey(_SELF, Uint32 flag, Uint32 key)
 
 	/* UnRLE surfaces before we change the colorkey */
 	if ( surface->flags & MIL_RLEACCEL ) {
-	        MIL_UnRLESurface(surface, 1);
+	        _vc1(surface, UnRLE, 1);
 	}
 
 	if ( flag ) {
@@ -246,7 +247,7 @@ int  Surface_X_setAlpha(_SELF, Uint32 flag, Uint8 value)
 	}
 
 	if(!(flag & MIL_RLEACCELOK) && (surface->flags & MIL_RLEACCEL))
-		MIL_UnRLESurface(surface, 1);
+		_vc1(surface, UnRLE, 1);
 
 	if ( flag ) {
 		VideoDevice* video = ACT_VIDEO_DEVICE;
@@ -645,7 +646,7 @@ Uint32 Surface_X_calculatePitch(_SELF)
 		default:
 			break;
 	}
-	pitch = (pitch + 3) & ~3;	/* 4-byte aligning */
+	return (pitch = (pitch + 3) & ~3);	/* 4-byte aligning */
 }
 
 int Surface_X_mapSurface(_SELF, Surface *dst)
@@ -658,7 +659,7 @@ int Surface_X_mapSurface(_SELF, Surface *dst)
 	/* Clear out any previous mapping */
 	map = src->map;
 	if ( (src->flags & MIL_RLEACCEL) == MIL_RLEACCEL ) {
-		MIL_UnRLESurface(src, 1);
+		_vc1(src, UnRLE, 1);
 	}
 	MIL_InvalidateMap(map);
 
@@ -755,6 +756,100 @@ Uint8 Surface_X_getBytesPerPixel(_CSELF)
     return ((const Surface*)self)->format->BytesPerPixel;
 }
 
+int Surface_X_RLE(_SELF)
+{
+	int retcode;
+    Surface* surface = (Surface*)self;
+
+	/* Clear any previous RLE conversion */
+	if ( (surface->flags & MIL_RLEACCEL) == MIL_RLEACCEL ) {
+		_vc1(surface, UnRLE, 1);
+	}
+
+	/* We don't support RLE encoding of bitmaps */
+	if ( surface->format->BitsPerPixel < 8 ) {
+		return(-1);
+	}
+
+	/* Lock the surface if it's in hardware */
+	if ( MIL_MUSTLOCK(surface) ) {
+		if ( _vc0(surface, lock) < 0 ) {
+			return(-1);
+		}
+	}
+
+	/* Encode */
+	if((surface->flags & MIL_SRCCOLORKEY) == MIL_SRCCOLORKEY) {
+	    retcode = RLEColorkeySurface(surface);
+	} else {
+	    if((surface->flags & MIL_SRCALPHA) == MIL_SRCALPHA
+	       && surface->format->Amask != 0)
+		retcode = RLEAlphaSurface(surface);
+	    else
+		retcode = -1;	/* no RLE for per-surface alpha sans ckey */
+	}
+
+	/* Unlock the surface if it's in hardware */
+	if ( MIL_MUSTLOCK(surface) ) {
+		_vc0(surface, unlock);
+	}
+
+	if(retcode < 0)
+	    return -1;
+
+	/* The surface is now accelerated */
+	surface->flags |= MIL_RLEACCEL;
+
+	return(0);
+}
+
+void Surface_X_UnRLE(_SELF, int recode)
+{
+    Surface* surface = (Surface*)self;
+    if ( (surface->flags & MIL_RLEACCEL) == MIL_RLEACCEL ) {
+        surface->flags &= ~MIL_RLEACCEL;
+
+        if(recode && (surface->flags & MIL_PREALLOC) != MIL_PREALLOC
+                && (surface->flags & MIL_HWSURFACE) != MIL_HWSURFACE) {
+            if((surface->flags & MIL_SRCCOLORKEY) == MIL_SRCCOLORKEY) {
+                MIL_Rect full;
+                unsigned alpha_flag;
+
+                /* re-create the original surface */
+                surface->pixels = MIL_malloc(surface->h * surface->pitch);
+                if ( !surface->pixels ) {
+                    /* Oh crap... */
+                    surface->flags |= MIL_RLEACCEL;
+                    return;
+                }
+
+                /* fill it with the background colour */
+                MIL_FillRect(surface, NULL, surface->format->colorkey);
+
+                /* now render the encoded surface */
+                full.x = full.y = 0;
+                full.w = surface->w;
+                full.h = surface->h;
+                alpha_flag = surface->flags & MIL_SRCALPHA;
+                surface->flags &= ~MIL_SRCALPHA; /* opaque blit */
+                MIL_RLEBlit(surface, &full, surface, &full);
+                surface->flags |= alpha_flag;
+            } else {
+                if ( !UnRLEAlpha(surface) ) {
+                    /* Oh crap... */
+                    surface->flags |= MIL_RLEACCEL;
+                    return;
+                }
+            }
+        }
+
+        if ( surface->map && surface->map->sw_data->aux_data ) {
+            MIL_free(surface->map->sw_data->aux_data);
+            surface->map->sw_data->aux_data = NULL;
+        }
+    }
+}
+
 VIRTUAL_METHOD_REGBEGIN(Surface, NonBase)
     DESTRUCTOR_REGISTER(Surface)
     METHOD_REGISTER(Surface, lock)
@@ -779,6 +874,9 @@ VIRTUAL_METHOD_REGBEGIN(Surface, NonBase)
     METHOD_REGISTER(Surface, getBitsPerPixel)
     METHOD_REGISTER(Surface, calculatePitch)
     METHOD_REGISTER(Surface, mapSurface)
+    METHOD_REGISTER(Surface, RLE)
+    METHOD_REGISTER(Surface, UnRLE)
+
 METHOD_REGISTER(Surface, getBytesPerPixel)
 
 VIRTUAL_METHOD_REGEND 
@@ -878,14 +976,14 @@ Surface * CreateRGBSurface (Uint32 flags,
 	if ( ((flags&MIL_HWSURFACE) == MIL_SWSURFACE) || 
 				(_vc1(video, allocHWSurface, (Surface*)surface) < 0) ) {
 		if ( surface->w && surface->h ) {
-			surface->pixels = MIL_malloc(surface->h*surface->pitch);
+			surface->pixels = MIL_malloc(surface->h * surface->pitch);
 			if ( surface->pixels == NULL ) {
 				Delete(surface);
 				MIL_OutOfMemory();
 				return(NULL);
 			}
 			/* This is important for bitmaps */
-			MIL_memset(surface->pixels, 0, surface->h*surface->pitch);
+			MIL_memset(surface->pixels, 0, surface->h * surface->pitch);
 		}
 	}
 
