@@ -88,7 +88,6 @@ static void BlitBto2(MIL_BlitInfo *info)
 	Uint8 *src;
 	Uint16 *map, *dst;
 	int srcskip, dstskip;
-
 	/* Set up some basic variables */
 	width = info->d_width;
 	height = info->d_height;
@@ -191,8 +190,8 @@ static void BlitBto4(MIL_BlitInfo *info)
 
 static void BlitBto1Key(MIL_BlitInfo *info)
 {
-        int width = info->d_width;
-	int height = info->d_height;
+    int width = info->d_width;
+    int height = info->d_height;
 	Uint8 *src = info->s_pixels;
 	Uint8 *dst = info->d_pixels;
 	int srcskip = info->s_skip;
@@ -243,8 +242,8 @@ static void BlitBto1Key(MIL_BlitInfo *info)
 
 static void BlitBto2Key(MIL_BlitInfo *info)
 {
-        int width = info->d_width;
-	int height = info->d_height;
+    int width = info->d_width;
+    int height = info->d_height;
 	Uint8 *src = info->s_pixels;
 	Uint16 *dstp = (Uint16 *)info->d_pixels;
 	int srcskip = info->s_skip;
@@ -277,7 +276,7 @@ static void BlitBto2Key(MIL_BlitInfo *info)
 
 static void BlitBto3Key(MIL_BlitInfo *info)
 {
-        int width = info->d_width;
+    int width = info->d_width;
 	int height = info->d_height;
 	Uint8 *src = info->s_pixels;
 	Uint8 *dst = info->d_pixels;
@@ -344,8 +343,8 @@ static void BlitBto4Key(MIL_BlitInfo *info)
 
 static void BlitBtoNAlpha(MIL_BlitInfo *info)
 {
-        int width = info->d_width;
-	int height = info->d_height;
+    int width = info->d_width;
+    int height = info->d_height;
 	Uint8 *src = info->s_pixels;
 	Uint8 *dst = info->d_pixels;
 	int srcskip = info->s_skip;
@@ -368,8 +367,8 @@ static void BlitBtoNAlpha(MIL_BlitInfo *info)
 			}
 			bit = (byte&0x80)>>7;
 			if ( 1 ) {
-			        Uint32 pixel;
-			        unsigned sR, sG, sB;
+                Uint32 pixel;
+                unsigned sR, sG, sB;
 				unsigned dR, dG, dB;
 				sR = srcpal[bit].r;
 				sG = srcpal[bit].g;

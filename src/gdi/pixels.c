@@ -203,79 +203,6 @@ void MIL_ApplyGamma(Uint16 *gamma, MIL_Color *colors, MIL_Color *output,
 	}
 }
 
-#if 0
-/* Map from Palette to Palette */
-Uint8* Map1to1(MIL_Palette *src, MIL_Palette *dst, int *identical)
-{
-	Uint8 *map;
-	int i;
-
-	if ( identical ) {
-		if ( src->ncolors <= dst->ncolors ) {
-			/* If an identical palette, no need to map */
-			if ( MIL_memcmp(src->colors, dst->colors, src->ncolors*
-						sizeof(MIL_Color)) == 0 ) {
-				*identical = 1;
-				return(NULL);
-			}
-		}
-		*identical = 0;
-	}
-	map = (Uint8 *)MIL_malloc(src->ncolors);
-	if ( map == NULL ) {
-		MIL_OutOfMemory();
-		return(NULL);
-	}
-	for ( i=0; i<src->ncolors; ++i ) {
-		map[i] = MIL_FindColor(dst,
-			src->colors[i].r, src->colors[i].g, src->colors[i].b);
-	}
-	return(map);
-}
-/* Map from Palette to BitField */
-Uint8 *Map1toN(PixelFormat *src, PixelFormat *dst)
-{
-	Uint8 *map;
-	int i;
-	int  bpp;
-	unsigned alpha;
-	MIL_Palette *pal = src->palette;
-
-	bpp = ((dst->BytesPerPixel == 3) ? 4 : dst->BytesPerPixel);
-	map = (Uint8 *)MIL_malloc(pal->ncolors*bpp);
-	if ( map == NULL ) {
-		MIL_OutOfMemory();
-		return(NULL);
-	}
-
-	alpha = dst->Amask ? src->alpha : 0;
-	/* We memory copy to the pixel map so the endianness is preserved */
-	for ( i=0; i<pal->ncolors; ++i ) {
-		ASSEMBLE_RGBA(&map[i*bpp], dst->BytesPerPixel, dst,
-			      pal->colors[i].r, pal->colors[i].g,
-			      pal->colors[i].b, alpha);
-	}
-	return(map);
-}
-/* Map from BitField to Dithered-Palette to Palette */
-static Uint8 *MapNto1(MIL_PixelFormat *src, MIL_PixelFormat *dst, int *identical)
-{
-	/* Generate a 256 color dither palette */
-	MIL_Palette dithered;
-	MIL_Color colors[256];
-	MIL_Palette *pal = dst->palette;
-	
-	/* MIL_DitherColors does not initialize the 'unused' component of colors,
-	   but Map1to1 compares it against pal, so we should initialize it. */  
-	MIL_memset(colors, 0, sizeof(colors));
-
-	dithered.ncolors = 256;
-	MIL_DitherColors(colors, 8);
-	dithered.colors = colors;
-	return(Map1to1(&dithered, pal, identical));
-}
-#endif
-
 MIL_BlitMap *MIL_AllocBlitMap(void)
 {
 	MIL_BlitMap *map;
@@ -300,6 +227,7 @@ MIL_BlitMap *MIL_AllocBlitMap(void)
 	/* It's ready to go */
 	return(map);
 }
+
 void MIL_InvalidateMap(MIL_BlitMap *map)
 {
 	if ( ! map ) {

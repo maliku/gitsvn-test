@@ -172,10 +172,114 @@ void Surface_X_unlock(_SELF)
 }
 
 int  Surface_X_setColorKey(_SELF, Uint32 flag, Uint32 key)
-{}
+{
+    Surface* surface = (Surface*)self;
+	/* Sanity check the flag as it gets passed in */
+	if ( flag & MIL_SRCCOLORKEY ) {
+		if ( flag & (MIL_RLEACCEL|MIL_RLEACCELOK) ) {
+			flag = (MIL_SRCCOLORKEY | MIL_RLEACCELOK);
+		} else {
+			flag = MIL_SRCCOLORKEY;
+		}
+	} else {
+		flag = 0;
+	}
 
-int  Surface_X_setAlpha(_SELF, Uint32 flag, Uint8 alpha)
-{}
+	/* Optimize away operations that don't change anything */
+	if ( (flag == (surface->flags & (MIL_SRCCOLORKEY|MIL_RLEACCELOK))) &&
+	     (key == surface->format->colorkey) ) {
+		return(0);
+	}
+
+	/* UnRLE surfaces before we change the colorkey */
+	if ( surface->flags & MIL_RLEACCEL ) {
+	        MIL_UnRLESurface(surface, 1);
+	}
+
+	if ( flag ) {
+		VideoDevice *video = ACT_VIDEO_DEVICE;
+		VideoDevice *this  = ACT_VIDEO_DEVICE;
+
+
+		surface->flags |= MIL_SRCCOLORKEY;
+		surface->format->colorkey = key;
+		if ( (surface->flags & MIL_HWACCEL) == MIL_HWACCEL ) {
+			if ((_vc2(video, setHWColorKey, surface, key) < 0) ) {
+				surface->flags &= ~MIL_HWACCEL;
+			}
+		}
+		if ( flag & MIL_RLEACCELOK ) {
+			surface->flags |= MIL_RLEACCELOK;
+		} else {
+			surface->flags &= ~MIL_RLEACCELOK;
+		}
+	} else {
+		surface->flags &= ~(MIL_SRCCOLORKEY|MIL_RLEACCELOK);
+		surface->format->colorkey = 0;
+	}
+	MIL_InvalidateMap(surface->map);
+	return(0);
+
+}
+
+int  Surface_X_setAlpha(_SELF, Uint32 flag, Uint8 value)
+{
+    Surface* surface = (Surface*)self;
+    Uint32 oldflags = surface->flags;
+	Uint32 oldalpha = surface->format->alpha;
+
+	/* Sanity check the flag as it gets passed in */
+	if ( flag & MIL_SRCALPHA ) {
+		if ( flag & (MIL_RLEACCEL|MIL_RLEACCELOK) ) {
+			flag = (MIL_SRCALPHA | MIL_RLEACCELOK);
+		} else {
+			flag = MIL_SRCALPHA;
+		}
+	} else {
+		flag = 0;
+	}
+
+	/* Optimize away operations that don't change anything */
+	if ( (flag == (surface->flags & (MIL_SRCALPHA|MIL_RLEACCELOK))) &&
+	     (!flag || value == oldalpha) ) {
+		return(0);
+	}
+
+	if(!(flag & MIL_RLEACCELOK) && (surface->flags & MIL_RLEACCEL))
+		MIL_UnRLESurface(surface, 1);
+
+	if ( flag ) {
+		VideoDevice* video = ACT_VIDEO_DEVICE;
+		VideoDevice* this  = ACT_VIDEO_DEVICE;
+
+		surface->flags |= MIL_SRCALPHA;
+		surface->format->alpha = value;
+		if ( (surface->flags & MIL_HWACCEL) == MIL_HWACCEL ) {
+			if ( (_vc2(video, setHWAlpha, surface, value) < 0) ) {
+				surface->flags &= ~MIL_HWACCEL;
+			}
+		}
+		if ( flag & MIL_RLEACCELOK ) {
+		        surface->flags |= MIL_RLEACCELOK;
+		} else {
+		        surface->flags &= ~MIL_RLEACCELOK;
+		}
+	} else {
+		surface->flags &= ~MIL_SRCALPHA;
+		surface->format->alpha = MIL_ALPHA_OPAQUE;
+	}
+	/*
+	 * The representation for software surfaces is independent of
+	 * per-surface alpha, so no need to invalidate the blit mapping
+	 * if just the alpha value was changed. (If either is 255, we still
+	 * need to invalidate.)
+	 */
+	if((surface->flags & MIL_HWACCEL) == MIL_HWACCEL
+	   || oldflags != surface->flags
+	   || (((oldalpha + 1) ^ (value + 1)) & 0x100))
+		MIL_InvalidateMap(surface->map);
+	return(0);
+}
 
 MIL_bool Surface_X_setClipRect(_SELF, const MIL_Rect *rect)
 {
@@ -264,8 +368,8 @@ int  Surface_X_blitSurface(_SELF, MIL_Rect *srcrect, Surface *dst, MIL_Rect *dst
 
 	/* clip the destination rectangle against the clip rectangle */
 	{
-	        MIL_Rect *clip = &dst->clip_rect;
-		int dx, dy;
+        MIL_Rect *clip = &dst->clip_rect;
+        int dx, dy;
 
 		dx = clip->x - dstrect->x;
 		if(dx > 0) {
