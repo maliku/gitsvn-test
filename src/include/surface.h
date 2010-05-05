@@ -11,8 +11,10 @@
 #define  SURFACE_INC
 #include "MIL_video.h"
 #include "MIL_mutex.h"
+#include "pixel_format.h"
 
-struct MIL_BlitMap;
+struct _MIL_BlitMap;
+typedef struct _MIL_BlitMap MIL_BlitMap;
 
 CLASS(Surface)
 {
@@ -28,7 +30,7 @@ CLASS(Surface)
     int  (*saveBMP)(_SELF, const char *file);
     Surface* (*displayFormat)(_SELF);
     Surface* (*displayFormatAlpha)(_SELF);
-    Surface* (*convert)(_SELF, MIL_PixelFormat *fmt, Uint32 flags);
+    Surface* (*convert)(_SELF, PixelFormat *fmt, Uint32 flags);
 
     Uint32 (*getWidth)(_CSELF);
     Uint32 (*getHeight)(_CSELF);
@@ -42,7 +44,7 @@ CLASS(Surface)
     METHOD_DECLARE_PLACEHOLDER(Surface)
     
     Uint32 flags;				/* Read-only */
-	MIL_PixelFormat *format;		/* Read-only */
+	PixelFormat* format;		/* Read-only */
 	Uint32 w, h;				/* Read-only */
 	Uint32 pitch;				/* Read-only */
 	void *pixels;				/* Read-write */
@@ -58,7 +60,7 @@ CLASS(Surface)
 	Uint32 locked;				/* Private */
 
 	/* info for fast blit mapping to other surfaces */
-	struct MIL_BlitMap *map;		/* Private */
+	MIL_BlitMap *map;		/* Private */
 
 	/* format version, bumped at every change to invalidate blit maps */
 	unsigned int format_version;		/* Private */

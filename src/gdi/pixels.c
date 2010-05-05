@@ -28,209 +28,21 @@
 #include "surface.h"
 #include "blit.h"
 #include "pixels.h"
+#include "pixel_format.h"
 #include "RLEaccel.h"
 
 /* Helper functions */
-/*
- * Allocate a pixel format structure and fill it according to the given info.
- */
-MIL_PixelFormat* MIL_AllocFormat(int bpp,
-			Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
-{
-	MIL_PixelFormat *format;
-	Uint32 mask;
 
-	/* Allocate an empty pixel format structure */
-	format = MIL_malloc(sizeof(*format));
-	if ( format == NULL ) {
-		MIL_OutOfMemory();
-		return(NULL);
-	}
-	MIL_memset(format, 0, sizeof(*format));
-	format->alpha = MIL_ALPHA_OPAQUE;
-
-	/* Set up the format */
-	format->BitsPerPixel = bpp;
-	format->BytesPerPixel = (bpp+7)/8;
-	if ( Rmask || Bmask || Gmask ) { /* Packed pixels with custom mask */
-		format->palette = NULL;
-		format->Rshift = 0;
-		format->Rloss = 8;
-		if ( Rmask ) {
-			for ( mask = Rmask; !(mask&0x01); mask >>= 1 )
-				++format->Rshift;
-			for ( ; (mask&0x01); mask >>= 1 )
-				--format->Rloss;
-		}
-		format->Gshift = 0;
-		format->Gloss = 8;
-		if ( Gmask ) {
-			for ( mask = Gmask; !(mask&0x01); mask >>= 1 )
-				++format->Gshift;
-			for ( ; (mask&0x01); mask >>= 1 )
-				--format->Gloss;
-		}
-		format->Bshift = 0;
-		format->Bloss = 8;
-		if ( Bmask ) {
-			for ( mask = Bmask; !(mask&0x01); mask >>= 1 )
-				++format->Bshift;
-			for ( ; (mask&0x01); mask >>= 1 )
-				--format->Bloss;
-		}
-		format->Ashift = 0;
-		format->Aloss = 8;
-		if ( Amask ) {
-			for ( mask = Amask; !(mask&0x01); mask >>= 1 )
-				++format->Ashift;
-			for ( ; (mask&0x01); mask >>= 1 )
-				--format->Aloss;
-		}
-		format->Rmask = Rmask;
-		format->Gmask = Gmask;
-		format->Bmask = Bmask;
-		format->Amask = Amask;
-	} else if ( bpp > 8 ) {		/* Packed pixels with standard mask */
-		/* R-G-B */
-		if ( bpp > 24 )
-			bpp = 24;
-		format->Rloss = 8-(bpp/3);
-		format->Gloss = 8-(bpp/3)-(bpp%3);
-		format->Bloss = 8-(bpp/3);
-		format->Rshift = ((bpp/3)+(bpp%3))+(bpp/3);
-		format->Gshift = (bpp/3);
-		format->Bshift = 0;
-		format->Rmask = ((0xFF>>format->Rloss)<<format->Rshift);
-		format->Gmask = ((0xFF>>format->Gloss)<<format->Gshift);
-		format->Bmask = ((0xFF>>format->Bloss)<<format->Bshift);
-	} else {
-		/* Palettized formats have no mask info */
-		format->Rloss = 8;
-		format->Gloss = 8;
-		format->Bloss = 8;
-		format->Aloss = 8;
-		format->Rshift = 0;
-		format->Gshift = 0;
-		format->Bshift = 0;
-		format->Ashift = 0;
-		format->Rmask = 0;
-		format->Gmask = 0;
-		format->Bmask = 0;
-		format->Amask = 0;
-	}
-	if ( bpp <= 8 ) {			/* Palettized mode */
-		int ncolors = 1<<bpp;
-#ifdef DEBUG_PALETTE
-		fprintf(stderr,"bpp=%d ncolors=%d\n",bpp,ncolors);
-#endif
-		format->palette = (MIL_Palette *)MIL_malloc(sizeof(MIL_Palette));
-		if ( format->palette == NULL ) {
-			MIL_FreeFormat(format);
-			MIL_OutOfMemory();
-			return(NULL);
-		}
-		(format->palette)->ncolors = ncolors;
-		(format->palette)->colors = (MIL_Color *)MIL_malloc(
-				(format->palette)->ncolors*sizeof(MIL_Color));
-		if ( (format->palette)->colors == NULL ) {
-			MIL_FreeFormat(format);
-			MIL_OutOfMemory();
-			return(NULL);
-		}
-		if ( Rmask || Bmask || Gmask ) {
-			/* create palette according to masks */
-			int i;
-			int Rm=0,Gm=0,Bm=0;
-			int Rw=0,Gw=0,Bw=0;
-#ifdef ENABLE_PALETTE_ALPHA
-			int Am=0,Aw=0;
-#endif
-			if(Rmask)
-			{
-				Rw=8-format->Rloss;
-				for(i=format->Rloss;i>0;i-=Rw)
-					Rm|=1<<i;
-			}
-#ifdef DEBUG_PALETTE
-			fprintf(stderr,"Rw=%d Rm=0x%02X\n",Rw,Rm);
-#endif
-			if(Gmask)
-			{
-				Gw=8-format->Gloss;
-				for(i=format->Gloss;i>0;i-=Gw)
-					Gm|=1<<i;
-			}
-#ifdef DEBUG_PALETTE
-			fprintf(stderr,"Gw=%d Gm=0x%02X\n",Gw,Gm);
-#endif
-			if(Bmask)
-			{
-				Bw=8-format->Bloss;
-				for(i=format->Bloss;i>0;i-=Bw)
-					Bm|=1<<i;
-			}
-#ifdef DEBUG_PALETTE
-			fprintf(stderr,"Bw=%d Bm=0x%02X\n",Bw,Bm);
-#endif
-#ifdef ENABLE_PALETTE_ALPHA
-			if(Amask)
-			{
-				Aw=8-format->Aloss;
-				for(i=format->Aloss;i>0;i-=Aw)
-					Am|=1<<i;
-			}
-# ifdef DEBUG_PALETTE
-			fprintf(stderr,"Aw=%d Am=0x%02X\n",Aw,Am);
-# endif
-#endif
-			for(i=0; i < ncolors; ++i) {
-				int r,g,b;
-				r=(i&Rmask)>>format->Rshift;
-				r=(r<<format->Rloss)|((r*Rm)>>Rw);
-				format->palette->colors[i].r=r;
-
-				g=(i&Gmask)>>format->Gshift;
-				g=(g<<format->Gloss)|((g*Gm)>>Gw);
-				format->palette->colors[i].g=g;
-
-				b=(i&Bmask)>>format->Bshift;
-				b=(b<<format->Bloss)|((b*Bm)>>Bw);
-				format->palette->colors[i].b=b;
-
-#ifdef ENABLE_PALETTE_ALPHA
-				a=(i&Amask)>>format->Ashift;
-				a=(a<<format->Aloss)|((a*Am)>>Aw);
-				format->palette->colors[i].unused=a;
-#else
-				format->palette->colors[i].unused=0;
-#endif
-			}
-		} else if ( ncolors == 2 ) {
-			/* Create a black and white bitmap palette */
-			format->palette->colors[0].r = 0xFF;
-			format->palette->colors[0].g = 0xFF;
-			format->palette->colors[0].b = 0xFF;
-			format->palette->colors[1].r = 0x00;
-			format->palette->colors[1].g = 0x00;
-			format->palette->colors[1].b = 0x00;
-		} else {
-			/* Create an empty palette */
-			MIL_memset((format->palette)->colors, 0,
-				(format->palette)->ncolors*sizeof(MIL_Color));
-		}
-	}
-	return(format);
-}
 
 MIL_PixelFormat *MIL_ReallocFormat(Surface *surface, int bpp,
 			Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
 {
 	if ( surface->format ) {
-		MIL_FreeFormat(surface->format);
+		Delete(surface->format);
 		MIL_FormatChanged(surface);
 	}
-	surface->format = MIL_AllocFormat(bpp, Rmask, Gmask, Bmask, Amask);
-	return surface->format;
+	surface->format = (PixelFormat*)MIL_AllocFormat(bpp, Rmask, Gmask, Bmask, Amask);
+	return (MIL_PixelFormat*)surface->format;
 }
 
 /*
@@ -246,6 +58,8 @@ void MIL_FormatChanged(Surface *surface)
 	surface->format_version = format_version;
 	MIL_InvalidateMap(surface->map);
 }
+
+#if 0
 /*
  * Free a previously allocated format structure
  */
@@ -261,6 +75,8 @@ void MIL_FreeFormat(MIL_PixelFormat *format)
 		MIL_free(format);
 	}
 }
+#endif
+
 /*
  * Calculate an 8-bit (3 red, 3 green, 2 blue) dithered palette of colors
  */
@@ -337,6 +153,7 @@ Uint8 MIL_FindColor(MIL_Palette *pal, Uint8 r, Uint8 g, Uint8 b)
 	return(pixel);
 }
 
+#if 0
 /* Find the opaque pixel value corresponding to an RGB triple */
 Uint32 MIL_MapRGB
 (const MIL_PixelFormat * const format,
@@ -419,6 +236,7 @@ void MIL_GetRGB(Uint32 pixel, const MIL_PixelFormat * const fmt,
 		*b = fmt->palette->colors[pixel].b;
 	}
 }
+#endif
 
 /* Apply gamma to a set of colors - this is easy. :) */
 void MIL_ApplyGamma(Uint16 *gamma, MIL_Color *colors, MIL_Color *output,
@@ -433,8 +251,9 @@ void MIL_ApplyGamma(Uint16 *gamma, MIL_Color *colors, MIL_Color *output,
 	}
 }
 
+#if 0
 /* Map from Palette to Palette */
-static Uint8 *Map1to1(MIL_Palette *src, MIL_Palette *dst, int *identical)
+Uint8* Map1to1(MIL_Palette *src, MIL_Palette *dst, int *identical)
 {
 	Uint8 *map;
 	int i;
@@ -462,7 +281,7 @@ static Uint8 *Map1to1(MIL_Palette *src, MIL_Palette *dst, int *identical)
 	return(map);
 }
 /* Map from Palette to BitField */
-static Uint8 *Map1toN(MIL_PixelFormat *src, MIL_PixelFormat *dst)
+Uint8 *Map1toN(PixelFormat *src, PixelFormat *dst)
 {
 	Uint8 *map;
 	int i;
@@ -503,6 +322,7 @@ static Uint8 *MapNto1(MIL_PixelFormat *src, MIL_PixelFormat *dst, int *identical
 	dithered.colors = colors;
 	return(Map1to1(&dithered, pal, identical));
 }
+#endif
 
 MIL_BlitMap *MIL_AllocBlitMap(void)
 {
@@ -540,10 +360,10 @@ void MIL_InvalidateMap(MIL_BlitMap *map)
 		map->table = NULL;
 	}
 }
-int MIL_MapSurface (Surface *src, Surface *dst)
+int MIL_MapSurface(Surface *src, Surface *dst)
 {
-	MIL_PixelFormat *srcfmt;
-	MIL_PixelFormat *dstfmt;
+	PixelFormat *srcfmt;
+	PixelFormat *dstfmt;
 	MIL_BlitMap *map;
 
 	/* Clear out any previous mapping */
@@ -581,7 +401,7 @@ int MIL_MapSurface (Surface *src, Surface *dst)
 
 		    default:
 			/* Palette --> BitField */
-			map->table = Map1toN(srcfmt, dstfmt);
+			map->table = _vc1(srcfmt, map1toN, (MIL_PixelFormat*)dstfmt);
 			if ( map->table == NULL ) {
 				return(-1);
 			}
@@ -592,7 +412,7 @@ int MIL_MapSurface (Surface *src, Surface *dst)
 		switch (dstfmt->BytesPerPixel) {
 		    case 1:
 			/* BitField --> Palette */
-			map->table = MapNto1(srcfmt, dstfmt, &map->identity);
+			map->table = _vc2(srcfmt, mapNto1, (MIL_PixelFormat*)dstfmt, &map->identity);
 			if ( ! map->identity ) {
 				if ( map->table == NULL ) {
 					return(-1);

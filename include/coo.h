@@ -67,7 +67,7 @@ struct _##type {\
 #define	CLASS_INHERIT_END };
 
 #define	_Self(type)	type* self		/* 'this' pointer for COO framework */
-#define	_CSelf(type)	const type* self		/* 'this' pointer for COO framework */
+#define	_CSelf(type)	const type* const self		/* 'this' pointer for COO framework */
 #define	_Rhs(type)	type* rhs		/* 'rhs' pointer for COO framework */
 #define	_SELF   _Self(void)		/* 'this' pointer for COO framework */
 #define	_CSELF  _CSelf(void)		/* 'this' pointer for COO framework */

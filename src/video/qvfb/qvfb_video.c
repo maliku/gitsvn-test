@@ -17,19 +17,22 @@
 #include <sys/shm.h>
 
 #include "surface.h"
+#include "pixel_format.h"
 #include "qvfb_video.h"
 
 #define QVFB_VIDEO_DRIVER_NAME "qvfb"
 
 VideoDevice* CreateQVFbVideoDevice(void)
 {
-    MIL_PixelFormat vf;
     VideoDevice* vd = (VideoDevice*)New(QVFbVideoDevice);
     if (NULL != vd) {
-        if (0 != _VC(vd)->videoInit(vd, &vf)) {
+        PixelFormat *vf = (PixelFormat*)New(PixelFormat);
+        if (0 != _VC(vd)->videoInit(vd, vf)) {
             Delete(vd);
+            Delete(vf);
             return NULL;
         }
+        Delete(vf);
     }
     return vd;
 }
@@ -53,8 +56,9 @@ DESTRUCTOR(QVFbVideoDevice)
     MIL_free(((QVFbVideoDevice*)self)->hw_data);
 }
 
-static int format_calc(MIL_PixelFormat* vformat, int bpp)
+static int format_calc(PixelFormat* fmt, int bpp)
 {
+    PixelFormat* vformat = (PixelFormat*)fmt;
     if (NULL == vformat) return -1;
     vformat->BitsPerPixel = bpp;
     switch (vformat->BitsPerPixel) {
@@ -82,7 +86,8 @@ static int format_calc(MIL_PixelFormat* vformat, int bpp)
             break;
         case 32:
             vformat->BytesPerPixel = 4;
-            vformat->Amask = 0xFF000000;
+//            vformat->Amask = 0xFF000000;
+//          The code seems like useless.
             vformat->Rmask = 0x00FF0000;
             vformat->Gmask = 0x0000FF00;
             vformat->Bmask = 0x000000FF;
@@ -94,7 +99,7 @@ static int format_calc(MIL_PixelFormat* vformat, int bpp)
     return 0;
 }
 
-int QVFbVideoDevice_X_videoInit(_Self(VideoDevice), MIL_PixelFormat *vformat)
+int QVFbVideoDevice_X_videoInit(_Self(VideoDevice), PixelFormat *vformat)
 {
     char file [MIL_MAX_PATH];
     int display = 0;
@@ -119,16 +124,15 @@ int QVFbVideoDevice_X_videoInit(_Self(VideoDevice), MIL_PixelFormat *vformat)
 
     data->hdr = (QVFbHeader *) data->shmrgn;
 
-    vformat->BitsPerPixel = data->hdr->depth;
     format_calc(vformat, data->hdr->depth);
-    if (8 == vformat->BitsPerPixel) {
+    if (8 == _vc0(vformat, getBitsPerPixel)) {
         data->hdr->numcols = 256;
     }
     return 0;
 }
 
 MIL_Rect** QVFbVideoDevice_X_listModes(_Self(VideoDevice), 
-        MIL_PixelFormat *format, Uint32 flags)
+        PixelFormat *format, Uint32 flags)
 {
     return (MIL_Rect **) -1;
 }

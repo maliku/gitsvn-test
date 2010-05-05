@@ -782,7 +782,7 @@ do {							\
 static void RLEClipBlit(int w, Uint8 *srcbuf, Surface *dst,
 			Uint8 *dstbuf, MIL_Rect *srcrect, unsigned alpha)
 {
-    MIL_PixelFormat *fmt = dst->format;
+    PixelFormat *fmt = dst->format;
 
 #define RLECLIPBLIT(bpp, Type, do_blit)					   \
     do {								   \
@@ -901,7 +901,7 @@ int MIL_RLEBlit(Surface *src, MIL_Rect *srcrect,
 	if ( srcrect->x || srcrect->w != src->w ) {
 	    RLEClipBlit(w, srcbuf, dst, dstbuf, srcrect, alpha);
 	} else {
-	    MIL_PixelFormat *fmt = src->format;
+	    PixelFormat *fmt = src->format;
 
 #define RLEBLIT(bpp, Type, do_blit)					      \
 	    do {							      \
@@ -994,7 +994,7 @@ done:
     } while(0)
 
 /* used to save the destination format in the encoding. Designed to be
-   macro-compatible with MIL_PixelFormat but without the unneeded fields */
+   macro-compatible with PixelFormat but without the unneeded fields */
 typedef struct {
 	Uint8  BytesPerPixel;
 	Uint8  Rloss;
@@ -1014,7 +1014,7 @@ typedef struct {
 static void RLEAlphaClipBlit(int w, Uint8 *srcbuf, Surface *dst,
 			     Uint8 *dstbuf, MIL_Rect *srcrect)
 {
-    MIL_PixelFormat *df = dst->format;
+    PixelFormat *df = dst->format;
     /*
      * clipped blitter: Ptype is the destination pixel type,
      * Ctype the translucent count type, and do_blend the macro
@@ -1109,7 +1109,7 @@ int MIL_RLEAlphaBlit(Surface *src, MIL_Rect *srcrect,
     int x, y;
     int w = src->w;
     Uint8 *srcbuf, *dstbuf;
-    MIL_PixelFormat *df = dst->format;
+    PixelFormat *df = dst->format;
 
     /* Lock the destination if necessary */
     if ( MIL_MUSTLOCK(dst) ) {
@@ -1269,7 +1269,7 @@ int MIL_RLEAlphaBlit(Surface *src, MIL_Rect *srcrect,
 
 /* encode 32bpp rgb + a into 16bpp rgb, losing alpha */
 static int copy_opaque_16(void *dst, Uint32 *src, int n,
-			  MIL_PixelFormat *sfmt, MIL_PixelFormat *dfmt)
+			  PixelFormat *sfmt, PixelFormat *dfmt)
 {
     int i;
     Uint16 *d = dst;
@@ -1285,7 +1285,7 @@ static int copy_opaque_16(void *dst, Uint32 *src, int n,
 
 /* decode opaque pixels from 16bpp to 32bpp rgb + a */
 static int uncopy_opaque_16(Uint32 *dst, void *src, int n,
-			    RLEDestFormat *sfmt, MIL_PixelFormat *dfmt)
+			    RLEDestFormat *sfmt, PixelFormat *dfmt)
 {
     int i;
     Uint16 *s = src;
@@ -1304,7 +1304,7 @@ static int uncopy_opaque_16(Uint32 *dst, void *src, int n,
 
 /* encode 32bpp rgb + a into 32bpp G0RAB format for blitting into 565 */
 static int copy_transl_565(void *dst, Uint32 *src, int n,
-			   MIL_PixelFormat *sfmt, MIL_PixelFormat *dfmt)
+			   PixelFormat *sfmt, PixelFormat *dfmt)
 {
     int i;
     Uint32 *d = dst;
@@ -1322,7 +1322,7 @@ static int copy_transl_565(void *dst, Uint32 *src, int n,
 
 /* encode 32bpp rgb + a into 32bpp G0RAB format for blitting into 555 */
 static int copy_transl_555(void *dst, Uint32 *src, int n,
-			   MIL_PixelFormat *sfmt, MIL_PixelFormat *dfmt)
+			   PixelFormat *sfmt, PixelFormat *dfmt)
 {
     int i;
     Uint32 *d = dst;
@@ -1340,7 +1340,7 @@ static int copy_transl_555(void *dst, Uint32 *src, int n,
 
 /* decode translucent pixels from 32bpp GORAB to 32bpp rgb + a */
 static int uncopy_transl_16(Uint32 *dst, void *src, int n,
-			    RLEDestFormat *sfmt, MIL_PixelFormat *dfmt)
+			    RLEDestFormat *sfmt, PixelFormat *dfmt)
 {
     int i;
     Uint32 *s = src;
@@ -1358,7 +1358,7 @@ static int uncopy_transl_16(Uint32 *dst, void *src, int n,
 
 /* encode 32bpp rgba into 32bpp rgba, keeping alpha (dual purpose) */
 static int copy_32(void *dst, Uint32 *src, int n,
-		   MIL_PixelFormat *sfmt, MIL_PixelFormat *dfmt)
+		   PixelFormat *sfmt, PixelFormat *dfmt)
 {
     int i;
     Uint32 *d = dst;
@@ -1375,7 +1375,7 @@ static int copy_32(void *dst, Uint32 *src, int n,
 
 /* decode 32bpp rgba into 32bpp rgba, keeping alpha (dual purpose) */
 static int uncopy_32(Uint32 *dst, void *src, int n,
-		     RLEDestFormat *sfmt, MIL_PixelFormat *dfmt)
+		     RLEDestFormat *sfmt, PixelFormat *dfmt)
 {
     int i;
     Uint32 *s = src;
@@ -1399,16 +1399,16 @@ static int uncopy_32(Uint32 *dst, void *src, int n,
 static int RLEAlphaSurface(Surface *surface)
 {
     Surface *dest;
-    MIL_PixelFormat *df;
+    PixelFormat *df;
     int maxsize = 0;
     int max_opaque_run;
     int max_transl_run = 65535;
     unsigned masksum;
     Uint8 *rlebuf, *dst;
     int (*copy_opaque)(void *, Uint32 *, int,
-		       MIL_PixelFormat *, MIL_PixelFormat *);
+		       PixelFormat *, PixelFormat *);
     int (*copy_transl)(void *, Uint32 *, int,
-		       MIL_PixelFormat *, MIL_PixelFormat *);
+		       PixelFormat *, PixelFormat *);
 
     dest = surface->map->dst;
     if(!dest)
@@ -1491,7 +1491,7 @@ static int RLEAlphaSurface(Surface *surface)
     {
 	int x, y;
 	int h = surface->h, w = surface->w;
-	MIL_PixelFormat *sf = surface->format;
+	PixelFormat *sf = surface->format;
 	Uint32 *src = (Uint32 *)surface->pixels;
 	Uint8 *lastline = dst;	/* end of last non-blank line */
 
@@ -1826,12 +1826,12 @@ static MIL_bool UnRLEAlpha(Surface *surface)
 {
     Uint8 *srcbuf;
     Uint32 *dst;
-    MIL_PixelFormat *sf = surface->format;
+    PixelFormat *sf = surface->format;
     RLEDestFormat *df = surface->map->sw_data->aux_data;
     int (*uncopy_opaque)(Uint32 *, void *, int,
-			 RLEDestFormat *, MIL_PixelFormat *);
+			 RLEDestFormat *, PixelFormat *);
     int (*uncopy_transl)(Uint32 *, void *, int,
-			 RLEDestFormat *, MIL_PixelFormat *);
+			 RLEDestFormat *, PixelFormat *);
     int w = surface->w;
     int bpp = df->BytesPerPixel;
 

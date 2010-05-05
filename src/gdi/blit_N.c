@@ -101,8 +101,8 @@ static size_t GetL3CacheSize( void )
     : vec_add(vec_lvsl(8, src), vec_splat_u8(8)))
 
 /* Calculate the permute vector used for 32->32 swizzling */
-static vector unsigned char calc_swizzle32(const MIL_PixelFormat *srcfmt,
-                                  const MIL_PixelFormat *dstfmt)
+static vector unsigned char calc_swizzle32(const PixelFormat *srcfmt,
+                                  const PixelFormat *dstfmt)
 {
     /*
     * We have to assume that the bits that aren't used by other
@@ -110,7 +110,7 @@ static vector unsigned char calc_swizzle32(const MIL_PixelFormat *srcfmt,
      *  leave alpha with a zero mask, but we should still swizzle the bits.
      */
     /* ARGB */
-    const static struct MIL_PixelFormat default_pixel_format = {
+    const static struct PixelFormat default_pixel_format = {
         NULL, 0, 0,
         0, 0, 0, 0,
         16, 8, 0, 24,
@@ -153,7 +153,7 @@ static void Blit_RGB888_RGB565Altivec(MIL_BlitInfo *info) {
     int srcskip = info->s_skip;
     Uint8 *dst = (Uint8 *) info->d_pixels;
     int dstskip = info->d_skip;
-    MIL_PixelFormat *srcfmt = info->src;
+    PixelFormat *srcfmt = info->src;
     vector unsigned char valpha = vec_splat_u8(0);
     vector unsigned char vpermute = calc_swizzle32(srcfmt, NULL);
     vector unsigned char vgmerge = VECUINT8_LITERAL(
@@ -254,8 +254,8 @@ static void Blit_RGB565_32Altivec(MIL_BlitInfo *info) {
     int srcskip = info->s_skip;
     Uint8 *dst = (Uint8 *) info->d_pixels;
     int dstskip = info->d_skip;
-    MIL_PixelFormat *srcfmt = info->src;
-    MIL_PixelFormat *dstfmt = info->dst;
+    PixelFormat *srcfmt = info->src;
+    PixelFormat *dstfmt = info->dst;
     unsigned alpha;
     vector unsigned char valpha;
     vector unsigned char vpermute;
@@ -399,8 +399,8 @@ static void Blit_RGB555_32Altivec(MIL_BlitInfo *info) {
     int srcskip = info->s_skip;
     Uint8 *dst = (Uint8 *) info->d_pixels;
     int dstskip = info->d_skip;
-    MIL_PixelFormat *srcfmt = info->src;
-    MIL_PixelFormat *dstfmt = info->dst;
+    PixelFormat *srcfmt = info->src;
+    PixelFormat *dstfmt = info->dst;
     unsigned alpha;
     vector unsigned char valpha;
     vector unsigned char vpermute;
@@ -546,9 +546,9 @@ static void Blit32to32KeyAltivec(MIL_BlitInfo *info)
     int srcskip = info->s_skip;
     Uint32 *dstp = (Uint32 *) info->d_pixels;
     int dstskip = info->d_skip;
-    MIL_PixelFormat *srcfmt = info->src;
+    PixelFormat *srcfmt = info->src;
     int srcbpp = srcfmt->BytesPerPixel;
-    MIL_PixelFormat *dstfmt = info->dst;
+    PixelFormat *dstfmt = info->dst;
     int dstbpp = dstfmt->BytesPerPixel;
     int copy_alpha = (srcfmt->Amask && dstfmt->Amask);
 	unsigned alpha = dstfmt->Amask ? srcfmt->alpha : 0;
@@ -660,8 +660,8 @@ static void ConvertAltivec32to32_noprefetch(MIL_BlitInfo *info)
     int srcskip = info->s_skip;
     Uint32 *dst = (Uint32 *) info->d_pixels;
     int dstskip = info->d_skip;
-    MIL_PixelFormat *srcfmt = info->src;
-    MIL_PixelFormat *dstfmt = info->dst;
+    PixelFormat *srcfmt = info->src;
+    PixelFormat *dstfmt = info->dst;
     vector unsigned int vzero = vec_splat_u32(0);
     vector unsigned char vpermute = calc_swizzle32(srcfmt, dstfmt);
     if (dstfmt->Amask && !srcfmt->Amask) {
@@ -738,8 +738,8 @@ static void ConvertAltivec32to32_prefetch(MIL_BlitInfo *info)
     int srcskip = info->s_skip;
     Uint32 *dst = (Uint32 *) info->d_pixels;
     int dstskip = info->d_skip;
-    MIL_PixelFormat *srcfmt = info->src;
-    MIL_PixelFormat *dstfmt = info->dst;
+    PixelFormat *srcfmt = info->src;
+    PixelFormat *dstfmt = info->dst;
     vector unsigned int vzero = vec_splat_u32(0);
     vector unsigned char vpermute = calc_swizzle32(srcfmt, dstfmt);
     if (dstfmt->Amask && !srcfmt->Amask) {
@@ -1906,7 +1906,7 @@ static void BlitNto1(MIL_BlitInfo *info)
 	int srcbpp;
 	Uint32 Pixel;
 	int  sR, sG, sB;
-	MIL_PixelFormat *srcfmt;
+	PixelFormat *srcfmt;
 
 	/* Set up some basic variables */
 	width = info->d_width;
@@ -1995,8 +1995,8 @@ static void Blit4to4MaskAlpha(MIL_BlitInfo *info)
 	int srcskip = info->s_skip;
 	Uint32 *dst = (Uint32 *)info->d_pixels;
 	int dstskip = info->d_skip;
-	MIL_PixelFormat *srcfmt = info->src;
-	MIL_PixelFormat *dstfmt = info->dst;
+	PixelFormat *srcfmt = info->src;
+	PixelFormat *dstfmt = info->dst;
 
 	if (dstfmt->Amask) {
 		/* RGB->RGBA, SET_ALPHA */
@@ -2039,9 +2039,9 @@ static void BlitNtoN(MIL_BlitInfo *info)
 	int srcskip = info->s_skip;
 	Uint8 *dst = info->d_pixels;
 	int dstskip = info->d_skip;
-	MIL_PixelFormat *srcfmt = info->src;
+	PixelFormat *srcfmt = info->src;
 	int srcbpp = srcfmt->BytesPerPixel;
-	MIL_PixelFormat *dstfmt = info->dst;
+	PixelFormat *dstfmt = info->dst;
 	int dstbpp = dstfmt->BytesPerPixel;
 	unsigned alpha = dstfmt->Amask ? srcfmt->alpha : 0;
 
@@ -2071,9 +2071,9 @@ static void BlitNtoNCopyAlpha(MIL_BlitInfo *info)
 	int srcskip = info->s_skip;
 	Uint8 *dst = info->d_pixels;
 	int dstskip = info->d_skip;
-	MIL_PixelFormat *srcfmt = info->src;
+	PixelFormat *srcfmt = info->src;
 	int srcbpp = srcfmt->BytesPerPixel;
-	MIL_PixelFormat *dstfmt = info->dst;
+	PixelFormat *dstfmt = info->dst;
 	int dstbpp = dstfmt->BytesPerPixel;
 	int c;
 
@@ -2102,7 +2102,7 @@ static void BlitNto1Key(MIL_BlitInfo *info)
 	int srcskip = info->s_skip;
 	Uint8 *dst = info->d_pixels;
 	int dstskip = info->d_skip;
-	MIL_PixelFormat *srcfmt = info->src;
+	PixelFormat *srcfmt = info->src;
 	const Uint8 *palmap = info->table;
 	Uint32 ckey = srcfmt->colorkey;
 	Uint32 rgbmask = ~srcfmt->Amask;
@@ -2195,8 +2195,8 @@ static void BlitNtoNKey(MIL_BlitInfo *info)
 	Uint8 *dst = info->d_pixels;
 	int dstskip = info->d_skip;
 	Uint32 ckey = info->src->colorkey;
-	MIL_PixelFormat *srcfmt = info->src;
-	MIL_PixelFormat *dstfmt = info->dst;
+	PixelFormat *srcfmt = info->src;
+	PixelFormat *dstfmt = info->dst;
 	int srcbpp = srcfmt->BytesPerPixel;
 	int dstbpp = dstfmt->BytesPerPixel;
 	unsigned alpha = dstfmt->Amask ? srcfmt->alpha : 0;
@@ -2236,8 +2236,8 @@ static void BlitNtoNKeyCopyAlpha(MIL_BlitInfo *info)
 	Uint8 *dst = info->d_pixels;
 	int dstskip = info->d_skip;
 	Uint32 ckey = info->src->colorkey;
-	MIL_PixelFormat *srcfmt = info->src;
-	MIL_PixelFormat *dstfmt = info->dst;
+	PixelFormat *srcfmt = info->src;
+	PixelFormat *dstfmt = info->dst;
 	Uint32 rgbmask = ~srcfmt->Amask;
 
 	Uint8 srcbpp;
@@ -2374,8 +2374,8 @@ static const struct blit_table *normal_blit[] = {
 MIL_loblit MIL_CalculateBlitN(Surface *surface, int blit_index)
 {
 	struct private_swaccel *sdata;
-	MIL_PixelFormat *srcfmt;
-	MIL_PixelFormat *dstfmt;
+	PixelFormat *srcfmt;
+	PixelFormat *dstfmt;
 	const struct blit_table *table;
 	int which;
 	MIL_loblit blitfun;

@@ -23,6 +23,7 @@
 
 #include "MIL_video.h"
 #include "blit.h"
+#include "pixel_format.h"
 #include "surface.h"
 
 /* Functions to blit from bitmaps to other surfaces */
@@ -350,7 +351,7 @@ static void BlitBtoNAlpha(MIL_BlitInfo *info)
 	int srcskip = info->s_skip;
 	int dstskip = info->d_skip;
 	const MIL_Color *srcpal	= info->src->palette->colors;
-	MIL_PixelFormat *dstfmt = info->dst;
+	PixelFormat *dstfmt = info->dst;
 	int  dstbpp;
 	int c;
 	const int A = info->src->alpha;
@@ -394,8 +395,8 @@ static void BlitBtoNAlphaKey(MIL_BlitInfo *info)
 	Uint8 *dst = info->d_pixels;
 	int srcskip = info->s_skip;
 	int dstskip = info->d_skip;
-	MIL_PixelFormat *srcfmt = info->src;
-	MIL_PixelFormat *dstfmt = info->dst;
+	PixelFormat *srcfmt = info->src;
+	PixelFormat *dstfmt = info->dst;
 	const MIL_Color *srcpal	= srcfmt->palette->colors;
 	int dstbpp;
 	int c;

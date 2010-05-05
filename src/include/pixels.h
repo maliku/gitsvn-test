@@ -26,12 +26,10 @@
 #include "blit.h"
 
 /* Pixel format functions */
-extern MIL_PixelFormat* MIL_AllocFormat(int bpp,
-		Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask);
-extern MIL_PixelFormat* MIL_ReallocFormat(Surface *surface, int bpp,
+MIL_PixelFormat* MIL_ReallocFormat(Surface *surface, int bpp,
 		Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask);
 extern void MIL_FormatChanged(Surface *surface);
-extern void MIL_FreeFormat(MIL_PixelFormat *format);
+//extern void MIL_FreeFormat(MIL_PixelFormat *format);
 
 /* Blit mapping functions */
 extern MIL_BlitMap* MIL_AllocBlitMap(void);

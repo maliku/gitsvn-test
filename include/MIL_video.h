@@ -58,7 +58,6 @@ typedef struct MIL_Color {
 	Uint8 b;
 	Uint8 unused;
 } MIL_Color;
-#define MIL_Colour MIL_Color
 
 typedef struct MIL_Palette {
 	int       ncolors;
@@ -66,30 +65,26 @@ typedef struct MIL_Palette {
 } MIL_Palette;
 /*@}*/
 
-/** Everything in the pixel format structure is read-only */
-typedef struct MIL_PixelFormat {
-	MIL_Palette *palette;
-	Uint8  BitsPerPixel;
-	Uint8  BytesPerPixel;
-	Uint8  Rloss;
-	Uint8  Gloss;
-	Uint8  Bloss;
-	Uint8  Aloss;
-	Uint8  Rshift;
-	Uint8  Gshift;
-	Uint8  Bshift;
-	Uint8  Ashift;
-	Uint32 Rmask;
-	Uint32 Gmask;
-	Uint32 Bmask;
-	Uint32 Amask;
+CLASS(MIL_PixelFormat) 
+{
+    VIRTUAL_METHOD_DECLARE_BEGIN(MIL_PixelFormat)
+        Uint32 (*mapRGB)(_CSELF, Uint8 r, Uint8 g, Uint8 b);
+        Uint32 (*mapRGBA)(_CSELF, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+        void (*getRGB)(_CSELF, Uint32 pixel, Uint8 *r,Uint8 *g,Uint8 *b);
+        void (*getRGBA)(_CSELF, Uint32 pixel, Uint8 *r, Uint8 *g, Uint8 *b, Uint8 *a);
+        Uint8* (*mapNto1)(_CSELF, MIL_PixelFormat *dst, int *identical);
+        Uint8* (*map1toN)(_CSELF, MIL_PixelFormat *dst);
+        Uint8  (*getBytesPerPixel)(_CSELF);
+        Uint8  (*getBitsPerPixel)(_CSELF);
+        Uint8  (*getAlpha)(_CSELF);
+        Uint32 (*getColorKey)(_CSELF);
+    VIRTUAL_METHOD_DECLARE_END
 
-	/** RGB color key information */
-	Uint32 colorkey;
-	/** Alpha value information (per-surface alpha) */
-	Uint8  alpha;
-} MIL_PixelFormat;
+    METHOD_DECLARE_PLACEHOLDER(MIL_PixelFormat)
+};
 
+extern MIL_PixelFormat* MIL_AllocFormat(int bpp,
+        Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask);
 #if 0
 /** This structure should be treated as read-only, except for 'pixels',
  *  which, if not NULL, contains the raw pixel data for the surface.

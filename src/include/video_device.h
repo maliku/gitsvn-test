@@ -22,12 +22,12 @@ CLASS(VideoDevice) {
 	/* Initialize the native video subsystem, filling 'vformat' with the 
 	   "best" display pixel format, returning 0 or -1 if there's an error.
 	 */
-	int (*videoInit)(_Self(VideoDevice), MIL_PixelFormat *vformat);
+	int (*videoInit)(_Self(VideoDevice), PixelFormat *vformat);
 
 	/* List the available video modes for the given pixel format, sorted
 	   from largest to smallest.
 	 */
-	MIL_Rect** (*listModes)(_Self(VideoDevice), MIL_PixelFormat *format, Uint32 flags);
+	MIL_Rect** (*listModes)(_Self(VideoDevice), PixelFormat *format, Uint32 flags);
 
 	/* Set the requested video mode, returning a surface which will be
 	   set to the MIL_VideoSurface.  The width and height will already
@@ -148,7 +148,7 @@ CLASS(VideoDevice) {
 	MIL_VideoInfo vinfo;
 
 	/* The pixel format used when MIL_CreateRGBSurface creates MIL_HWSURFACEs with alpha */
-	MIL_PixelFormat* display_format_alpha_pixel;
+	PixelFormat* display_format_alpha_pixel;
     Surface *screen;
     Surface *shadow;
 	Surface *visible;

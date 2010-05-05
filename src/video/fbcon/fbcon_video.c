@@ -26,6 +26,7 @@
 #include <linux/vt.h>
 
 #include "surface.h"
+#include "pixel_format.h"
 #include "fbcon_video.h"
 
 #if defined(i386) && defined(FB_TYPE_VGA_PLANES)
@@ -109,11 +110,15 @@ enum {
 
 VideoDevice* CreateFBconVideoDevice(void)
 {
-    MIL_PixelFormat vformat;
     VideoDevice* video = (VideoDevice*)New(FBconVideoDevice);
-    if (0 != _VC(video)->videoInit(video, &vformat)) {
-        Delete(video);
-        return NULL;
+    if (NULL != video) {
+        PixelFormat* vformat = (PixelFormat*)New(PixelFormat);
+        if (0 != _VC(video)->videoInit(video, vformat)) {
+            Delete(vformat);
+            Delete(video);
+            return NULL;
+        }
+        Delete(vformat);
     }
     return video;
 }
@@ -527,7 +532,7 @@ static Surface *FB_SetVGA16Mode(_Self(VideoDevice), Surface *cur,
 }
 #endif /* VGA16_FBCON_SUPPORT */
 
-static int FBconVideoDevice_X_videoInit(_Self(VideoDevice), MIL_PixelFormat *vformat)
+static int FBconVideoDevice_X_videoInit(_Self(VideoDevice), PixelFormat *format)
 {
 	const int pagesize = MIL_getpagesize();
 	struct fb_fix_screeninfo finfo;
@@ -539,6 +544,7 @@ static int FBconVideoDevice_X_videoInit(_Self(VideoDevice), MIL_PixelFormat *vfo
 	const char *MIL_fbdev;
 	const char *rotation;
 	FILE *modesdb;
+    PixelFormat* vformat = (PixelFormat*)format;
 
 	/* Initialize the library */
 	MIL_fbdev = MIL_getenv("MIL_FBDEV");
@@ -858,9 +864,9 @@ static int FBconVideoDevice_X_videoInit(_Self(VideoDevice), MIL_PixelFormat *vfo
 }
 
 static MIL_Rect** FBconVideoDevice_X_listModes(_Self(VideoDevice), 
-        MIL_PixelFormat *format, Uint32 flags)
+        PixelFormat *format, Uint32 flags)
 {
-	return(((FBconVideoDevice*)self)->hw_data->MIL_modelist[((format->BitsPerPixel+7)/8)-1]);
+	return(((FBconVideoDevice*)self)->hw_data->MIL_modelist[((_vc0(format, getBitsPerPixel)+7)/8)-1]);
 }
 
 /* Various screen update functions available */

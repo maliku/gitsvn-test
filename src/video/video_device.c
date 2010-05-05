@@ -25,7 +25,7 @@ VideoDevice* CreateVideoDevice(const char* driver_name)
 {
 	VideoDevice* video = NULL;
 	int i = 0;
-	MIL_PixelFormat vformat;
+	PixelFormat vformat;
 
 	/* Check to make sure we don't overwrite 'g_current_video' */
 	if ( NULL != g_current_video ) {
@@ -78,13 +78,13 @@ DESTRUCTOR(VideoDevice)
 {
 }
 
-int VideoDevice_X_videoInit(_Self(VideoDevice), MIL_PixelFormat *vformat)
+int VideoDevice_X_videoInit(_Self(VideoDevice), PixelFormat *vformat)
 {
     printf("VideoDevice::videoInit vformat=%p\n", vformat);
     return -1;
 }
 
-MIL_Rect** VideoDevice_X_listModes(_Self(VideoDevice), MIL_PixelFormat *format, Uint32 flags)
+MIL_Rect** VideoDevice_X_listModes(_Self(VideoDevice), PixelFormat *format, Uint32 flags)
 {
     return NULL;
 }

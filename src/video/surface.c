@@ -9,6 +9,8 @@
 
 #include "video_device.h"
 #include "surface.h"
+#include "pixel_format.h"
+#include "pixels.h"
 
 /*
  * A function to calculate the intersection of two rectangles:
@@ -96,7 +98,7 @@ DESTRUCTOR(Surface)
 	        MIL_UnRLESurface(surface, 0);
 	}
 	if ( surface->format ) {
-		MIL_FreeFormat(surface->format);
+		Delete(surface->format);
 		surface->format = NULL;
 	}
 	if ( surface->map != NULL ) {
@@ -305,12 +307,85 @@ int  Surface_X_saveBMP(_SELF, const char *file)
 {}
 
 Surface* Surface_X_displayFormat(_SELF)
-{}
+{
+	Uint32 flags;
+    Surface* surface = (Surface*)self;
+
+	if ( ! ACT_VIDEO_DEVICE->visible ) {
+		MIL_SetError("No video mode has been set");
+		return(NULL);
+	}
+	/* Set the flags appropriate for copying to display surface */
+	if (((ACT_VIDEO_DEVICE->visible->flags & MIL_HWSURFACE) == MIL_HWSURFACE) 
+            && ACT_VIDEO_DEVICE->vinfo.blit_hw)
+		flags = MIL_HWSURFACE;
+	else 
+		flags = MIL_SWSURFACE;
+#ifdef AUTORLE_DISPLAYFORMAT
+	flags |= (surface->flags & (MIL_SRCCOLORKEY | MIL_SRCALPHA));
+	flags |= MIL_RLEACCELOK;
+#else
+	flags |= surface->flags & (MIL_SRCCOLORKEY | MIL_SRCALPHA | MIL_RLEACCELOK);
+#endif
+	return(_vc2(surface, convert, ACT_VIDEO_DEVICE->visible->format, flags));
+
+}
 
 Surface* Surface_X_displayFormatAlpha(_SELF)
-{}
+{
+	PixelFormat* vf = NULL;
+	PixelFormat* format = NULL;
+	Surface* converted = NULL;
+    Surface* surface = (Surface*)self;
+	Uint32 flags;
+	/* default to ARGB8888 */
+	Uint32 amask = 0xff000000;
+	Uint32 rmask = 0x00ff0000;
+	Uint32 gmask = 0x0000ff00;
+	Uint32 bmask = 0x000000ff;
 
-Surface* Surface_X_convert(_SELF, MIL_PixelFormat *format, Uint32 flags)
+	if ( ! ACT_VIDEO_DEVICE->visible ) {
+		MIL_SetError("No video mode has been set");
+		return(NULL);
+	}
+	vf = ACT_VIDEO_DEVICE->visible->format;
+
+	switch(vf->BytesPerPixel) {
+	    case 2:
+		/* For XGY5[56]5, use, AXGY8888, where {X, Y} = {R, B}.
+		   For anything else (like ARGB4444) it doesn't matter
+		   since we have no special code for it anyway */
+		if ( (vf->Rmask == 0x1f) &&
+		     (vf->Bmask == 0xf800 || vf->Bmask == 0x7c00)) {
+			rmask = 0xff;
+			bmask = 0xff0000;
+		}
+		break;
+
+	    case 3:
+	    case 4:
+		/* Keep the video format, as long as the high 8 bits are
+		   unused or alpha */
+		if ( (vf->Rmask == 0xff) && (vf->Bmask == 0xff0000) ) {
+			rmask = 0xff;
+			bmask = 0xff0000;
+		}
+		break;
+
+	    default:
+		/* We have no other optimised formats right now. When/if a new
+		   optimised alpha format is written, add the converter here */
+		break;
+	}
+	format = (PixelFormat*)MIL_AllocFormat(32, rmask, gmask, bmask, amask);
+	flags = ACT_VIDEO_DEVICE->visible->flags & MIL_HWSURFACE;
+	flags |= surface->flags & (MIL_SRCALPHA | MIL_RLEACCELOK);
+	converted = _vc2(surface, convert, format, flags);
+	Delete(format);
+	return(converted);
+}
+
+Surface* Surface_X_convert(_SELF, PixelFormat *format, Uint32 flags)
 {
 	Surface* convert = NULL;
     Surface* surface = (Surface*)self;
@@ -396,10 +471,10 @@ Surface* Surface_X_convert(_SELF, MIL_PixelFormat *format, Uint32 flags)
 		if ( convert != NULL ) {
 			Uint8 keyR, keyG, keyB;
 
-			MIL_GetRGB(colorkey,surface->format,&keyR,&keyG,&keyB);
-			_vc2(convert, setColorKey, cflags|(flags&MIL_RLEACCELOK),
-				MIL_MapRGB(convert->format, keyR, keyG, keyB));
-		}
+			_vc4(surface->format, getRGB, colorkey, &keyR, &keyG, &keyB);
+            _vc2(convert, setColorKey, cflags|(flags&MIL_RLEACCELOK),
+                    _vc3(convert->format, mapRGB, keyR, keyG, keyB));
+        }
 		_vc2(surface, setColorKey, cflags, colorkey);
 	}
 	if ( (surface_flags & MIL_SRCALPHA) == MIL_SRCALPHA ) {
@@ -545,7 +620,7 @@ Surface * CreateRGBSurface (Uint32 flags,
 			Amask = screen->format->Amask;
 		}
 	}
-	surface->format = MIL_AllocFormat(depth, Rmask, Gmask, Bmask, Amask);
+	surface->format = (PixelFormat*)MIL_AllocFormat(depth, Rmask, Gmask, Bmask, Amask);
 	if ( surface->format == NULL ) {
 		MIL_free(surface);
 		return(NULL);

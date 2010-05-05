@@ -411,7 +411,7 @@ static void Blit1toNAlpha(MIL_BlitInfo *info)
 	int srcskip = info->s_skip;
 	Uint8 *dst = info->d_pixels;
 	int dstskip = info->d_skip;
-	MIL_PixelFormat *dstfmt = info->dst;
+	PixelFormat *dstfmt = info->dst;
 	const MIL_Color *srcpal	= info->src->palette->colors;
 	int dstbpp;
 	const int A = info->src->alpha;
@@ -449,8 +449,8 @@ static void Blit1toNAlphaKey(MIL_BlitInfo *info)
 	int srcskip = info->s_skip;
 	Uint8 *dst = info->d_pixels;
 	int dstskip = info->d_skip;
-	MIL_PixelFormat *srcfmt = info->src;
-	MIL_PixelFormat *dstfmt = info->dst;
+	PixelFormat *srcfmt = info->src;
+	PixelFormat *dstfmt = info->dst;
 	const MIL_Color *srcpal	= info->src->palette->colors;
 	Uint32 ckey = srcfmt->colorkey;
 	int dstbpp;
@@ -494,7 +494,7 @@ static MIL_loblit one_blitkey[] = {
 MIL_loblit MIL_CalculateBlit1(Surface *surface, int blit_index)
 {
 	int which;
-	MIL_PixelFormat *dstfmt;
+	PixelFormat *dstfmt;
 
 	dstfmt = surface->map->dst->format;
 	if ( dstfmt->BitsPerPixel < 8 ) {

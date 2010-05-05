@@ -1,6 +1,7 @@
 
 [2010-05-05]: Fix a bug of depth error in QVFb_X_setVideoMode.
 Add surface convertion method.
+Modify MIL_PixelFormat to a class.
 [2010-05-04]: Fix ltmain.sh for shield a bug of libtool, this modify may be
 can't compatible with old version of libtool.Surface BitBlit surpportted.
 [2010-05-01]: Add slots(Group) disconnect method.

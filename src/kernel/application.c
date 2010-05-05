@@ -57,7 +57,7 @@ CONSTRUCTOR(Application)
     Delete(sig);
 
     if (NULL != vd) {
-        _VC(vd)->setVideoMode(vd, (Surface*)screen, 640, 480, 16, 0);
+        _VC(vd)->setVideoMode(vd, (Surface*)screen, 640, 480, 32, 0);
         if (NULL != screen->pixels) {
             MIL_Rect rc = {0, 0, 640, 480};
             MIL_Rect rcbmp = {0, 0, 300, 300};
@@ -68,15 +68,19 @@ CONSTRUCTOR(Application)
             char *pixels = (char*)screen->pixels;
             for (i = 0; i < 480; ++i)
             {
-                memset(pixels, i % 255, 4 * 640);
+                memset(pixels, i % 255, _vc0(screen, getBytesPerPixel) * 640);
                 pixels += _vc0((Surface*)screen, getPitch);
-            }
-            if (NULL != bmp) {
-                puts("bitblit.");
-                _vc3(bmp, blitSurface, &rcbmp, screen, &rcdst);
             }
             _VC(vd)->updateRects(vd, 1, &rc);
             getchar();
+            if (NULL != bmp) {
+                Surface* convert = _vc2(bmp, convert, screen->format, screen->flags);
+                for (j = 0; j < 400; ++j) {
+                    rcdst.x = j;
+                    _vc3(convert, blitSurface, &rcbmp, screen, &rcdst);
+                    _VC(vd)->updateRects(vd, 1, &rc);
+                }
+            }
         }
     }
 

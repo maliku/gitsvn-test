@@ -47,7 +47,7 @@
 #endif
 
 
-Surface * MIL_LoadBMP_RW(MIL_RWops *src, int freesrc)
+Surface * MIL_LoadBMP_RW(MIL_RWops* src, int freesrc)
 {
 	MIL_bool was_error;
 	long fp_offset;

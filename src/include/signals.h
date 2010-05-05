@@ -11,7 +11,7 @@
 #define  SIGNALS_INC
 
 #include "MIL_mutex.h"
-#include "linux-list.h"
+#include "linux_list.h"
 
 #ifdef MIL_USE_SLOT_TYPE
 enum SlotType {
