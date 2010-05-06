@@ -6,11 +6,25 @@
  *  Organization: http://www.ds0101.net
  */
 
-#include "rect.h"
+#include "MIL_gdi.h"
 
-__INLINE__ MIL_bool 
+#ifndef MAX
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#endif
+
+__INLINE__ MIL_bool
 MIL_IntersectRect(const MIL_Rect *A, const MIL_Rect *B, MIL_Rect *intersection)
 {
+#if 1
+    intersection->x = (A->x > B->x) ? A->x : B->x;
+    intersection->y  = (A->y > B->y) ? A->y : B->y;
+    intersection->w = (A->x + A->w < B->x + B->w) ? 
+        (A->x + A->w - intersection->x) : (B->x + B->w - intersection->x);
+    intersection->h = (A->y + A->h < B->h + B->h) ? 
+        (A->y + A->h - intersection->y) : (B->y + B->h - intersection->y);
+
+    return (intersection->w && intersection->h);
+#else
     int Amin, Amax, Bmin, Bmax;
 
     /* Horizontal intersection */
@@ -38,16 +52,17 @@ MIL_IntersectRect(const MIL_Rect *A, const MIL_Rect *B, MIL_Rect *intersection)
     intersection->h = Amax - Amin > 0 ? Amax - Amin : 0;
 
     return (intersection->w && intersection->h);
+#endif
 }
 
-__INLINE__ MIL_bool IsRectEmpty (const MIL_Rect* prc)
+__INLINE__ MIL_bool MIL_IsRectEmpty (const MIL_Rect* prc)
 {
     if( 0 == prc->w ) return MIL_TRUE;
     if( 0 == prc->h ) return MIL_TRUE;
     return MIL_FALSE;
 }
 
-__INLINE__ MIL_bool EqualRect (const MIL_Rect* prc1, const MIL_Rect* prc2)
+__INLINE__ MIL_bool MIL_EqualRect (const MIL_Rect* prc1, const MIL_Rect* prc2)
 {
     if(prc1->x != prc2->x) return MIL_FALSE;
     if(prc1->y != prc2->y) return MIL_FALSE;
@@ -57,7 +72,7 @@ __INLINE__ MIL_bool EqualRect (const MIL_Rect* prc1, const MIL_Rect* prc2)
     return MIL_TRUE;
 }
 
-__INLINE__ MIL_bool IsCovered(const MIL_Rect* prc1, const MIL_Rect* prc2)
+__INLINE__ MIL_bool MIL_IsCovered(const MIL_Rect* prc1, const MIL_Rect* prc2)
 {
     if (prc1->x < prc2->x
             || prc1->y < prc2->y
@@ -69,61 +84,41 @@ __INLINE__ MIL_bool IsCovered(const MIL_Rect* prc1, const MIL_Rect* prc2)
     return MIL_TRUE;
 }
 
-#if 0
-MIL_bool IntersectRect(MIL_Rect* pdrc, const MIL_Rect* psrc1, const MIL_Rect* psrc2)
-{
-    pdrc->left = (psrc1->left > psrc2->left) ? psrc1->left : psrc2->left;
-    pdrc->top  = (psrc1->top > psrc2->top) ? psrc1->top : psrc2->top;
-    pdrc->right = (psrc1->right < psrc2->right) ? psrc1->right : psrc2->right;
-    pdrc->bottom = (psrc1->bottom < psrc2->bottom) 
-                   ? psrc1->bottom : psrc2->bottom;
-
-    if(pdrc->left >= pdrc->right || pdrc->top >= pdrc->bottom)
-        return MIL_FALSE;
-
-    return MIL_TRUE;
-}
-
-MIL_bool DoesIntersect (const MIL_Rect* psrc1, const MIL_Rect* psrc2)
+__INLINE__ MIL_bool MIL_DoesIntersect (const MIL_Rect* psrc1, const MIL_Rect* psrc2)
 {
     int left, top, right, bottom;
     
-    left = (psrc1->left > psrc2->left) ? psrc1->left : psrc2->left;
-    top  = (psrc1->top > psrc2->top) ? psrc1->top : psrc2->top;
-    right = (psrc1->right < psrc2->right) ? psrc1->right : psrc2->right;
-    bottom = (psrc1->bottom < psrc2->bottom) 
-                   ? psrc1->bottom : psrc2->bottom;
+    left = (psrc1->x > psrc2->x) ? psrc1->x : psrc2->x;
+    top  = (psrc1->y > psrc2->y) ? psrc1->y : psrc2->y;
+    right = (psrc1->x + psrc1->w < psrc2->x + psrc2->w) ? 
+        psrc1->x + psrc1->w : psrc2->x + psrc2->w;
+    bottom = (psrc1->y + psrc1->h < psrc2->y + psrc2->h) 
+                   ? psrc1->y + psrc1->h : psrc2->y + psrc2->h;
 
-    if(left >= right || top >= bottom)
-        return MIL_FALSE;
-
-    return MIL_TRUE;
+    return (left >= right || top >= bottom) ? MIL_FALSE : MIL_TRUE;
 }
 
-MIL_bool UnionRect(MIL_Rect* pdrc, const MIL_Rect* psrc1, const MIL_Rect* psrc2)
+__INLINE__ MIL_bool MIL_UnionRect(MIL_Rect* pdrc, const MIL_Rect* psrc1, const MIL_Rect* psrc2)
 {
     MIL_Rect src1, src2;
     memcpy(&src1, psrc1, sizeof(MIL_Rect));
     memcpy(&src2, psrc2, sizeof(MIL_Rect));
 
-    NormalizeRect(&src1);
-    NormalizeRect(&src2);
-
-    if (src1.left == src2.left 
-        && src1.right == src2.right) {
-        if (src1.top <= src2.top && src2.top <= src1.bottom) {
-            pdrc->left = src1.left;
-            pdrc->right = src1.right;
-            pdrc->top = src1.top;
-            pdrc->bottom = MAX(src1.bottom, src2.bottom);
+    if (src1.x == src2.x 
+        && (src1.x+src1.w) == (src2.x+src2.w)) {
+        if (src1.y <= src2.y && src2.y <= (src1.y+src1.h)) {
+            pdrc->x = src1.x;
+            pdrc->w = src1.w;
+            pdrc->y = src1.y;
+            pdrc->h = MAX(src1.h, src2.h);
 
             return MIL_TRUE;
         }
-        else if (src1.top >= src2.top && src2.bottom >= src1.top) {
-            pdrc->left = src1.left;
-            pdrc->right = src1.right;
-            pdrc->top = src2.top;
-            pdrc->bottom = MAX(src1.bottom, src2.bottom);
+        else if (src1.y >= src2.y && (src2.y+src2.h) >= src1.y) {
+            pdrc->x = src1.x;
+            pdrc->w = src1.w;
+            pdrc->y = src2.y;
+            pdrc->h = MAX(src1.h, src2.h);
 
             return MIL_TRUE;
        }
@@ -131,48 +126,98 @@ MIL_bool UnionRect(MIL_Rect* pdrc, const MIL_Rect* psrc1, const MIL_Rect* psrc2)
        return MIL_FALSE;
     }
 
-    if (src1.top == src2.top 
-        && src1.bottom == src2.bottom) {
-        if (src1.left <= src2.left && src2.left <= src1.right) {
-            pdrc->top = src1.top;
-            pdrc->bottom = src1.bottom;
-            pdrc->left = src1.left;
-            pdrc->right = MAX(src1.right, src2.right);
+    if (src1.y == src2.y 
+        && (src1.y+src1.h) == (src2.y+src2.h)) {
+        if (src1.x <= src2.x && src2.x <= (src1.x+src1.w)) {
+            pdrc->y = src1.y;
+            pdrc->h = src1.h;
+            pdrc->x = src1.x;
+            pdrc->w = MAX(src1.w, src2.w);
 
             return MIL_TRUE;
         }
-        else if (src1.left >= src2.left && src2.right >= src1.left) {
-            pdrc->top = src1.top;
-            pdrc->bottom = src1.bottom;
-            pdrc->left = src2.left;
-            pdrc->right = MAX(src1.right, src2.right);
+        else if (src1.x >= src2.x && (src2.x+src2.w) >= src1.x) {
+            pdrc->y = src1.y;
+            pdrc->h = src1.h;
+            pdrc->x = src2.x;
+            pdrc->w = MAX(src1.w, src2.w);
 
             return MIL_TRUE;
        }
 
-       return MIL_FALSE;
+/*        return MIL_FALSE;
+ */
     }
 
     return MIL_FALSE;
 }
 
-void GetBoundRect (PMIL_Rect pdrc,  const MIL_Rect* psrc1, const MIL_Rect* psrc2)
+__INLINE__ void MIL_GetBoundRect (MIL_Rect* pdrc,  const MIL_Rect* psrc1, const MIL_Rect* psrc2)
 {
     MIL_Rect src1, src2;
     memcpy(&src1, psrc1, sizeof(MIL_Rect));
     memcpy(&src2, psrc2, sizeof(MIL_Rect));
 
-    NormalizeRect(&src1);
-    NormalizeRect(&src2);
-
-    pdrc->left = (src1.left < src2.left) ? src1.left : src2.left;
-    pdrc->top  = (src1.top < src2.top) ? src1.top : src2.top;
-    pdrc->right = (src1.right > src2.right) ? src1.right : src2.right;
-    pdrc->bottom = (src1.bottom > src2.bottom) 
-                   ? src1.bottom : src2.bottom;
+    pdrc->x = (src1.x < src2.x) ? src1.x : src2.x;
+    pdrc->y  = (src1.y < src2.y) ? src1.y : src2.y;
+    pdrc->w = ((src1.x + src1.w) > (src2.x + src2.w)) 
+        ? src1.w : src2.w;
+    pdrc->h = ((src1.y + src1.h) > (src2.y + src2.h)) 
+                   ? src1.h : src2.h;
 }
 
-int SubtractRect(MIL_Rect* rc, const MIL_Rect* psrc1, const MIL_Rect* psrc2)
+__INLINE__ void MIL_SetRectCorner(MIL_Rect* prc, int left, int top, int right, int bottom)
+{
+    prc->x = left;
+    prc->y = top;
+    prc->w = right - left;
+    prc->h = bottom - top;
+}
+
+__INLINE__ void MIL_SetRectSize(MIL_Rect* prc, int x, int y, int w, int h)
+{
+    prc->x = x;
+    prc->y = y;
+    prc->w = w;
+    prc->h = h;
+}
+#if 0
+void OffsetRect(MIL_Rect* prc, int x, int y)
+{
+    prc->left += x;
+    prc->top += y;
+    prc->right += x;
+    prc->bottom += y;
+}
+
+void InflateRect(MIL_Rect* prc, int cx, int cy)
+{
+    prc->left -= cx;
+    prc->top -= cy;
+    prc->right += cx;
+    prc->bottom += cy;
+}
+
+void InflateRectToPt (MIL_Rect* prc, int x, int y)
+{
+    if (x < prc->left) prc->left = x;
+    if (y < prc->top) prc->top = y;
+    if (x > prc->right) prc->right = x;
+    if (y > prc->bottom) prc->bottom = y;
+}
+
+MIL_bool PtInRect(const MIL_Rect* prc, int x, int y)
+{
+    if (   x >= prc->left 
+        && x < prc->right 
+        && y >= prc->top 
+        && y < prc->bottom) 
+        return MIL_TRUE;
+    
+    return MIL_FALSE;
+}
+
+int MIL_SubtractRect(MIL_Rect* rc, const MIL_Rect* psrc1, const MIL_Rect* psrc2)
 {
     MIL_Rect src, rcExpect, *prcExpect;
     int nCount = 0;

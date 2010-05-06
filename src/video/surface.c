@@ -8,11 +8,11 @@
  */
 
 #include "video_device.h"
-#include "rect.h"
 #include "surface.h"
 #include "pixel_format.h"
 #include "pixels.h"
 #include "RLEaccel.h"
+#include "MIL_gdi.h"
 
 /*
  * Get the current information about the video hardware

@@ -189,6 +189,46 @@ int QVFbVideoDevice_X_setColors(_Self(VideoDevice), int firstcolor,
     return 1;
 }
 
+__INLINE__ MIL_bool is_rect_empty(RECT* prc)
+{
+    if( prc->left == prc->right ) return MIL_TRUE;
+    if( prc->top == prc->bottom ) return MIL_TRUE;
+    return MIL_FALSE;
+}
+__INLINE__ void normalize_rect(RECT* pRect)
+{
+    int iTemp;
+
+    if(pRect->left > pRect->right)
+    {
+         iTemp = pRect->left;
+         pRect->left = pRect->right;
+         pRect->right = iTemp;
+    }
+
+    if(pRect->top > pRect->bottom)
+    {
+         iTemp = pRect->top;
+         pRect->top = pRect->bottom;
+         pRect->bottom = iTemp;
+    }
+}
+__INLINE__ void get_bound_rect(RECT* pdrc,  const RECT* psrc1, const RECT* psrc2)
+{
+    RECT src1, src2;
+    memcpy(&src1, psrc1, sizeof(RECT));
+    memcpy(&src2, psrc2, sizeof(RECT));
+
+    normalize_rect(&src1);
+    normalize_rect(&src2);
+
+    pdrc->left = (src1.left < src2.left) ? src1.left : src2.left;
+    pdrc->top  = (src1.top < src2.top) ? src1.top : src2.top;
+    pdrc->right = (src1.right > src2.right) ? src1.right : src2.right;
+    pdrc->bottom = (src1.bottom > src2.bottom) 
+                   ? src1.bottom : src2.bottom;
+}
+
 void QVFbVideoDevice_X_updateRects(_Self(VideoDevice), int numrects, 
         MIL_Rect *rects)
 {
@@ -200,13 +240,10 @@ void QVFbVideoDevice_X_updateRects(_Self(VideoDevice), int numrects,
         RECT rc = {rects[i].x, rects[i].y, 
                         rects[i].x + rects[i].w, rects[i].y + rects[i].h};
 
-        // TODO:merge here.
-//        SetRect (&rc, rects[i].x, rects[i].y, 
-//                        rects[i].x + rects[i].w, rects[i].y + rects[i].h);
-//        if (IsRectEmpty (&bound))
+        if (is_rect_empty(&bound))
             bound = rc;
-//        else
-//            GetBoundRect (&bound, &bound, &rc);
+        else
+            get_bound_rect(&bound, &bound, &rc);
     }
 
     ((QVFbVideoDevice*)self)->hw_data->hdr->update = bound;
