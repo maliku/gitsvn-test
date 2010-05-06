@@ -1396,7 +1396,7 @@ static int uncopy_32(Uint32 *dst, void *src, int n,
     ((unsigned)((((pixel) & fmt->Amask) >> fmt->Ashift) - 1U) < 254U)
 
 /* convert surface to be quickly alpha-blittable onto dest, if possible */
-int RLEAlphaSurface(Surface *surface)
+__INLINE__ int RLEAlphaSurface(Surface *surface)
 {
     Surface *dest;
     PixelFormat *df;
@@ -1639,7 +1639,7 @@ static getpix_func getpixes[4] = {
     getpix_8, getpix_16, getpix_24, getpix_32
 };
 
-int RLEColorkeySurface(Surface *surface)
+__INLINE__ int RLEColorkeySurface(Surface *surface)
 {
     Uint8 *rlebuf, *dst;
     int maxn;
@@ -1823,7 +1823,7 @@ int MIL_RLESurface(Surface *surface)
  * completely transparent pixels will be lost, and colour and alpha depth
  * may have been reduced (when encoding for 16bpp targets).
  */
-MIL_bool UnRLEAlpha(Surface *surface)
+__INLINE__ MIL_bool UnRLEAlpha(Surface *surface)
 {
     Uint8 *srcbuf;
     Uint32 *dst;

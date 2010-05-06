@@ -97,6 +97,7 @@
 /* Set up compiler-specific options for inlining functions */
 #ifndef MIL_INLINE_OKAY
 #ifdef __GNUC__
+#define __INLINE__ inline
 #define MIL_INLINE_OKAY
 #else
 /* Add any special compiler-specific cases here */
@@ -104,25 +105,25 @@
     defined(__DMC__) || defined(__SC__) || \
     defined(__WATCOMC__) || defined(__LCC__) || \
     defined(__DECC)
-#ifndef __inline__
-#define __inline__	__inline
+#ifndef __INLINE__
+#define __INLINE__	__inline
 #endif
 #define MIL_INLINE_OKAY
 #else
 #if !defined(__MRC__) && !defined(_SGI_SOURCE)
-#define __inline__ inline
+#define __INLINE__ inline
 #define MIL_INLINE_OKAY
 #endif /* Not a funky compiler */
 #endif /* Visual C++ */
 #endif /* GNU C */
 #endif /* MIL_INLINE_OKAY */
 
-/* If inlining isn't supported, remove "__inline__", turning static
+/* If inlining isn't supported, remove "__INLINE__", turning static
    inlined functions into static functions (resulting in code bloat
    in all files which include the offending header files)
 */
 #ifndef MIL_INLINE_OKAY
-#define __inline__
+#define __INLINE__
 #endif
 
 /* Apparently this is needed by several Windows compilers */

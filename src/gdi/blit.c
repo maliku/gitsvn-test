@@ -110,7 +110,7 @@ static int MIL_SoftBlit(Surface *src, MIL_Rect *srcrect,
 }
 
 #ifdef MMX_ASMBLIT
-static __inline__ void MIL_memcpyMMX(Uint8 *to, const Uint8 *from, int len)
+static __INLINE__ void MIL_memcpyMMX(Uint8 *to, const Uint8 *from, int len)
 {
 	int i;
 
@@ -127,7 +127,7 @@ static __inline__ void MIL_memcpyMMX(Uint8 *to, const Uint8 *from, int len)
 }
 
 #ifdef SSE_ASMBLIT
-static __inline__ void MIL_memcpySSE(Uint8 *to, const Uint8 *from, int len)
+static __INLINE__ void MIL_memcpySSE(Uint8 *to, const Uint8 *from, int len)
 {
 	int i;
 

@@ -8,46 +8,11 @@
  */
 
 #include "video_device.h"
+#include "rect.h"
 #include "surface.h"
 #include "pixel_format.h"
 #include "pixels.h"
 #include "RLEaccel.h"
-
-/*
- * A function to calculate the intersection of two rectangles:
- * return true if the rectangles intersect, false otherwise
- */
-static __inline__
-MIL_bool MIL_IntersectRect(const MIL_Rect *A, const MIL_Rect *B, MIL_Rect *intersection)
-{
-	int Amin, Amax, Bmin, Bmax;
-
-	/* Horizontal intersection */
-	Amin = A->x;
-	Amax = Amin + A->w;
-	Bmin = B->x;
-	Bmax = Bmin + B->w;
-	if(Bmin > Amin)
-	        Amin = Bmin;
-	intersection->x = Amin;
-	if(Bmax < Amax)
-	        Amax = Bmax;
-	intersection->w = Amax - Amin > 0 ? Amax - Amin : 0;
-
-	/* Vertical intersection */
-	Amin = A->y;
-	Amax = Amin + A->h;
-	Bmin = B->y;
-	Bmax = Bmin + B->h;
-	if(Bmin > Amin)
-	        Amin = Bmin;
-	intersection->y = Amin;
-	if(Bmax < Amax)
-	        Amax = Bmax;
-	intersection->h = Amax - Amin > 0 ? Amax - Amin : 0;
-
-	return (intersection->w && intersection->h);
-}
 
 /*
  * Get the current information about the video hardware
@@ -635,13 +600,13 @@ Uint32 Surface_X_calculatePitch(_SELF)
     Surface* surface = (Surface*)self;
 
 	/* Surface should be 4-byte aligned for speed */
-	pitch = surface->w*surface->format->BytesPerPixel;
+	pitch = surface->w * surface->format->BytesPerPixel;
 	switch (surface->format->BitsPerPixel) {
 		case 1:
-			pitch = (pitch+7)/8;
+			pitch = (pitch + 7) / 8;
 			break;
 		case 4:
-			pitch = (pitch+1)/2;
+			pitch = (pitch + 1) / 2;
 			break;
 		default:
 			break;

@@ -45,7 +45,7 @@ extern struct __##type##Vtable g_##type##Vtable;\
 extern struct __##type##Mtable g_##type##Mtable;\
 struct __##type;\
 typedef struct __##type type;\
-__inline__ void* type##Preconstructor(_SELF);\
+extern void* type##Preconstructor(_SELF);\
 void type##Predestructor(_SELF);\
 struct __##type
 
@@ -56,7 +56,7 @@ extern type##Vtable g_##type##Vtable;\
 extern struct __##type##Mtable g_##type##Mtable;\
 struct _##type;\
 typedef struct _##type type;\
-__inline__ void* type##Preconstructor(_SELF);\
+extern void* type##Preconstructor(_SELF);\
 void type##Predestructor(_SELF);\
 struct _##type {\
     union { \
@@ -187,7 +187,7 @@ VIRTUAL_METHOD_REGEND
 #define MAKE_PURE_VIRTUAL_CLASS(type) VIRTUAL_METHOD_REGISTER_PLACEHOLDER(type, NonBase)
 
 #define METHOD_REGBEGIN(type) \
-__inline__ type* type##_X_OT(_SELF) { return (type*)self; } \
+__INLINE__ type* type##_X_OT(_SELF) { return (type*)self; } \
 struct __##type##Mtable g_##type##Mtable = { \
     type##_X_OT,
 
@@ -210,11 +210,11 @@ METHOD_REGEND
         return (NULL != g_##type##Mtable.type) ? \
         g_##type##Mtable.type(self) : self; \
     } \
-__inline__ void * type##Preconstructor(_SELF) { \
+__INLINE__ void * type##Preconstructor(_SELF) { \
     *(type##Vtable**)self = &g_##type##Vtable;\
     return type##OrderConstruct(self);\
 }\
-__inline__ type * type##ArrayConstructor(_Self(type), int num) { \
+__INLINE__ type * type##ArrayConstructor(_Self(type), int num) { \
     type * head = self; \
     int  i = num; \
     while (i--) { \
@@ -224,7 +224,7 @@ __inline__ type * type##ArrayConstructor(_Self(type), int num) { \
 }
 
 #define PREDESTRUCTORS(type) \
-	__inline__ void type##Predestructor(_SELF) { \
+	__INLINE__ void type##Predestructor(_SELF) { \
 	RTTI * prev = &g_##type##Vtable.__rtti; \
 	assert(NULL != prev);\
 	if (((CommonVtable*)*(CommonVtable**)prev)->Destructor)\
@@ -232,7 +232,7 @@ __inline__ type * type##ArrayConstructor(_Self(type), int num) { \
 	if (((CommonVtable*)*(CommonVtable**)prev)->Predestructor)\
 	((CommonVtable*)*(CommonVtable**)prev)->Predestructor(self);\
 } \
-	__inline__ void type##ArrayDestructor(_Self(type), int num) { \
+	__INLINE__ void type##ArrayDestructor(_Self(type), int num) { \
 	type * head = self; \
 	int  i = num; \
 	while (i--) { \

@@ -2,7 +2,7 @@
 
 CommonVtable g_NonBaseVtable;
 
-__inline__ void OrderDestruct(void * ptr)
+__INLINE__ void OrderDestruct(void * ptr)
 {
 	if (NULL != ptr)
 	{
@@ -14,13 +14,13 @@ __inline__ void OrderDestruct(void * ptr)
 	}
 }
 
-__inline__ void Delete(void *ptr)
+__INLINE__ void Delete(void *ptr)
 {
     OrderDestruct(ptr);
     MIL_free(ptr);
 }
 
-__inline__ void* SafeCast(void* vtable, void* ptr)
+__INLINE__ void* SafeCast(void* vtable, void* ptr)
 {
 /*     printf("vtable=%p, ptr=%p\n", vtable, ptr);
  */

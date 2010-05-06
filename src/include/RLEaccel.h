@@ -29,6 +29,6 @@ extern int MIL_RLEBlit(Surface *src, MIL_Rect *srcrect,
 extern int MIL_RLEAlphaBlit(Surface *src, MIL_Rect *srcrect,
 			    Surface *dst, MIL_Rect *dstrect);
 //extern void MIL_UnRLESurface(Surface *surface, int recode);
-int RLEAlphaSurface(Surface *surface);
-int RLEColorkeySurface(Surface *surface);
-MIL_bool UnRLEAlpha(Surface *surface);
+extern int RLEAlphaSurface(Surface *surface);
+extern int RLEColorkeySurface(Surface *surface);
+extern MIL_bool UnRLEAlpha(Surface *surface);

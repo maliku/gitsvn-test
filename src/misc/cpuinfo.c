@@ -53,7 +53,7 @@ static void illegal_instruction(int sig)
 }
 #endif /* HAVE_SETJMP */
 
-static __inline__ int CPU_haveCPUID(void)
+static __INLINE__ int CPU_haveCPUID(void)
 {
 	int has_CPUID = 0;
 #if defined(__GNUC__) && defined(i386)
@@ -143,7 +143,7 @@ done:
 	return has_CPUID;
 }
 
-static __inline__ int CPU_getCPUIDFeatures(void)
+static __INLINE__ int CPU_getCPUIDFeatures(void)
 {
 	int features = 0;
 #if defined(__GNUC__) && defined(i386)
@@ -213,7 +213,7 @@ done:
 	return features;
 }
 
-static __inline__ int CPU_getCPUIDFeaturesExt(void)
+static __INLINE__ int CPU_getCPUIDFeaturesExt(void)
 {
 	int features = 0;
 #if defined(__GNUC__) && defined(i386)
@@ -280,7 +280,7 @@ done:
 	return features;
 }
 
-static __inline__ int CPU_haveRDTSC(void)
+static __INLINE__ int CPU_haveRDTSC(void)
 {
 	if ( CPU_haveCPUID() ) {
 		return (CPU_getCPUIDFeatures() & 0x00000010);
@@ -288,7 +288,7 @@ static __inline__ int CPU_haveRDTSC(void)
 	return 0;
 }
 
-static __inline__ int CPU_haveMMX(void)
+static __INLINE__ int CPU_haveMMX(void)
 {
 	if ( CPU_haveCPUID() ) {
 		return (CPU_getCPUIDFeatures() & 0x00800000);
@@ -296,7 +296,7 @@ static __inline__ int CPU_haveMMX(void)
 	return 0;
 }
 
-static __inline__ int CPU_haveMMXExt(void)
+static __INLINE__ int CPU_haveMMXExt(void)
 {
 	if ( CPU_haveCPUID() ) {
 		return (CPU_getCPUIDFeaturesExt() & 0x00400000);
@@ -304,7 +304,7 @@ static __inline__ int CPU_haveMMXExt(void)
 	return 0;
 }
 
-static __inline__ int CPU_have3DNow(void)
+static __INLINE__ int CPU_have3DNow(void)
 {
 	if ( CPU_haveCPUID() ) {
 		return (CPU_getCPUIDFeaturesExt() & 0x80000000);
@@ -312,7 +312,7 @@ static __inline__ int CPU_have3DNow(void)
 	return 0;
 }
 
-static __inline__ int CPU_have3DNowExt(void)
+static __INLINE__ int CPU_have3DNowExt(void)
 {
 	if ( CPU_haveCPUID() ) {
 		return (CPU_getCPUIDFeaturesExt() & 0x40000000);
@@ -320,7 +320,7 @@ static __inline__ int CPU_have3DNowExt(void)
 	return 0;
 }
 
-static __inline__ int CPU_haveSSE(void)
+static __INLINE__ int CPU_haveSSE(void)
 {
 	if ( CPU_haveCPUID() ) {
 		return (CPU_getCPUIDFeatures() & 0x02000000);
@@ -328,7 +328,7 @@ static __inline__ int CPU_haveSSE(void)
 	return 0;
 }
 
-static __inline__ int CPU_haveSSE2(void)
+static __INLINE__ int CPU_haveSSE2(void)
 {
 	if ( CPU_haveCPUID() ) {
 		return (CPU_getCPUIDFeatures() & 0x04000000);
@@ -336,7 +336,7 @@ static __inline__ int CPU_haveSSE2(void)
 	return 0;
 }
 
-static __inline__ int CPU_haveAltiVec(void)
+static __INLINE__ int CPU_haveAltiVec(void)
 {
 	volatile int altivec = 0;
 #if defined(__MACOSX__) && defined(__ppc__)

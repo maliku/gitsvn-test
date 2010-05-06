@@ -54,8 +54,8 @@ CLASS(Surface)
 	PixelFormat* format;		/* Read-only */
 	Uint32 w, h;				/* Read-only */
 	Uint32 pitch;				/* Read-only */
-	void *pixels;				/* Read-write */
-	int offset;				/* Private */
+	void*  pixels;				/* Read-write */
+	int    offset;				/* Private */
 
 	/* Hardware-specific surface info */
 	struct private_hwdata *hwdata;

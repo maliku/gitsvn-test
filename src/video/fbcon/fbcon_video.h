@@ -118,17 +118,17 @@ extern void FB_RestorePaletteFrom(_Self(VideoDevice), int palette_len, __u16 *ar
 
 /* These are utility functions for working with video surfaces */
 
-static __inline__ void FB_AddBusySurface(Surface *surface)
+static __INLINE__ void FB_AddBusySurface(Surface *surface)
 {
 	((vidmem_bucket *)surface->hwdata)->dirty = 1;
 }
 
-static __inline__ int FB_IsSurfaceBusy(Surface *surface)
+static __INLINE__ int FB_IsSurfaceBusy(Surface *surface)
 {
 	return ((vidmem_bucket *)surface->hwdata)->dirty;
 }
 
-static __inline__ void FB_WaitBusySurfaces(_Self(VideoDevice))
+static __INLINE__ void FB_WaitBusySurfaces(_Self(VideoDevice))
 {
 	vidmem_bucket *bucket;
 
@@ -142,7 +142,7 @@ static __inline__ void FB_WaitBusySurfaces(_Self(VideoDevice))
 	}
 }
 
-static __inline__ void FB_dst_to_xy(_Self(VideoDevice), Surface *dst, int *x, int *y)
+static __INLINE__ void FB_dst_to_xy(_Self(VideoDevice), Surface *dst, int *x, int *y)
 {
 	*x = (long)((char *)dst->pixels - ((FBconVideoDevice*)self)->hw_data->mapped_mem) % ((FBconVideoDevice*)self)->screen->pitch;
 	*y = (long)((char *)dst->pixels - ((FBconVideoDevice*)self)->hw_data->mapped_mem) / 
