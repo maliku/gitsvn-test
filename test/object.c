@@ -19,12 +19,16 @@ DESTRUCTOR(Object)
 CONSTRUCTOR(Object)
 {
     printf("Object %p constructed...\n", self);
+    _ptm(Object, p_m1) = 110;
+    _public(Object)->m0 = 119;
     return self;
 }
 
 void test(_Self(Object), int i)
 {
     printf("Object::test input %d.\n", i);
+    printf("The private member Object->p_m1 = %d.\n", _private(Object)->p_m1);
+    printf("The public member Object->m0 = %d.\n", _public(Object)->m0);
 }
 
 VIRTUAL_METHOD_REGBEGIN(Object, CooBase)

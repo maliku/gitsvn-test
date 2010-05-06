@@ -16,6 +16,12 @@ CLASS_INHERIT_BEGIN(Object, CooBase)
     METHOD_DECLARE_BEGIN(Object)
     void (*test)(_Self(Object), int);
     METHOD_DECLARE_END
+
+    int m0;
+    PRIVATE_BEGIN(Object)
+    int p_m1;
+    char p_m2;
+    PRIVATE_END
 CLASS_INHERIT_END
 
 #endif

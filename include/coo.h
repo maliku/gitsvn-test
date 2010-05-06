@@ -134,6 +134,10 @@ struct _##type {\
 
 #define PRIVATE_END })]
 
+#define _ptm(type, name) (*(struct _##type##_private*)(&((type*)self)->__)).name
+#define _private(type) ((struct _##type##_private*)(&((type*)self)->__))
+#define _public(type)  ((type*)self)
+
 /* Macro for virtual member function declare begin. */
 #define VIRTUAL_METHOD_DECLARE_BEGIN(type) \
     union { \
