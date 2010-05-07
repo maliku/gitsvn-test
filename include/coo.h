@@ -283,7 +283,7 @@ void* SafeCast(void* vtable, void* ptr);
     ((NULL != ptr && NULL != (*(RTTI**)ptr) && NULL != (*(RTTI**)ptr)->__name) ? (*(RTTI**)ptr)->__name : "")
 
 #define MIL_Error(err)
-#define MIL_SetError(fmt, ...) fprintf(stderr, fmt, ##__VA_ARGS__)
+#define MIL_SetError(fmt, ...) fprintf(stderr, fmt "\n", ##__VA_ARGS__)
 #define MIL_GetError()  ""
 #define MIL_ClearError() 
 #define MIL_OutOfMemory() 

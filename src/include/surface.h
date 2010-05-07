@@ -79,5 +79,7 @@ CLASS(Surface)
 Surface * CreateRGBSurface (Uint32 flags,
 			int width, int height, int depth,
 			Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask);
+int MIL_SoftStretch(Surface *src, MIL_Rect *srcrect,
+                    Surface *dst, MIL_Rect *dstrect);
 #endif   /* ----- #ifndef SURFACE_INC  ----- */
 
