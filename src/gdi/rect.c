@@ -166,7 +166,7 @@ __INLINE__ void MIL_GetBoundRect (MIL_Rect* pdrc,  const MIL_Rect* psrc1, const 
                    ? src1.h : src2.h;
 }
 
-__INLINE__ void MIL_SetRectCorner(MIL_Rect* prc, int left, int top, int right, int bottom)
+__INLINE__ void MIL_SetRectByCorner(MIL_Rect* prc, int left, int top, int right, int bottom)
 {
     prc->x = left;
     prc->y = top;
@@ -174,47 +174,43 @@ __INLINE__ void MIL_SetRectCorner(MIL_Rect* prc, int left, int top, int right, i
     prc->h = bottom - top;
 }
 
-__INLINE__ void MIL_SetRectSize(MIL_Rect* prc, int x, int y, int w, int h)
+__INLINE__ void MIL_SetRectBySize(MIL_Rect* prc, int x, int y, int w, int h)
 {
     prc->x = x;
     prc->y = y;
     prc->w = w;
     prc->h = h;
 }
-#if 0
-void OffsetRect(MIL_Rect* prc, int x, int y)
+
+__INLINE__ void MIL_OffsetRect(MIL_Rect* prc, int x, int y)
 {
-    prc->left += x;
-    prc->top += y;
-    prc->right += x;
-    prc->bottom += y;
+    prc->x += x;
+    prc->y += y;
 }
 
-void InflateRect(MIL_Rect* prc, int cx, int cy)
+__INLINE__ void MIL_InflateRect(MIL_Rect* prc, int cx, int cy)
 {
-    prc->left -= cx;
-    prc->top -= cy;
-    prc->right += cx;
-    prc->bottom += cy;
+    prc->x -= cx;
+    prc->y -= cy;
+    prc->w += cx << 1;
+    prc->h += cy << 1;
 }
 
-void InflateRectToPt (MIL_Rect* prc, int x, int y)
+__INLINE__ void MIL_InflateRectToPt (MIL_Rect* prc, int x, int y)
 {
-    if (x < prc->left) prc->left = x;
-    if (y < prc->top) prc->top = y;
-    if (x > prc->right) prc->right = x;
-    if (y > prc->bottom) prc->bottom = y;
+    if (x < prc->x) prc->x = x;
+    if (y < prc->y) prc->y = y;
+    if (x > prc->x + prc->w) prc->w = x - prc->x;
+    if (y > prc->y + prc->h) prc->y = y - prc->y;
 }
 
-MIL_bool PtInRect(const MIL_Rect* prc, int x, int y)
+__INLINE__ MIL_bool MIL_PtInRect(const MIL_Rect* prc, int x, int y)
 {
-    if (   x >= prc->left 
-        && x < prc->right 
-        && y >= prc->top 
-        && y < prc->bottom) 
-        return MIL_TRUE;
-    
-    return MIL_FALSE;
+    return (   (x >= prc->x) 
+        && (x < prc->x + prc->w)
+        && (y >= prc->y) 
+        && (y < prc->y + prc->h)) ?
+         MIL_TRUE : MIL_FALSE;
 }
 
 int MIL_SubtractRect(MIL_Rect* rc, const MIL_Rect* psrc1, const MIL_Rect* psrc2)
@@ -226,47 +222,47 @@ int MIL_SubtractRect(MIL_Rect* rc, const MIL_Rect* psrc1, const MIL_Rect* psrc2)
     rcExpect = *psrc2;
     prcExpect = &rcExpect;
 
-    if (!DoesIntersect (&src, prcExpect)) {
+    if (!MIL_DoesIntersect (&src, prcExpect)) {
         nCount = 1;
         rc[0] = src;
     }
     else {
-        if(prcExpect->top > src.top)
+        if(prcExpect->y > src.y)
         {
-            rc[nCount].left  = src.left;
-            rc[nCount].top   = src.top;
-            rc[nCount].right = src.right;
-            rc[nCount].bottom = prcExpect->top;
+            rc[nCount].x  = src.x;
+            rc[nCount].y  = src.y;
+            rc[nCount].w = src.w;
+            rc[nCount].h = prcExpect->y - rc[nCount].y;
             nCount++;
-            src.top = prcExpect->top;
+            src.y = prcExpect->y;
         }
-        if(prcExpect->bottom < src.bottom)
+        if(prcExpect->y + prcExpect->h < src.y + src.h)
         {
-            rc[nCount].top  = prcExpect->bottom;
-            rc[nCount].left   = src.left;
-            rc[nCount].right = src.right;
-            rc[nCount].bottom = src.bottom;
+            rc[nCount].y = prcExpect->y + prcExpect->h;
+            rc[nCount].x = src.x;
+            rc[nCount].w = src.w;
+            rc[nCount].h = src.y + src.h - rc[nCount].y;
             nCount++;
-            src.bottom = prcExpect->bottom;
+            src.h = prcExpect->y + prcExpect->h - src.y;
         }
-        if(prcExpect->left > src.left)
+        if(prcExpect->x > src.x)
         {
-            rc[nCount].left  = src.left;
-            rc[nCount].top   = src.top;
-            rc[nCount].right = prcExpect->left;
-            rc[nCount].bottom = src.bottom;
+            rc[nCount].x  = src.x;
+            rc[nCount].y   = src.y;
+            rc[nCount].w = prcExpect->x - rc[nCount].x;
+            rc[nCount].h = src.h;
             nCount++;
         }
-        if(prcExpect->right < src.right)
+        if((prcExpect->x + prcExpect->w) < (src.x + src.w))
         {
-            rc[nCount].left  = prcExpect->right;
-            rc[nCount].top   = src.top;
-            rc[nCount].right = src.right;
-            rc[nCount].bottom = src.bottom;
+            rc[nCount].x  = prcExpect->x + prcExpect->w;
+            rc[nCount].y   = src.y;
+            rc[nCount].w = src.x + src.w - rc[nCount].x;
+            rc[nCount].h = src.h;
             nCount++;
         }
     }
 
     return nCount;
 }
-#endif
+
