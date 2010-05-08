@@ -348,6 +348,7 @@ src/video/dummy/Makefile
 src/video/qvfb/Makefile
 src/video/fbcon/Makefile
 src/kernel/Makefile
+src/kernel/timer/Makefile
 src/gdi/Makefile
 )
 
