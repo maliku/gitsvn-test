@@ -11,6 +11,7 @@
 #include "video_device.h"
 #include "signals.h"
 #include "application.h"
+#include "image.h"
 
 MAKE_PURE_VIRTUAL_CLASS(MIL_Application)
 METHOD_REGISTER_PLACEHOLDER(MIL_Application)
@@ -66,6 +67,7 @@ CONSTRUCTOR(Application)
 
             MIL_RWops* ops = MIL_RWFromFile("res/lena16.bmp", "rb");
             Surface* bmp = MIL_LoadBMP_RW(ops, 1);
+            Image* img = LoadImageFromFile("res/mil.bmp");
             int i, j;
             char *pixels = (char*)screen->pixels;
             _vc1(screen, setClipRect, &rclip);

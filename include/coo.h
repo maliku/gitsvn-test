@@ -132,7 +132,7 @@ struct _##type {\
 #define PRIVATE_BEGIN(type) \
     char __ [sizeof(struct _##type##_private {
 
-#define PRIVATE_END })]
+#define PRIVATE_END })];
 
 #define _ptm(type, name) (*(struct _##type##_private*)(&((type*)self)->__)).name
 #define _private(type) ((struct _##type##_private*)(&((type*)self)->__))
@@ -183,6 +183,9 @@ type##Vtable g_##type##Vtable = {\
 #endif
 
 #define VIRTUAL_METHOD_REGEND };
+/* Alias */
+#define VIRTUAL_METHOD_REGISTER_BEGIN VIRTUAL_METHOD_REGBEGIN
+#define VIRTUAL_METHOD_REGISTER_END   VIRTUAL_METHOD_REGEND
 
 #define VIRTUAL_METHOD_REGISTER_PLACEHOLDER(type, basetype) \
 VIRTUAL_METHOD_REGBEGIN(type, basetype) \
@@ -196,6 +199,8 @@ struct __##type##Mtable g_##type##Mtable = { \
     type##_X_OT,
 
 #define METHOD_REGEND };
+#define METHOD_REGISTER_BEGIN METHOD_REGBEGIN
+#define METHOD_REGISTER_END METHOD_REGEND
 
 #define METHOD_REGISTER_PLACEHOLDER(type) \
 METHOD_REGBEGIN(type) \

@@ -67,9 +67,20 @@ CLASS(MIL_Image)
         MIL_Status  (*getPixelFormat)(_Self(MIL_Image), MIL_PixelFormat* fmt);
         const char* (*getRawFormat)(_Self(MIL_Image));
         MIL_Status  (*rotateFlip)(_Self(MIL_Image), MIL_RotateFlipType);
-        MIL_Status  (*save)(_Self(MIL_Status));
+        MIL_Status  (*save)(_Self(MIL_Status), const char* file);
     VIRTUAL_METHOD_DECLARE_END
+    METHOD_DECLARE_PLACEHOLDER(MIL_Image)
 };
+
+/** 
+ * @synopsis Load image from a file.
+ * 
+ * @param file The path of file.
+ * 
+ * @returns Pointer of image object if success, NULL otherwise. 
+ */
+MIL_Image* LoadImageFromFile(const char* file);
+
 /*
  * A function to calculate the intersection of two rectangles.
  */
