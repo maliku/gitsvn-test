@@ -19,13 +19,13 @@ typedef struct _MIL_BlitMap MIL_BlitMap;
 CLASS(Surface)
 {
     VIRTUAL_METHOD_DECLARE_BEGIN(Surface)
-    void* (*lock)(_SELF);
+    int  (*lock)(_SELF);
     void (*unlock)(_SELF);
     int  (*setColorKey)(_SELF, Uint32 flag, Uint32 key);
     int  (*setAlpha)(_SELF, Uint32 flag, Uint8 alpha);
-    MIL_bool (*setClipRect)(_SELF, const MIL_Rect *rect);
+    MIL_Bool (*setClipRect)(_SELF, const MIL_Rect *rect);
     void (*getClipRect)(_SELF, MIL_Rect *rect);
-    int  (*blitSurface)(_SELF, MIL_Rect *srcrect, Surface *dst, MIL_Rect *dstrect);
+    int  (*blit)(_SELF, MIL_Rect *srcrect, Surface *dst, MIL_Rect *dstrect);
     int  (*fillRect)(_SELF, MIL_Rect *dstrect, Uint32 color);
     int  (*saveBMP)(_SELF, const char *file);
     Surface* (*displayFormat)(_SELF);

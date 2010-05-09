@@ -53,7 +53,7 @@ int Signal_X_connect(_SELF, void* slot)
 int Signal_X_connectGroup(_SELF, Sint32 group, void* slot)
 {
     struct list_head* i = NULL;
-    MIL_bool is_break = MIL_FALSE;
+    MIL_Bool is_break = MIL_FALSE;
 
     if (NULL != slot) {
         _VC(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
@@ -177,7 +177,7 @@ Uint32 Signal_X_num_slots(_SELF)
     return 0;
 }
 
-MIL_bool Signal_X_empty(_SELF)
+MIL_Bool Signal_X_empty(_SELF)
 {
     int ret = 0;
     _VC(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
@@ -277,7 +277,7 @@ void* CallSlot(SlotNode* node, void* arg)
 
 CONSTRUCTOR(SignalSimple)
 {
-    static MIL_bool is_virtual_method_checked = MIL_FALSE;
+    static MIL_Bool is_virtual_method_checked = MIL_FALSE;
  
     if (!is_virtual_method_checked) {
         VirtualMethodVerify(self, connect);

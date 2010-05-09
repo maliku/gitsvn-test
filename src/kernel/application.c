@@ -61,17 +61,20 @@ CONSTRUCTOR(Application)
         if (NULL != screen->pixels) {
             MIL_Rect rc = {0, 0, 640, 480};
             MIL_Rect rcbmp = {0, 0, 300, 300};
-            MIL_Rect rcdst = {50, 50, 400, 400};
+            MIL_Rect rcdst = {50, 50, 300, 300};
+            MIL_Rect rclip = {300, 0, 600, 479};
 
             MIL_RWops* ops = MIL_RWFromFile("res/lena16.bmp", "rb");
             Surface* bmp = MIL_LoadBMP_RW(ops, 1);
             int i, j;
             char *pixels = (char*)screen->pixels;
+            _vc1(screen, setClipRect, &rclip);
             for (i = 0; i < 480; ++i)
             {
                 memset(pixels, i % 255, _vc0(screen, getBytesPerPixel) * 640);
                 pixels += _vc0((Surface*)screen, getPitch);
             }
+            _vc2(screen, fillRect, &rclip, 0);
             _VC(vd)->updateRects(vd, 1, &rc);
             getchar();
             if (NULL != bmp) {
@@ -80,9 +83,9 @@ CONSTRUCTOR(Application)
 //                _vc2(convert, setAlpha, MIL_SRCALPHA, 5);
                 for (j = 0; j < 400; ++j) {
                     rcdst.x = j;
-                    MIL_SoftStretch(convert, &rcbmp,
-                            screen, &rcdst);
-//                    _vc3(convert, blitSurface, &rcbmp, screen, &rcdst);
+//                    MIL_SoftStretch(convert, &rcbmp,
+//                            screen, &rcdst);
+                    _vc3(convert, blit, &rcbmp, screen, &rcdst);
                     _VC(vd)->updateRects(vd, 1, &rc);
                 }
                 Delete(bmp);

@@ -12,7 +12,7 @@
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #endif
 
-__INLINE__ MIL_bool
+__INLINE__ MIL_Bool
 MIL_IntersectRect(const MIL_Rect *A, const MIL_Rect *B, MIL_Rect *intersection)
 {
 #if 1
@@ -55,14 +55,14 @@ MIL_IntersectRect(const MIL_Rect *A, const MIL_Rect *B, MIL_Rect *intersection)
 #endif
 }
 
-__INLINE__ MIL_bool MIL_IsRectEmpty (const MIL_Rect* prc)
+__INLINE__ MIL_Bool MIL_IsRectEmpty (const MIL_Rect* prc)
 {
     if( 0 == prc->w ) return MIL_TRUE;
     if( 0 == prc->h ) return MIL_TRUE;
     return MIL_FALSE;
 }
 
-__INLINE__ MIL_bool MIL_EqualRect (const MIL_Rect* prc1, const MIL_Rect* prc2)
+__INLINE__ MIL_Bool MIL_EqualRect (const MIL_Rect* prc1, const MIL_Rect* prc2)
 {
     if(prc1->x != prc2->x) return MIL_FALSE;
     if(prc1->y != prc2->y) return MIL_FALSE;
@@ -72,7 +72,7 @@ __INLINE__ MIL_bool MIL_EqualRect (const MIL_Rect* prc1, const MIL_Rect* prc2)
     return MIL_TRUE;
 }
 
-__INLINE__ MIL_bool MIL_IsCovered(const MIL_Rect* prc1, const MIL_Rect* prc2)
+__INLINE__ MIL_Bool MIL_IsCovered(const MIL_Rect* prc1, const MIL_Rect* prc2)
 {
     if (prc1->x < prc2->x
             || prc1->y < prc2->y
@@ -84,7 +84,7 @@ __INLINE__ MIL_bool MIL_IsCovered(const MIL_Rect* prc1, const MIL_Rect* prc2)
     return MIL_TRUE;
 }
 
-__INLINE__ MIL_bool MIL_DoesIntersect (const MIL_Rect* psrc1, const MIL_Rect* psrc2)
+__INLINE__ MIL_Bool MIL_DoesIntersect (const MIL_Rect* psrc1, const MIL_Rect* psrc2)
 {
     int left, top, right, bottom;
     
@@ -98,7 +98,7 @@ __INLINE__ MIL_bool MIL_DoesIntersect (const MIL_Rect* psrc1, const MIL_Rect* ps
     return (left >= right || top >= bottom) ? MIL_FALSE : MIL_TRUE;
 }
 
-__INLINE__ MIL_bool MIL_UnionRect(MIL_Rect* pdrc, const MIL_Rect* psrc1, const MIL_Rect* psrc2)
+__INLINE__ MIL_Bool MIL_UnionRect(MIL_Rect* pdrc, const MIL_Rect* psrc1, const MIL_Rect* psrc2)
 {
     MIL_Rect src1, src2;
     memcpy(&src1, psrc1, sizeof(MIL_Rect));
@@ -204,7 +204,7 @@ __INLINE__ void MIL_InflateRectToPt (MIL_Rect* prc, int x, int y)
     if (y > prc->y + prc->h) prc->y = y - prc->y;
 }
 
-__INLINE__ MIL_bool MIL_PtInRect(const MIL_Rect* prc, int x, int y)
+__INLINE__ MIL_Bool MIL_PtInRect(const MIL_Rect* prc, int x, int y)
 {
     return (   (x >= prc->x) 
         && (x < prc->x + prc->w)

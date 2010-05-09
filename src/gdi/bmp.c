@@ -49,7 +49,7 @@
 
 Surface * MIL_LoadBMP_RW(MIL_RWops* src, int freesrc)
 {
-	MIL_bool was_error;
+	MIL_Bool was_error;
 	long fp_offset;
 	int bmpPitch;
 	int i, pad;
@@ -60,7 +60,7 @@ Surface * MIL_LoadBMP_RW(MIL_RWops* src, int freesrc)
 	MIL_Palette *palette;
 	Uint8 *bits;
 	Uint8 *top, *end;
-	MIL_bool topDown;
+	MIL_Bool topDown;
 	int ExpandBMP;
 
 	/* The Win32 BMP file header (14 bytes) */

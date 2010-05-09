@@ -189,7 +189,7 @@ int QVFbVideoDevice_X_setColors(_Self(VideoDevice), int firstcolor,
     return 1;
 }
 
-__INLINE__ MIL_bool is_rect_empty(RECT* prc)
+__INLINE__ MIL_Bool is_rect_empty(RECT* prc)
 {
     if( prc->left == prc->right ) return MIL_TRUE;
     if( prc->top == prc->bottom ) return MIL_TRUE;

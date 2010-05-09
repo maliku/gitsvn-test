@@ -93,7 +93,7 @@
 typedef enum {
 	MIL_FALSE = 0,
 	MIL_TRUE  = 1
-} MIL_bool;
+} MIL_Bool;
 
 typedef int8_t		Sint8;
 typedef uint8_t		Uint8;
@@ -116,6 +116,30 @@ typedef struct {
 #endif
 
 /*@}*/
+typedef enum  {
+    MIL_GENERIC_ERROR               = -1,
+    MIL_OK                          = 0,
+    MIL_INVALID_PARAMETER           = 1,
+    MIL_OUT_OF_MEMORY               = 2,
+    MIL_OBJECT_BUSY                 = 4,
+    MIL_INSUFFICIENT_BUFFER         = 5,
+    MIL_NOT_IMPLEMENTED             = 6,
+    MIL_SYSTEM_CALL_ERROR           = 7,
+    MIL_WRONG_STATE                 = 8,
+    MIL_ABORTED                     = 9,
+    MIL_FILE_NOT_FOUND               = 10,
+    MIL_VALUE_OVERFLOW               = 11,
+    MIL_ACCESS_DENIED                = 12,
+    MIL_UNKNOWN_FILE_FORMAT          = 13,
+    MIL_FONT_FAMILY_NOT_FOUND          = 14,
+    MIL_FONT_STYLE_NOT_FOUND           = 15,
+    MIL_NOT_TRUE_TYPE_FONT             = 16,
+    MIL_UNSUPPORTED_VERSION   = 17,
+    MIL_NOT_INITIALIZED       = 18,
+    MIL_PropertyNotFound            = 19,
+    MIL_PropertyNotSupported        = 20,
+    MIL_ProfileNotFound             = 21 
+} MIL_Status;
 
 /** @name Make sure the types really have the right sizes */
 /*@{*/

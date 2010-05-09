@@ -36,8 +36,8 @@ typedef struct
 {
     unsigned int unicode;
     unsigned int modifiers;
-    MIL_bool press;
-    MIL_bool repeat;
+    MIL_Bool press;
+    MIL_Bool repeat;
 }QVFbKeyData;
 
 typedef struct {

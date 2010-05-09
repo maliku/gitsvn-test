@@ -53,7 +53,7 @@ void MIL_MintAudio_CheckFpu(void);
 
 /* The first ticks value of the application */
 static Uint32 start;
-static MIL_bool read_hz200_from_vbl = MIL_FALSE;
+static MIL_Bool read_hz200_from_vbl = MIL_FALSE;
 static int mint_present; /* can we use Syield() ? */
 
 void MIL_StartTicks(void)
@@ -99,7 +99,7 @@ void MIL_Delay (Uint32 ms)
 }
 
 /* Data to handle a single periodic alarm */
-static MIL_bool timer_installed=MIL_FALSE;
+static MIL_Bool timer_installed=MIL_FALSE;
 
 /* This is only called if the event thread is not running */
 int MIL_SYS_TimerInit(void)

@@ -34,7 +34,7 @@ static size_t MIL_ScanLong(const char *text, int radix, long *valuep)
 {
     const char *textstart = text;
     long value = 0;
-    MIL_bool negative = MIL_FALSE;
+    MIL_Bool negative = MIL_FALSE;
 
     if ( *text == '-' ) {
         negative = MIL_TRUE;
@@ -137,7 +137,7 @@ static size_t MIL_ScanLongLong(const char *text, int radix, Sint64 *valuep)
 {
     const char *textstart = text;
     Sint64 value = 0;
-    MIL_bool negative = MIL_FALSE;
+    MIL_Bool negative = MIL_FALSE;
 
     if ( *text == '-' ) {
         negative = MIL_TRUE;
@@ -210,7 +210,7 @@ static size_t MIL_ScanFloat(const char *text, double *valuep)
     const char *textstart = text;
     unsigned long lvalue = 0;
     double value = 0.0;
-    MIL_bool negative = MIL_FALSE;
+    MIL_Bool negative = MIL_FALSE;
 
     if ( *text == '-' ) {
         negative = MIL_TRUE;
@@ -744,7 +744,7 @@ int MIL_sscanf(const char *text, const char *fmt, ...)
             continue;
         }
         if ( *fmt == '%' ) {
-            MIL_bool done = MIL_FALSE;
+            MIL_Bool done = MIL_FALSE;
             long count = 0;
             int radix = 10;
             enum {
@@ -753,7 +753,7 @@ int MIL_sscanf(const char *text, const char *fmt, ...)
                 DO_LONG,
                 DO_LONGLONG
             } inttype = DO_INT;
-            MIL_bool suppress = MIL_FALSE;
+            MIL_Bool suppress = MIL_FALSE;
 
             ++fmt;
             if ( *fmt == '%' ) {
@@ -1121,9 +1121,9 @@ int MIL_vsnprintf(char *text, size_t maxlen, const char *fmt, va_list ap)
     --maxlen; /* For the trailing '\0' */
     while ( *fmt && maxlen ) {
         if ( *fmt == '%' ) {
-            MIL_bool done = MIL_FALSE;
+            MIL_Bool done = MIL_FALSE;
             size_t len = 0;
-            MIL_bool do_lowercase = MIL_FALSE;
+            MIL_Bool do_lowercase = MIL_FALSE;
             int radix = 10;
             enum {
                 DO_INT,

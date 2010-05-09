@@ -395,7 +395,7 @@ static Uint32 MIL_GetCPUFeatures(void)
 	return MIL_CPUFeatures;
 }
 
-MIL_bool MIL_HasRDTSC(void)
+MIL_Bool MIL_HasRDTSC(void)
 {
 	if ( MIL_GetCPUFeatures() & CPU_HAS_RDTSC ) {
 		return MIL_TRUE;
@@ -403,7 +403,7 @@ MIL_bool MIL_HasRDTSC(void)
 	return MIL_FALSE;
 }
 
-MIL_bool MIL_HasMMX(void)
+MIL_Bool MIL_HasMMX(void)
 {
 	if ( MIL_GetCPUFeatures() & CPU_HAS_MMX ) {
 		return MIL_TRUE;
@@ -411,7 +411,7 @@ MIL_bool MIL_HasMMX(void)
 	return MIL_FALSE;
 }
 
-MIL_bool MIL_HasMMXExt(void)
+MIL_Bool MIL_HasMMXExt(void)
 {
 	if ( MIL_GetCPUFeatures() & CPU_HAS_MMXEXT ) {
 		return MIL_TRUE;
@@ -419,7 +419,7 @@ MIL_bool MIL_HasMMXExt(void)
 	return MIL_FALSE;
 }
 
-MIL_bool MIL_Has3DNow(void)
+MIL_Bool MIL_Has3DNow(void)
 {
 	if ( MIL_GetCPUFeatures() & CPU_HAS_3DNOW ) {
 		return MIL_TRUE;
@@ -427,7 +427,7 @@ MIL_bool MIL_Has3DNow(void)
 	return MIL_FALSE;
 }
 
-MIL_bool MIL_Has3DNowExt(void)
+MIL_Bool MIL_Has3DNowExt(void)
 {
 	if ( MIL_GetCPUFeatures() & CPU_HAS_3DNOWEXT ) {
 		return MIL_TRUE;
@@ -435,7 +435,7 @@ MIL_bool MIL_Has3DNowExt(void)
 	return MIL_FALSE;
 }
 
-MIL_bool MIL_HasSSE(void)
+MIL_Bool MIL_HasSSE(void)
 {
 	if ( MIL_GetCPUFeatures() & CPU_HAS_SSE ) {
 		return MIL_TRUE;
@@ -443,7 +443,7 @@ MIL_bool MIL_HasSSE(void)
 	return MIL_FALSE;
 }
 
-MIL_bool MIL_HasSSE2(void)
+MIL_Bool MIL_HasSSE2(void)
 {
 	if ( MIL_GetCPUFeatures() & CPU_HAS_SSE2 ) {
 		return MIL_TRUE;
@@ -451,7 +451,7 @@ MIL_bool MIL_HasSSE2(void)
 	return MIL_FALSE;
 }
 
-MIL_bool MIL_HasAltiVec(void)
+MIL_Bool MIL_HasAltiVec(void)
 {
 	if ( MIL_GetCPUFeatures() & CPU_HAS_ALTIVEC ) {
 		return MIL_TRUE;

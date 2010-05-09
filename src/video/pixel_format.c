@@ -14,7 +14,7 @@ METHOD_REGISTER_PLACEHOLDER(MIL_PixelFormat)
 
 CONSTRUCTOR(PixelFormat)
 {
-    static MIL_bool method_verify = MIL_FALSE;
+    static MIL_Bool method_verify = MIL_FALSE;
     if (!method_verify) {
         VirtualMethodVerify(self, mapRGB);
         VirtualMethodVerify(self, mapRGBA);

@@ -47,7 +47,7 @@ struct _MIL_TimerID {
 
 static MIL_TimerID MIL_timers = NULL;
 static MIL_mutex *MIL_timer_mutex;
-static volatile MIL_bool list_changed = MIL_FALSE;
+static volatile MIL_Bool list_changed = MIL_FALSE;
 
 /* Set whether or not the timer should use a thread.
    This should not be called while the timer subsystem is running.
@@ -104,7 +104,7 @@ void MIL_ThreadedTimerCheck(void)
 {
 	Uint32 now, ms;
 	MIL_TimerID t, prev, next;
-	MIL_bool removed;
+	MIL_Bool removed;
 
 	MIL_mutexP(MIL_timer_mutex);
 	list_changed = MIL_FALSE;
@@ -202,10 +202,10 @@ MIL_TimerID MIL_AddTimer(Uint32 interval, MIL_NewTimerCallback callback, void *p
 	return t;
 }
 
-MIL_bool MIL_RemoveTimer(MIL_TimerID id)
+MIL_Bool MIL_RemoveTimer(MIL_TimerID id)
 {
 	MIL_TimerID t, prev = NULL;
-	MIL_bool removed;
+	MIL_Bool removed;
 
 	removed = MIL_FALSE;
 	MIL_mutexP(MIL_timer_mutex);

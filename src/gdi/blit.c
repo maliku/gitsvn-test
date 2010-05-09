@@ -405,3 +405,4 @@ int MIL_LowerBlit (Surface *src, MIL_Rect *srcrect,
 	}
 	return(do_blit(src, srcrect, dst, dstrect));
 }
+

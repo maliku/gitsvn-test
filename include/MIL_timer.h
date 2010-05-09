@@ -112,7 +112,7 @@ extern DECLSPEC MIL_TimerID MILCALL MIL_AddTimer(Uint32 interval, MIL_NewTimerCa
  * Remove one of the multiple timers knowing its ID.
  * Returns a boolean value indicating success.
  */
-extern DECLSPEC MIL_bool MILCALL MIL_RemoveTimer(MIL_TimerID t);
+extern DECLSPEC MIL_Bool MILCALL MIL_RemoveTimer(MIL_TimerID t);
 
 /*@}*/
 

@@ -12,6 +12,64 @@
 #include "coo.h"
 #include "MIL_video.h"
 
+#include "begin_code.h"
+/* Set up for C function definitions, even when using C++ */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef enum  {
+    MIL_IMG_NONE                = 0,
+    MIL_IMG_SCALABLE            = 0x0001,
+    MIL_IMG_HAS_ALPHA           = 0x0002,
+    MIL_IMG_HAS_TRANSLUCENT     = 0x0004,
+    MIL_IMG_PARTIALLY_SCALABLE  = 0x0008,
+    MIL_IMG_COLOR_SPACE_RGB     = 0x0010,
+    MIL_IMG_COLOR_SPACE_CMYK    = 0x0020,
+    MIL_IMG_COLOR_SPACE_GRAY    = 0x0040,
+    MIL_IMG_COLOR_SPACE_YCBCR   = 0x0080,
+    MIL_IMG_COLOR_SPACE_YCCK    = 0x0100,
+    MIL_IMG_HAS_REAL_DPI        = 0x1000,
+    MIL_IMG_HAS_REAL_PIXEL_SIZE = 0x2000,
+    MIL_IMG_READONLY            = 0x00010000,
+    MIL_IMG_CACHING             = 0x00020000 
+} MIL_ImageFlags;
+
+typedef enum  {
+    MIL_ROTATE_NONE_FLIP_NONE   = 0,
+    MIL_ROTATE_90_FLIP_NONE     = 1,
+    MIL_ROTATE_180_FLIP_NONE    = 2,
+    MIL_ROTATE_270_FLIP_NONE    = 3,
+    MIL_ROTATE_NONE_FLIP_X      = 4,
+    MIL_ROTATE_90_FLIP_X        = 5,
+    MIL_ROTATE_180_FLIP_X       = 6,
+    MIL_ROTATE_270_FLIP_X       = 7,
+    MIL_ROTATE_NONE_FLIP_Y      = MIL_ROTATE_180_FLIP_X,
+    MIL_ROTATE_90_FLIP_Y        = MIL_ROTATE_270_FLIP_X,
+    MIL_ROTATE_180_FLIP_Y       = MIL_ROTATE_NONE_FLIP_X,
+    MIL_ROTATE_270_FLIP_Y       = MIL_ROTATE_90_FLIP_X,
+    MIL_ROTATE_NONE_FLIP_XY     = MIL_ROTATE_180_FLIP_NONE,
+    MIL_ROTATE_90_FLIP_XY       = MIL_ROTATE_270_FLIP_NONE,
+    MIL_ROTATE_180_FLIP_XY      = MIL_ROTATE_NONE_FLIP_NONE,
+    MIL_ROTATE_270_FLIP_XY      = MIL_ROTATE_90_FLIP_NONE 
+} MIL_RotateFlipType;
+
+CLASS(MIL_Image)
+{
+    VIRTUAL_METHOD_DECLARE_BEGIN(MIL_Image)
+        MIL_Image*  (*clone)(_Self(MIL_Image));
+        MIL_Status  (*getBounds)(_Self(MIL_Image), MIL_Rect* rc);
+        Uint32      (*getWidth)(_Self(MIL_Image));
+        Uint32      (*getHeight)(_Self(MIL_Image));
+        MIL_Status  (*getPalette)(_Self(MIL_Image), MIL_Palette* palette);
+        MIL_Status  (*setPalette)(_Self(MIL_Image), const MIL_Palette* palette);
+        int         (*getPaletteSize)(_Self(MIL_Image));
+        MIL_Status  (*getPixelFormat)(_Self(MIL_Image), MIL_PixelFormat* fmt);
+        const char* (*getRawFormat)(_Self(MIL_Image));
+        MIL_Status  (*rotateFlip)(_Self(MIL_Image), MIL_RotateFlipType);
+        MIL_Status  (*save)(_Self(MIL_Status));
+    VIRTUAL_METHOD_DECLARE_END
+};
 /*
  * A function to calculate the intersection of two rectangles.
  */
@@ -23,7 +81,7 @@
  * @param intersection The intersection rectangle of A and B.
  * @returns MIL_TRUE if the rectangles intersect, MIL_FALSE otherwise.
  */
-extern DECLSPEC MIL_bool
+extern DECLSPEC MIL_Bool
 MIL_IntersectRect(const MIL_Rect *A, const MIL_Rect *B, MIL_Rect *intersection);
 
 /** 
@@ -33,7 +91,7 @@ MIL_IntersectRect(const MIL_Rect *A, const MIL_Rect *B, MIL_Rect *intersection);
  * 
  * @returns MIL_TRUE if the rectangle is empty, MIL_FALSE otherwise.
  */
-extern DECLSPEC MIL_bool MIL_IsRectEmpty (const MIL_Rect* prc);
+extern DECLSPEC MIL_Bool MIL_IsRectEmpty (const MIL_Rect* prc);
 
 /** 
  * @synopsis Check two rectangles whether equivalent.
@@ -43,17 +101,23 @@ extern DECLSPEC MIL_bool MIL_IsRectEmpty (const MIL_Rect* prc);
  * 
  * @returns MIL_TRUE if rectangles are equivalent, MIL_FALSE otherwise.  
  */
-extern DECLSPEC MIL_bool MIL_EqualRect (const MIL_Rect* prc1, const MIL_Rect* prc2);
-extern DECLSPEC MIL_bool MIL_DoesIntersect (const MIL_Rect* psrc1, const MIL_Rect* psrc2);
-extern DECLSPEC MIL_bool MIL_UnionRect(MIL_Rect* pdrc, const MIL_Rect* psrc1, const MIL_Rect* psrc2);
+extern DECLSPEC MIL_Bool MIL_EqualRect (const MIL_Rect* prc1, const MIL_Rect* prc2);
+extern DECLSPEC MIL_Bool MIL_DoesIntersect (const MIL_Rect* psrc1, const MIL_Rect* psrc2);
+extern DECLSPEC MIL_Bool MIL_UnionRect(MIL_Rect* pdrc, const MIL_Rect* psrc1, const MIL_Rect* psrc2);
 extern DECLSPEC void MIL_GetBoundRect (MIL_Rect* pdrc,  const MIL_Rect* psrc1, const MIL_Rect* psrc2);
 extern DECLSPEC void MIL_SetRectByCorner(MIL_Rect* prc, int left, int top, int right, int bottom);
 extern DECLSPEC void MIL_SetRectBySize(MIL_Rect* prc, int x, int y, int w, int h);
 extern DECLSPEC void MIL_OffsetRect(MIL_Rect* prc, int x, int y);
 extern DECLSPEC void MIL_InflateRect(MIL_Rect* prc, int cx, int cy);
 extern DECLSPEC void MIL_InflateRectToPt (MIL_Rect* prc, int x, int y);
-extern DECLSPEC MIL_bool MIL_PtInRect(const MIL_Rect* prc, int x, int y);
+extern DECLSPEC MIL_Bool MIL_PtInRect(const MIL_Rect* prc, int x, int y);
 DECLSPEC int MIL_SubtractRect(MIL_Rect* rc, const MIL_Rect* psrc1, const MIL_Rect* psrc2);
+
+/* Ends C function definitions when using C++ */
+#ifdef __cplusplus
+}
+#endif
+#include "close_code.h"
 
 #endif   /* ----- #ifndef MIL_GDI_INC  ----- */
 

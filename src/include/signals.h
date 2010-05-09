@@ -50,7 +50,7 @@ CLASS(Signal)
         void (*disconnectAllGroup)(_SELF);
         void*  (*emit)(_SELF, ...);
         Uint32 (*num_slots)(_SELF);
-        MIL_bool (*empty)(_SELF);
+        MIL_Bool (*empty)(_SELF);
     VIRTUAL_METHOD_DECLARE_END
     METHOD_DECLARE_BEGIN(Signal)
     void* (*travel)(_SELF, SlotNode*, SlotHandle);

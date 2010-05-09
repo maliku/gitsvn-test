@@ -213,7 +213,7 @@ int MIL_SoftStretch(Surface *src, MIL_Rect *srcrect,
 	MIL_Rect full_src;
 	MIL_Rect full_dst;
 #ifdef USE_ASM_STRETCH
-	MIL_bool use_asm = MIL_TRUE;
+	MIL_Bool use_asm = MIL_TRUE;
 #ifdef __GNUC__
 	int u1, u2;
 #endif

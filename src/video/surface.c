@@ -85,7 +85,7 @@ DESTRUCTOR(Surface)
 #endif
 }
 
-void* Surface_X_lock(_SELF)
+int Surface_X_lock(_SELF)
 {
     Surface* surface = (Surface*)self;
 	if ( ! surface->locked ) {
@@ -94,7 +94,7 @@ void* Surface_X_lock(_SELF)
 			VideoDevice *video = ACT_VIDEO_DEVICE;
 			VideoDevice *this  = ACT_VIDEO_DEVICE;
 			if ( _vc1(video, lockHWSurface, surface) < 0 ) {
-				return(NULL);
+				return(-1);
 			}
 		}
 		if ( surface->flags & MIL_RLEACCEL ) {
@@ -109,7 +109,7 @@ void* Surface_X_lock(_SELF)
 	++surface->locked;
 
 	/* Ready to go.. */
-	return(surface->pixels);
+	return(0);
 }
 
 void Surface_X_unlock(_SELF)
@@ -247,7 +247,7 @@ int  Surface_X_setAlpha(_SELF, Uint32 flag, Uint8 value)
 	return(0);
 }
 
-MIL_bool Surface_X_setClipRect(_SELF, const MIL_Rect *rect)
+MIL_Bool Surface_X_setClipRect(_SELF, const MIL_Rect *rect)
 {
 	MIL_Rect full_rect;
     Surface* surface = (Surface*)self;
@@ -279,7 +279,7 @@ void Surface_X_getClipRect(_SELF, MIL_Rect *rect)
     }
 }
 
-int  Surface_X_blitSurface(_SELF, MIL_Rect *srcrect, Surface *dst, MIL_Rect *dstrect)
+int  Surface_X_blit(_SELF, MIL_Rect *srcrect, Surface *dst, MIL_Rect *dstrect)
 {
     MIL_Rect fulldst;
 	int srcx, srcy, w, h;
@@ -296,19 +296,19 @@ int  Surface_X_blitSurface(_SELF, MIL_Rect *srcrect, Surface *dst, MIL_Rect *dst
 
 	/* If the destination rectangle is NULL, use the entire dest surface */
 	if ( dstrect == NULL ) {
-	        fulldst.x = fulldst.y = 0;
-		dstrect = &fulldst;
+        fulldst.x = fulldst.y = 0;
+        dstrect = &fulldst;
 	}
 
 	/* clip the source rectangle to the source surface */
 	if(srcrect) {
-	        int maxw, maxh;
-	
+        int maxw, maxh;
+
 		srcx = srcrect->x;
 		w = srcrect->w;
 		if(srcx < 0) {
-		        w += srcx;
-			dstrect->x -= srcx;
+            w += srcx;
+            dstrect->x -= srcx;
 			srcx = 0;
 		}
 		maxw = src->w - srcx;
@@ -318,16 +318,16 @@ int  Surface_X_blitSurface(_SELF, MIL_Rect *srcrect, Surface *dst, MIL_Rect *dst
 		srcy = srcrect->y;
 		h = srcrect->h;
 		if(srcy < 0) {
-		        h += srcy;
-			dstrect->y -= srcy;
+            h += srcy;
+            dstrect->y -= srcy;
 			srcy = 0;
 		}
 		maxh = src->h - srcy;
 		if(maxh < h)
 			h = maxh;
 	    
-	} else {
-	        srcx = srcy = 0;
+    } else {
+        srcx = srcy = 0;
 		w = src->w;
 		h = src->h;
 	}
@@ -359,8 +359,8 @@ int  Surface_X_blitSurface(_SELF, MIL_Rect *srcrect, Surface *dst, MIL_Rect *dst
 	}
 
 	if(w > 0 && h > 0) {
-	        MIL_Rect sr;
-	        sr.x = srcx;
+        MIL_Rect sr;
+        sr.x = srcx;
 		sr.y = srcy;
 		sr.w = dstrect->w = w;
 		sr.h = dstrect->h = h;
@@ -370,8 +370,200 @@ int  Surface_X_blitSurface(_SELF, MIL_Rect *srcrect, Surface *dst, MIL_Rect *dst
 	return 0;
 }
 
+static int MIL_FillRect1(Surface *dst, MIL_Rect *dstrect, Uint32 color)
+{
+	/* FIXME: We have to worry about packing order.. *sigh* */
+	MIL_SetError("1-bpp rect fill not yet implemented");
+	return -1;
+}
+
+static int MIL_FillRect4(Surface *dst, MIL_Rect *dstrect, Uint32 color)
+{
+	/* FIXME: We have to worry about packing order.. *sigh* */
+	MIL_SetError("4-bpp rect fill not yet implemented");
+	return -1;
+}
+
 int  Surface_X_fillRect(_SELF, MIL_Rect *dstrect, Uint32 color)
-{}
+{
+	VideoDevice *video = ACT_VIDEO_DEVICE;
+	VideoDevice *this  = ACT_VIDEO_DEVICE;
+    Surface* dst = (Surface*)self;
+	int x, y;
+	Uint8 *row;
+
+	/* This function doesn't work on surfaces < 8 bpp */
+	if ( dst->format->BitsPerPixel < 8 ) {
+		switch(dst->format->BitsPerPixel) {
+		    case 1:
+			return MIL_FillRect1(dst, dstrect, color);
+			break;
+		    case 4:
+			return MIL_FillRect4(dst, dstrect, color);
+			break;
+		    default:
+			MIL_SetError("Fill rect on unsupported surface format");
+			return(-1);
+			break;
+		}
+	}
+
+	/* If 'dstrect' == NULL, then fill the whole surface */
+	if ( dstrect ) {
+		/* Perform clipping */
+		if ( !MIL_IntersectRect(dstrect, &dst->clip_rect, dstrect) ) {
+			return(0);
+		}
+	} else {
+		dstrect = &dst->clip_rect;
+	}
+
+	/* Check for hardware acceleration */
+	if ( ((dst->flags & MIL_HWSURFACE) == MIL_HWSURFACE) &&
+					video->vinfo.blit_fill ) {
+		MIL_Rect hw_rect;
+		if ( dst == ACT_VIDEO_DEVICE->screen ) {
+			hw_rect = *dstrect;
+			hw_rect.x += ACT_VIDEO_DEVICE->offset_x;
+			hw_rect.y += ACT_VIDEO_DEVICE->offset_y;
+			dstrect = &hw_rect;
+		}
+		return(_vc3(video, fillHWRect, dst, dstrect, color));
+	}
+
+	/* Perform software fill */
+	if ( _vc0(dst, lock) != 0 ) {
+		return(-1);
+	}
+	row = (Uint8 *)dst->pixels+dstrect->y*dst->pitch+
+			dstrect->x*dst->format->BytesPerPixel;
+	if ( dst->format->palette || (color == 0) ) {
+		x = dstrect->w*dst->format->BytesPerPixel;
+		if ( !color && !((uintptr_t)row&3) && !(x&3) && !(dst->pitch&3) ) {
+			int n = x >> 2;
+			for ( y=dstrect->h; y; --y ) {
+				MIL_memset4(row, 0, n);
+				row += dst->pitch;
+			}
+		} else {
+#ifdef __powerpc__
+			/*
+			 * MIL_memset() on PPC (both glibc and codewarrior) uses
+			 * the dcbz (Data Cache Block Zero) instruction, which
+			 * causes an alignment exception if the destination is
+			 * uncachable, so only use it on software surfaces
+			 */
+			if((dst->flags & MIL_HWSURFACE) == MIL_HWSURFACE) {
+				if(dstrect->w >= 8) {
+					/*
+					 * 64-bit stores are probably most
+					 * efficient to uncached video memory
+					 */
+					double fill;
+					MIL_memset(&fill, color, (sizeof fill));
+					for(y = dstrect->h; y; y--) {
+						Uint8 *d = row;
+						unsigned n = x;
+						unsigned nn;
+						Uint8 c = color;
+						double f = fill;
+						while((unsigned long)d
+						      & (sizeof(double) - 1)) {
+							*d++ = c;
+							n--;
+						}
+						nn = n / (sizeof(double) * 4);
+						while(nn) {
+							((double *)d)[0] = f;
+							((double *)d)[1] = f;
+							((double *)d)[2] = f;
+							((double *)d)[3] = f;
+							d += 4*sizeof(double);
+							nn--;
+						}
+						n &= ~(sizeof(double) * 4 - 1);
+						nn = n / sizeof(double);
+						while(nn) {
+							*(double *)d = f;
+							d += sizeof(double);
+							nn--;
+						}
+						n &= ~(sizeof(double) - 1);
+						while(n) {
+							*d++ = c;
+							n--;
+						}
+						row += dst->pitch;
+					}
+				} else {
+					/* narrow boxes */
+					for(y = dstrect->h; y; y--) {
+						Uint8 *d = row;
+						Uint8 c = color;
+						int n = x;
+						while(n) {
+							*d++ = c;
+							n--;
+						}
+						row += dst->pitch;
+					}
+				}
+			} else
+#endif /* __powerpc__ */
+			{
+				for(y = dstrect->h; y; y--) {
+					MIL_memset(row, color, x);
+					row += dst->pitch;
+				}
+			}
+		}
+	} else {
+		switch (dst->format->BytesPerPixel) {
+		    case 2:
+			for ( y=dstrect->h; y; --y ) {
+				Uint16 *pixels = (Uint16 *)row;
+				Uint16 c = (Uint16)color;
+				Uint32 cc = (Uint32)c << 16 | c;
+				int n = dstrect->w;
+				if((uintptr_t)pixels & 3) {
+					*pixels++ = c;
+					n--;
+				}
+				if(n >> 1)
+					MIL_memset4(pixels, cc, n >> 1);
+				if(n & 1)
+					pixels[n - 1] = c;
+				row += dst->pitch;
+			}
+			break;
+
+		    case 3:
+			#if MIL_BYTEORDER == MIL_BIG_ENDIAN
+				color <<= 8;
+			#endif
+			for ( y=dstrect->h; y; --y ) {
+				Uint8 *pixels = row;
+				for ( x=dstrect->w; x; --x ) {
+					MIL_memcpy(pixels, &color, 3);
+					pixels += 3;
+				}
+				row += dst->pitch;
+			}
+			break;
+
+		    case 4:
+			for(y = dstrect->h; y; --y) {
+				MIL_memset4(row, color, dstrect->w);
+				row += dst->pitch;
+			}
+			break;
+		}
+	}
+	_vc0(dst, unlock);
+
+	/* We're done! */
+	return(0);
+}
 
 int  Surface_X_saveBMP(_SELF, const char *file)
 {}
@@ -823,7 +1015,7 @@ VIRTUAL_METHOD_REGBEGIN(Surface, NonBase)
     METHOD_REGISTER(Surface, setAlpha)
     METHOD_REGISTER(Surface, setClipRect)
     METHOD_REGISTER(Surface, getClipRect)
-    METHOD_REGISTER(Surface, blitSurface)
+    METHOD_REGISTER(Surface, blit)
     METHOD_REGISTER(Surface, fillRect)
     METHOD_REGISTER(Surface, saveBMP)
     METHOD_REGISTER(Surface, displayFormat)

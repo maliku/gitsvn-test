@@ -1823,7 +1823,7 @@ int MIL_RLESurface(Surface *surface)
  * completely transparent pixels will be lost, and colour and alpha depth
  * may have been reduced (when encoding for 16bpp targets).
  */
-__INLINE__ MIL_bool UnRLEAlpha(Surface *surface)
+__INLINE__ MIL_Bool UnRLEAlpha(Surface *surface)
 {
     Uint8 *srcbuf;
     Uint32 *dst;
