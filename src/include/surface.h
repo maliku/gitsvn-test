@@ -81,6 +81,8 @@ Surface * CreateRGBSurface (Uint32 flags,
 			Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask);
 int MIL_SoftStretch(Surface *src, MIL_Rect *srcrect,
                     Surface *dst, MIL_Rect *dstrect);
+#define MIL_AUTO_FREE 1
 Surface * MIL_LoadBMP_RW(MIL_RWops* src, int freesrc);
+MIL_Status MIL_SaveBMP_RW (Surface *saveme, MIL_RWops *dst, int freedst);
 #endif   /* ----- #ifndef SURFACE_INC  ----- */
 

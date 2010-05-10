@@ -65,7 +65,7 @@ CLASS(MIL_RWops)
 
     VIRTUAL_METHOD_DECLARE_END
 
-        METHOD_DECLARE_PLACEHOLDER(MIL_RWops)
+    METHOD_DECLARE_PLACEHOLDER(MIL_RWops)
     Uint32 type;
     union {
         struct {

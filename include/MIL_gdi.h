@@ -54,6 +54,18 @@ typedef enum  {
     MIL_ROTATE_270_FLIP_XY      = MIL_ROTATE_90_FLIP_NONE 
 } MIL_RotateFlipType;
 
+STRUCT {
+    Uint32 w;
+    Uint32 h;
+    Sint32  stride;
+    void*  scan0;
+    MIL_PixelFormat* format;
+}MIL_BitmapData;
+
+/** 
+ * @name MIL_Image
+ * @brief A readonly container of kinds of image format.
+ */
 CLASS(MIL_Image)
 {
     VIRTUAL_METHOD_DECLARE_BEGIN(MIL_Image)
@@ -73,6 +85,19 @@ CLASS(MIL_Image)
 };
 
 /** 
+ * @name MIL_Bitmap
+ * @brief A modifiable container of MIL_Image, you can change it's pixel data.
+ */
+CLASS_INHERIT_BEGIN(MIL_Bitmap, MIL_Image)
+    METHOD_DECLARE_BEGIN(MIL_Bitmap)
+        MIL_Status  (*getPixel)(_Self(MIL_Bitmap), int x, int y, MIL_Color* color);
+        MIL_Status  (*lockBits)(_Self(MIL_Bitmap), const MIL_Rect* rc, MIL_BitmapData* locked_data);
+        MIL_Status  (*setPixel)(_Self(MIL_Bitmap), int x, int y, const MIL_Color* color);
+        MIL_Status  (*unlockBits)(_Self(MIL_Bitmap), MIL_BitmapData* locked_data);
+    METHOD_DECLARE_END
+CLASS_INHERIT_END
+
+/** 
  * @synopsis Load image from a file.
  * 
  * @param file The path of file.
@@ -80,6 +105,7 @@ CLASS(MIL_Image)
  * @returns Pointer of image object if success, NULL otherwise. 
  */
 MIL_Image* LoadImageFromFile(const char* file);
+MIL_Bitmap* LoadBitmapFromFile(const char* file);
 
 /*
  * A function to calculate the intersection of two rectangles.

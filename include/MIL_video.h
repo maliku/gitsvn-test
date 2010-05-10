@@ -106,6 +106,7 @@ CLASS(MIL_PixelFormat)
 
 extern MIL_PixelFormat* MIL_AllocFormat(int bpp,
         Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask);
+
 #if 0
 /** This structure should be treated as read-only, except for 'pixels',
  *  which, if not NULL, contains the raw pixel data for the surface.

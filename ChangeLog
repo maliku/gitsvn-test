@@ -1,4 +1,10 @@
 
+[2010-05-10]: Add Image/Bitmap class but not implement yet.
+[2010-05-09]: Change MIL_bool to MIL_Bool.
+[2010-05-08]: add basic timer support but not completed.
+[2010-05-07]: Add private member access macro, it's usefully.Add basic strech
+blit support.
+[2010-05-06]: Add MIL_Rect operation function set.
 [2010-05-05]: Fix a bug of depth error in QVFb_X_setVideoMode.
 Add surface convertion method.
 Modify MIL_PixelFormat to a class.

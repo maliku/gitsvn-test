@@ -35,7 +35,7 @@
 
 /* Functions to read/write stdio file pointers */
 
-static int METHOD_NAMED(RawFileOperator, seek)(_Self(MIL_RWops), int offset, int whence)
+int METHOD_NAMED(RawFileOperator, seek)(_Self(MIL_RWops), int offset, int whence)
 {
 	if (fseek(self->hidden.stdio.fp, offset, whence) == 0 ) {
 		return(ftell(self->hidden.stdio.fp));
@@ -45,7 +45,7 @@ static int METHOD_NAMED(RawFileOperator, seek)(_Self(MIL_RWops), int offset, int
 	}
 }
 
-static int METHOD_NAMED(RawFileOperator, read)(_Self(MIL_RWops), void *ptr, int size, int maxnum)
+int METHOD_NAMED(RawFileOperator, read)(_Self(MIL_RWops), void *ptr, int size, int maxnum)
 {
 	size_t nread;
 
@@ -56,7 +56,7 @@ static int METHOD_NAMED(RawFileOperator, read)(_Self(MIL_RWops), void *ptr, int 
 	return(nread);
 }
 
-static int METHOD_NAMED(RawFileOperator, write)(_Self(MIL_RWops), const void *ptr, int size, int num)
+int METHOD_NAMED(RawFileOperator, write)(_Self(MIL_RWops), const void *ptr, int size, int num)
 {
 	size_t nwrote;
 	nwrote = fwrite(ptr, size, num, self->hidden.stdio.fp);
@@ -67,7 +67,7 @@ static int METHOD_NAMED(RawFileOperator, write)(_Self(MIL_RWops), const void *pt
 	return(nwrote);
 }
 
-static int METHOD_NAMED(RawFileOperator, close)(_Self(MIL_RWops))
+int METHOD_NAMED(RawFileOperator, close)(_Self(MIL_RWops))
 {
 	if ( self ) {
 		if ( self->hidden.stdio.autoclose ) {
@@ -81,7 +81,7 @@ static int METHOD_NAMED(RawFileOperator, close)(_Self(MIL_RWops))
 
 /* Functions to read/write memory pointers */
 
-static int METHOD_NAMED(MemFileOperator, seek)(_Self(MIL_RWops), int offset, int whence)
+int METHOD_NAMED(MemFileOperator, seek)(_Self(MIL_RWops), int offset, int whence)
 {
 	Uint8 *newpos;
 
@@ -108,7 +108,7 @@ static int METHOD_NAMED(MemFileOperator, seek)(_Self(MIL_RWops), int offset, int
 	self->hidden.mem.here = newpos;
 	return(self->hidden.mem.here-self->hidden.mem.base);
 }
-static int METHOD_NAMED(MemFileOperator, read)(_Self(MIL_RWops), void *ptr, int size, int maxnum)
+int METHOD_NAMED(MemFileOperator, read)(_Self(MIL_RWops), void *ptr, int size, int maxnum)
 {
 	int total_bytes;
 	int mem_available;
@@ -128,7 +128,7 @@ static int METHOD_NAMED(MemFileOperator, read)(_Self(MIL_RWops), void *ptr, int 
 
 	return (total_bytes / size);
 }
-static int METHOD_NAMED(MemFileOperator, write)(_Self(MIL_RWops), const void *ptr, int size, int num)
+int METHOD_NAMED(MemFileOperator, write)(_Self(MIL_RWops), const void *ptr, int size, int num)
 {
 	if ( (self->hidden.mem.here + (num*size)) > self->hidden.mem.stop ) {
 		num = (self->hidden.mem.stop-self->hidden.mem.here)/size;
@@ -137,12 +137,12 @@ static int METHOD_NAMED(MemFileOperator, write)(_Self(MIL_RWops), const void *pt
 	self->hidden.mem.here += num*size;
 	return(num);
 }
-static int mem_writeconst(_Self(MIL_RWops), const void *ptr, int size, int num)
+int mem_writeconst(_Self(MIL_RWops), const void *ptr, int size, int num)
 {
 	//MIL_SetError("Can't write to read-only memory");
 	return(-1);
 }
-static int METHOD_NAMED(MemFileOperator, close)(_Self(MIL_RWops))
+int METHOD_NAMED(MemFileOperator, close)(_Self(MIL_RWops))
 {
 	if ( self ) {
 		free(self);
@@ -302,8 +302,8 @@ VIRTUAL_METHOD_REGBEGIN(RawFileOperator, MIL_RWops)
     METHOD_REGISTER(RawFileOperator, seek)
     METHOD_REGISTER(RawFileOperator, read)
     METHOD_REGISTER(RawFileOperator, write)
-METHOD_REGISTER(RawFileOperator, close)
-    VIRTUAL_METHOD_REGEND
+    METHOD_REGISTER(RawFileOperator, close)
+VIRTUAL_METHOD_REGEND
 METHOD_REGISTER_PLACEHOLDER(RawFileOperator)
 
 VIRTUAL_METHOD_REGBEGIN(MemFileOperator, MIL_RWops)
@@ -311,6 +311,7 @@ VIRTUAL_METHOD_REGBEGIN(MemFileOperator, MIL_RWops)
     METHOD_REGISTER(MemFileOperator, seek)
     METHOD_REGISTER(MemFileOperator, read)
     METHOD_REGISTER(MemFileOperator, write)
-METHOD_REGISTER(MemFileOperator, close)
+    METHOD_REGISTER(MemFileOperator, close)
 VIRTUAL_METHOD_REGEND
 METHOD_REGISTER_PLACEHOLDER(MemFileOperator)
+

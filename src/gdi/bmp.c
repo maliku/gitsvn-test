@@ -46,7 +46,6 @@
 #define BI_BITFIELDS	3
 #endif
 
-
 Surface * MIL_LoadBMP_RW(MIL_RWops* src, int freesrc)
 {
 	MIL_Bool was_error;
@@ -348,7 +347,7 @@ done:
 	return(surface);
 }
 
-int MIL_SaveBMP_RW (Surface *saveme, MIL_RWops *dst, int freedst)
+MIL_Status MIL_SaveBMP_RW (Surface *saveme, MIL_RWops *dst, int freedst)
 {
 	long fp_offset;
 	int i, pad;
@@ -536,5 +535,5 @@ int MIL_SaveBMP_RW (Surface *saveme, MIL_RWops *dst, int freedst)
 	if ( freedst && dst ) {
 		MIL_RWclose(dst);
 	}
-	return((MIL_strcmp(MIL_GetError(), "") == 0) ? 0 : -1);
+	return((MIL_strcmp(MIL_GetError(), "") == 0) ? MIL_OK : MIL_GENERIC_ERROR);
 }

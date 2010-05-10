@@ -11,7 +11,7 @@
 #include "video_device.h"
 #include "signals.h"
 #include "application.h"
-#include "image.h"
+#include "bitmap.h"
 
 MAKE_PURE_VIRTUAL_CLASS(MIL_Application)
 METHOD_REGISTER_PLACEHOLDER(MIL_Application)
@@ -66,8 +66,8 @@ CONSTRUCTOR(Application)
             MIL_Rect rclip = {300, 0, 600, 479};
 
             MIL_RWops* ops = MIL_RWFromFile("res/lena16.bmp", "rb");
-            Surface* bmp = MIL_LoadBMP_RW(ops, 1);
-            Image* img = LoadImageFromFile("res/mil.bmp");
+            Surface* bmp = MIL_LoadBMP_RW(ops, MIL_AUTO_FREE);
+            MIL_Bitmap* img = LoadBitmapFromFile("res/mil.bmp");
             int i, j;
             char *pixels = (char*)screen->pixels;
             _vc1(screen, setClipRect, &rclip);
@@ -82,6 +82,7 @@ CONSTRUCTOR(Application)
             if (NULL != bmp) {
                 Surface* convert = _vc2(bmp, convert, screen->format, screen->flags);
                 _vc2(convert, setColorKey, MIL_SRCCOLORKEY, 0);
+//                printf("img w=%d, h=%d.\n", _vc0((MIL_Image*)img, getWidth), _vc0((MIL_Image*)img, getHeight));
 //                _vc2(convert, setAlpha, MIL_SRCALPHA, 5);
                 for (j = 0; j < 400; ++j) {
                     rcdst.x = j;

@@ -19,7 +19,7 @@ CONSTRUCTOR(Image)
 
 DESTRUCTOR(Image)
 {
-
+    Detele(_private(Image)->surface);
 }
 
 MIL_Image*  Image_X_clone(_Self(MIL_Image))
@@ -29,17 +29,22 @@ MIL_Image*  Image_X_clone(_Self(MIL_Image))
 
 MIL_Status  Image_X_getBounds(_Self(MIL_Image), MIL_Rect* rc)
 {
+    if (NULL != rc) {
+        rc->x = rc->y = 0;
+        rc->w = _VC(self)->getWidth(self);
+        rc->h = _VC(self)->getHeight(self);
+    }
     return MIL_NOT_IMPLEMENTED;
 }
 
 Uint32      Image_X_getWidth(_Self(MIL_Image))
 {
-    return 0;
+    return _private(Image)->surface->w;
 }
 
 Uint32      Image_X_getHeight(_Self(MIL_Image))
 {
-    return 0;
+    return _private(Image)->surface->h;
 }
 
 MIL_Status  Image_X_getPalette(_Self(MIL_Image), MIL_Palette* palette)
@@ -59,7 +64,10 @@ int         Image_X_getPaletteSize(_Self(MIL_Image))
 
 MIL_Status  Image_X_getPixelFormat(_Self(MIL_Image), MIL_PixelFormat* fmt)
 {
-    return MIL_NOT_IMPLEMENTED;
+    if (NULL != fmt) {
+        memcpy(fmt, _private(Image)->surface->format, sizeof(*fmt));
+    }
+    return MIL_INVALID_PARAMETER;
 }
 
 const char* Image_X_getRawFormat(_Self(MIL_Image))
@@ -74,7 +82,14 @@ MIL_Status  Image_X_rotateFlip(_Self(MIL_Image), MIL_RotateFlipType type)
 
 MIL_Status  Image_X_save(_Self(MIL_Status), const char* file)
 {
-    return MIL_NOT_IMPLEMENTED;
+    if (NULL != file) {
+        MIL_RWops* ops = MIL_RWFromFile(file, "wb");
+        if (NULL != ops) {
+            return MIL_SaveBMP_RW(_private(Image)->surface, ops, MIL_AUTO_FREE);
+        }
+        return MIL_OUT_OF_MEMORY;
+    }
+    return MIL_INVALID_PARAMETER;
 }
 
 MIL_Status Image_X_loadFile(_SELF, const char* file)
@@ -87,8 +102,7 @@ MIL_Status Image_X_loadFile(_SELF, const char* file)
         }
         ops = MIL_RWFromFile(file, "rb");
         if (NULL != ops) {
-            _private(Image)->surface = MIL_LoadBMP_RW(ops, 1);
-            Delete(ops);
+            _private(Image)->surface = MIL_LoadBMP_RW(ops, MIL_AUTO_FREE);
             return NULL != _private(Image)->surface ? MIL_OK : MIL_OUT_OF_MEMORY;
         }
         else {
