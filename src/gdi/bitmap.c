@@ -39,7 +39,7 @@ MIL_Status  MIL_Bitmap_X_unlockBits(_Self(MIL_Bitmap), MIL_BitmapData* locked_da
     return MIL_NOT_IMPLEMENTED;
 }
 
-VIRTUAL_METHOD_REGBEGIN(MIL_Bitmap, Image)
+VIRTUAL_METHOD_REGBEGIN(MIL_Bitmap, MIL_Image)
     DESTRUCTOR_REGISTER(MIL_Bitmap)
     METHOD_PLACEHOLDER(clone)
     METHOD_PLACEHOLDER(getBounds)
@@ -65,9 +65,9 @@ METHOD_REGEND
 MIL_Bitmap* LoadBitmapFromFile(const char* file)
 {
     if (NULL != file) {
-        MIL_Bitmap* bmp = (MIL_Bitmap*)New(Image);
+        MIL_Bitmap* bmp = (MIL_Bitmap*)New(MIL_Bitmap);
         if (NULL != bmp) {
-            if (MIL_OK == _MC((Image*)bmp)->loadFile(bmp, file)) {
+            if (MIL_OK == _vc1((MIL_Image*)bmp, loadFile, file)) {
                 return (MIL_Bitmap*)bmp;
             }
             else {

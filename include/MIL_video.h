@@ -86,6 +86,10 @@ typedef struct MIL_Palette {
 } MIL_Palette;
 /*@}*/
 
+/**
+ * name MIL_PixelFormat
+ * brief Interface for Pixel Format, which is readonly structure for user.
+ */
 CLASS(MIL_PixelFormat) 
 {
     VIRTUAL_METHOD_DECLARE_BEGIN(MIL_PixelFormat)

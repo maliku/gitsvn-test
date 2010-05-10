@@ -25,6 +25,9 @@ CLASS_INHERIT_BEGIN(PixelFormat, MIL_PixelFormat)
 	Uint8  Gshift;
 	Uint8  Bshift;
 	Uint8  Ashift;
+	/** Alpha value information (per-surface alpha) */
+	Uint8  alpha;
+    Uint8  align;
 	Uint32 Rmask;
 	Uint32 Gmask;
 	Uint32 Bmask;
@@ -32,8 +35,6 @@ CLASS_INHERIT_BEGIN(PixelFormat, MIL_PixelFormat)
 
 	/** RGB color key information */
 	Uint32 colorkey;
-	/** Alpha value information (per-surface alpha) */
-	Uint8  alpha;
 CLASS_INHERIT_END
 
 Uint8* Map1to1(MIL_Palette *src, MIL_Palette *dst, int *identical);

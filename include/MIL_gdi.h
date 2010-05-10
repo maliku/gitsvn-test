@@ -80,11 +80,26 @@ CLASS(MIL_Image)
         const char* (*getRawFormat)(_Self(MIL_Image));
         MIL_Status  (*rotateFlip)(_Self(MIL_Image), MIL_RotateFlipType);
         MIL_Status  (*save)(_Self(MIL_Status), const char* file);
+        MIL_Status  (*loadFile)(_Self(MIL_Image), const char* file);
     VIRTUAL_METHOD_DECLARE_END
-    METHOD_DECLARE_PLACEHOLDER(MIL_Image)
+
+    METHOD_DECLARE_BEGIN(MIL_Image)
+    METHOD_DECLARE_END
+
 
     PRIVATE_BEGIN(MIL_Image)
-        void* surface;
+
+    /** The width of the bitmap */
+    Uint32 width;
+    /** The height of the bitmap */
+    Uint32 height;
+    /** The pitch of the bitmap */
+    Uint32 pitch;
+    /** The bits of the bitmap */
+    void*  bits;
+    /** The private pixel format */
+    MIL_PixelFormat* format;
+
     PRIVATE_END
 };
 

@@ -71,6 +71,7 @@ CONSTRUCTOR(Application)
             int i, j;
             char *pixels = (char*)screen->pixels;
             _vc1(screen, setClipRect, &rclip);
+            Delete(img);
             for (i = 0; i < 480; ++i)
             {
                 memset(pixels, i % 255, _vc0(screen, getBytesPerPixel) * 640);

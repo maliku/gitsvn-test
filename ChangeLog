@@ -1,4 +1,5 @@
 
+[2010-05-11]: Adjust MIL_Image & MIL_Bitmap inheritance.
 [2010-05-10]: Add Image/Bitmap class but not implement yet.
 [2010-05-09]: Change MIL_bool to MIL_Bool.
 [2010-05-08]: add basic timer support but not completed.
