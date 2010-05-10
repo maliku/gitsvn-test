@@ -82,11 +82,15 @@ CLASS(MIL_Image)
         MIL_Status  (*save)(_Self(MIL_Status), const char* file);
     VIRTUAL_METHOD_DECLARE_END
     METHOD_DECLARE_PLACEHOLDER(MIL_Image)
+
+    PRIVATE_BEGIN(MIL_Image)
+        void* surface;
+    PRIVATE_END
 };
 
 /** 
  * @name MIL_Bitmap
- * @brief A modifiable container of MIL_Image, you can change it's pixel data.
+ * @brief A modifiable container for MIL_Image, you can change it's pixel data.
  */
 CLASS_INHERIT_BEGIN(MIL_Bitmap, MIL_Image)
     METHOD_DECLARE_BEGIN(MIL_Bitmap)
@@ -95,6 +99,11 @@ CLASS_INHERIT_BEGIN(MIL_Bitmap, MIL_Image)
         MIL_Status  (*setPixel)(_Self(MIL_Bitmap), int x, int y, const MIL_Color* color);
         MIL_Status  (*unlockBits)(_Self(MIL_Bitmap), MIL_BitmapData* locked_data);
     METHOD_DECLARE_END
+
+    PRIVATE_BEGIN(MIL_Bitmap)
+        MIL_BitmapData* data;
+    PRIVATE_END
+
 CLASS_INHERIT_END
 
 /** 

@@ -18,9 +18,6 @@ CLASS_INHERIT_BEGIN(Image, MIL_Image)
         MIL_Status (*loadFile)(_SELF, const char* file);
     METHOD_DECLARE_END
 
-    PRIVATE_BEGIN(Image)
-        Surface* surface;
-    PRIVATE_END
 CLASS_INHERIT_END
 #endif   /* ----- #ifndef IMAGE_INC  ----- */
 

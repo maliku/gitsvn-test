@@ -13,13 +13,13 @@ METHOD_REGISTER_PLACEHOLDER(MIL_Image)
 
 CONSTRUCTOR(Image)
 {
-    _private(Image)->surface = NULL;
+    _private(MIL_Image)->surface = NULL;
     return self;
 }
 
 DESTRUCTOR(Image)
 {
-    Detele(_private(Image)->surface);
+    Delete(_private(MIL_Image)->surface);
 }
 
 MIL_Image*  Image_X_clone(_Self(MIL_Image))
@@ -39,12 +39,12 @@ MIL_Status  Image_X_getBounds(_Self(MIL_Image), MIL_Rect* rc)
 
 Uint32      Image_X_getWidth(_Self(MIL_Image))
 {
-    return _private(Image)->surface->w;
+    return ((Surface*)_private(MIL_Image)->surface)->w;
 }
 
 Uint32      Image_X_getHeight(_Self(MIL_Image))
 {
-    return _private(Image)->surface->h;
+    return ((Surface*)_private(MIL_Image)->surface)->h;
 }
 
 MIL_Status  Image_X_getPalette(_Self(MIL_Image), MIL_Palette* palette)
@@ -65,7 +65,7 @@ int         Image_X_getPaletteSize(_Self(MIL_Image))
 MIL_Status  Image_X_getPixelFormat(_Self(MIL_Image), MIL_PixelFormat* fmt)
 {
     if (NULL != fmt) {
-        memcpy(fmt, _private(Image)->surface->format, sizeof(*fmt));
+        memcpy(fmt, ((Surface*)_private(MIL_Image)->surface)->format, sizeof(*fmt));
     }
     return MIL_INVALID_PARAMETER;
 }
@@ -85,7 +85,7 @@ MIL_Status  Image_X_save(_Self(MIL_Status), const char* file)
     if (NULL != file) {
         MIL_RWops* ops = MIL_RWFromFile(file, "wb");
         if (NULL != ops) {
-            return MIL_SaveBMP_RW(_private(Image)->surface, ops, MIL_AUTO_FREE);
+            return MIL_SaveBMP_RW(((Surface*)_private(MIL_Image)->surface), ops, MIL_AUTO_FREE);
         }
         return MIL_OUT_OF_MEMORY;
     }
@@ -96,14 +96,14 @@ MIL_Status Image_X_loadFile(_SELF, const char* file)
 {
     if (NULL != file) {
         MIL_RWops* ops;
-        if (NULL != _private(Image)->surface) {
-            Delete(_private(Image));
-            _private(Image)->surface = NULL;
+        if (NULL != _private(MIL_Image)->surface) {
+            Delete(_private(MIL_Image)->surface);
+            _private(MIL_Image)->surface = NULL;
         }
         ops = MIL_RWFromFile(file, "rb");
         if (NULL != ops) {
-            _private(Image)->surface = MIL_LoadBMP_RW(ops, MIL_AUTO_FREE);
-            return NULL != _private(Image)->surface ? MIL_OK : MIL_OUT_OF_MEMORY;
+            _private(MIL_Image)->surface = MIL_LoadBMP_RW(ops, MIL_AUTO_FREE);
+            return NULL != _private(MIL_Image)->surface ? MIL_OK : MIL_OUT_OF_MEMORY;
         }
         else {
             return MIL_FILE_NOT_FOUND;
