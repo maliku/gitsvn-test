@@ -121,6 +121,7 @@ typedef enum  {
     MIL_OK                          = 0,
     MIL_INVALID_PARAMETER           = 1,
     MIL_OUT_OF_MEMORY               = 2,
+    MIL_IMPL_BY_SUBCLASS            = 3,
     MIL_OBJECT_BUSY                 = 4,
     MIL_INSUFFICIENT_BUFFER         = 5,
     MIL_NOT_IMPLEMENTED             = 6,
