@@ -66,6 +66,7 @@ void* CallSlot(SlotNode*, void* arg);
 void* DelSlot(SlotNode*);
 
 CLASS_INHERIT_BEGIN(SignalSimple, Signal)
+    NO_VIRTUAL_METHOD_EXPAND(SignalSimple)
     METHOD_DECLARE_BEGIN(SignalSimple)
     void* (*travel)(_SELF, SlotNode*, SimpleSlotHandle, void*);
     METHOD_DECLARE_END

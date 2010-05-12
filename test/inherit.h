@@ -4,6 +4,8 @@
 #include <milui/coobase.h>
 
 CLASS_INHERIT_BEGIN(CooSub, CooBase)
+    NO_VIRTUAL_METHOD_EXPAND(CooSub)
+
         METHOD_DECLARE_BEGIN(CooSub)
         METHOD_DECLARE_END
 CLASS_INHERIT_END
@@ -28,6 +30,7 @@ CONSTRUCTOR_REGISTER(CooSub)
 
 /*============================================================================*/
 CLASS_INHERIT_BEGIN(CooLevel1, CooSub)
+    NO_VIRTUAL_METHOD_EXPAND(CooLevel1)
         METHOD_DECLARE_BEGIN(CooLevel1)
         METHOD_DECLARE_END
 CLASS_INHERIT_END

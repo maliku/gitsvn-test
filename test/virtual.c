@@ -23,7 +23,7 @@ CONSTRUCTOR(MyBase)
 
 void METHOD_NAMED(MyBase, vtest)(_SELF, int in)
 {
-    printf("Obj from MyBase %p get %d.\n", (MyBase*)self, in);
+    printf("MyBase::vtest - Obj from MyBase %p get %d.\n", (MyBase*)self, in);
 }
 
 VIRTUAL_METHOD_REGBEGIN(MyBase, NonBase)
@@ -49,12 +49,19 @@ CONSTRUCTOR(MySub)
 
 void METHOD_NAMED(MySub, vtest)(_SELF, int in)
 {
-    printf("Obj from MySub %p get %d.\n", (MySub*)self, in);
+    printf("MySub::vtest - Obj from MySub %p get %d.\n", (MySub*)self, in);
 }
 
+void METHOD_NAMED(MySub, ptest)(_SELF, int in)
+{
+    printf("MySub::ptest - Obj from MySub %p get %d.\n", (MySub*)self, in);
+}
+    
 VIRTUAL_METHOD_REGBEGIN(MySub, MyBase)
     DESTRUCTOR_REGISTER(MySub)
-//METHOD_REGISTER(MySub, vtest)
+    NULL,
+//    METHOD_REGISTER(MySub, vtest)
+    METHOD_REGISTER(MySub, ptest)
     VIRTUAL_METHOD_REGEND
 
 METHOD_REGBEGIN(MySub)
@@ -74,17 +81,18 @@ CONSTRUCTOR(MySub2)
 
 void METHOD_NAMED(MySub2, vtest)(_SELF, int in)
 {
-    printf("Obj from MySub %p get %d.\n", (MySub*)self, in);
+    printf("MySub2::vtest - Obj from MySub2 %p get %d.\n", (MySub*)self, in);
 }
+
 
 VIRTUAL_METHOD_REGBEGIN(MySub2, MySub)
     DESTRUCTOR_REGISTER(MySub2)
-//METHOD_REGISTER(MySub, vtest)
+    METHOD_REGISTER(MySub2, vtest)
     VIRTUAL_METHOD_REGEND
 
 METHOD_REGBEGIN(MySub2)
     CONSTRUCTOR_REGISTER(MySub2)
-    METHOD_REGEND
+METHOD_REGEND
 
 int main()
 {
@@ -92,21 +100,23 @@ int main()
     assert(NULL == DynamicCast(MySub, base));
     _VC(base)->vtest(base, 123);
     Delete(base);
-    printf("==============================\n");
-    MyBase* sub = (MyBase*)New(MySub);
+    printf("==============================\n\n");
+    MySub* sub = (MySub*)New(MySub);
     assert(NULL != DynamicCast(MyBase, sub));
     puts(GetTypeName(sub));
     VirtualMethodVerify(sub, vtest);
     _VC(sub)->vtest(sub, 456);
+    _VC(sub)->ptest(sub, 123);
     Delete(sub);
-    printf("==============================\n");
-    MySub2* sub2 = (MySub2*)New(MySub2);
+    printf("==============================\n\n");
+    MySub* sub2 = (MySub*)New(MySub2);
     assert(NULL != DynamicCast(MyBase, sub2));
     assert(NULL != DynamicCast(MySub2, sub2));
     assert(NULL != DynamicCast(MySub, sub2));
     puts(GetTypeName(sub2));
     VirtualMethodVerify(sub2, vtest);
     _VC(sub2)->vtest(sub2, 789);
+    _vc1(sub2, ptest, 456);
     Delete(sub2);
 
     return 0;

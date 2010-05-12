@@ -14,6 +14,7 @@
 #include "MIL_mutex.h"
 
 CLASS_INHERIT_BEGIN(DummyMutex, MIL_mutex)
+    NO_VIRTUAL_METHOD_EXPAND(DummyMutex)
     METHOD_DECLARE_PLACEHOLDER(DummyMutex)
 CLASS_INHERIT_END
 

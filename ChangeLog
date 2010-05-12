@@ -1,4 +1,6 @@
 
+[2010-05-12]: Sub class virtual method expand feature surpported, it's make
+the COO framework more useful and more promise strict.
 [2010-05-11]: Adjust MIL_Image & MIL_Bitmap inheritance.
 [2010-05-10]: Add Image/Bitmap class but not implement yet.
 [2010-05-09]: Change MIL_bool to MIL_Bool.

@@ -108,6 +108,7 @@ CLASS(MIL_Image)
  * @brief A modifiable container for MIL_Image, you can change it's pixel data.
  */
 CLASS_INHERIT_BEGIN(MIL_Bitmap, MIL_Image)
+    NO_VIRTUAL_METHOD_EXPAND(MIL_Bitmap)
     METHOD_DECLARE_BEGIN(MIL_Bitmap)
         MIL_Status  (*getPixel)(_Self(MIL_Bitmap), int x, int y, MIL_Color* color);
         MIL_Status  (*lockBits)(_Self(MIL_Bitmap), const MIL_Rect* rc, MIL_BitmapData* locked_data);

@@ -50,6 +50,7 @@ void type##Predestructor(_SELF);\
 struct __##type
 
 /* Macro for inherit class decalre. */
+#if 0
 #define	CLASS_INHERIT_BEGIN(type, basetype) \
 typedef basetype##Vtable type##Vtable;\
 extern type##Vtable g_##type##Vtable;\
@@ -63,6 +64,41 @@ struct _##type {\
 	    basetype __class; \
         type##Vtable *__vptr; \
     }__super;
+#endif
+
+#define NO_VIRTUAL_METHOD_EXPAND(type) \
+typedef __VtableTypeOf##type##Base type##Vtable;\
+extern type##Vtable g_##type##Vtable;\
+struct _##type {\
+    union { \
+	    __BaseOf##type __class; \
+        type##Vtable *__vptr; \
+    }__super;
+
+#define VIRTUAL_METHOD_EXPAND_DECLARE_BEGIN(type) \
+struct __##type##Vtable; \
+typedef struct __##type##Vtable type##Vtable;\
+extern type##Vtable g_##type##Vtable;\
+struct _##type {\
+    union { \
+	    __BaseOf##type __class; \
+    struct __##type##Vtable {\
+        RTTI __rtti;\
+        void* (*OrderConstruct)(void*);\
+        void (*Predestructor)(void*);\
+        void (*Destructor)(void*);
+
+/* Macro for virtual member function declare end. */
+#define	VIRTUAL_METHOD_EXPAND_DECLARE_END }*__vptr; } __super;
+
+#define	CLASS_INHERIT_BEGIN(type, basetype) \
+extern struct __##type##Mtable g_##type##Mtable;\
+struct _##type;\
+typedef struct _##type type;\
+typedef basetype __BaseOf##type; \
+typedef basetype##Vtable __VtableTypeOf##type##Base;\
+extern void* type##Preconstructor(_SELF);\
+void type##Predestructor(_SELF);\
 
 #define	CLASS_INHERIT_END };
 

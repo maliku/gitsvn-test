@@ -16,6 +16,7 @@
 #include "MIL_mutex.h"
 
 CLASS_INHERIT_BEGIN(PthreadMutex, MIL_mutex)
+    NO_VIRTUAL_METHOD_EXPAND(PthreadMutex)
     METHOD_DECLARE_PLACEHOLDER(PthreadMutex)
 
     pthread_mutex_t id;

@@ -9,6 +9,7 @@
 #include <milui/MIL_gdi.h>
 
 CLASS_INHERIT_BEGIN(MyBitmap, MIL_Bitmap)
+    NO_VIRTUAL_METHOD_EXPAND(MyBitmap)
     METHOD_DECLARE_PLACEHOLDER(MyBitmap)
 
     int member;

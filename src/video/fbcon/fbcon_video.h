@@ -103,6 +103,7 @@ STRUCT {
 #endif
 
 CLASS_INHERIT_BEGIN(FBconVideoDevice, VideoDevice)
+    NO_VIRTUAL_METHOD_EXPAND(FBconVideoDevice)
     METHOD_DECLARE_PLACEHOLDER(FBconVideoDevice)
     /* Private display data */
     MIL_PrivateVideoData* hw_data; 

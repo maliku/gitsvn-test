@@ -14,6 +14,8 @@
 
 #if 0
 CLASS_INHERIT_BEGIN(Image, MIL_Image)
+    NO_VIRTUAL_METHOD_EXPAND(Image)
+
     METHOD_DECLARE_BEGIN(Image)
         MIL_Status (*loadFile)(_SELF, const char* file);
     METHOD_DECLARE_END
