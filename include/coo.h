@@ -204,7 +204,7 @@ VIRTUAL_METHOD_DECLARE_END
 METHOD_DECLARE_BEGIN(type) \
 METHOD_DECLARE_END 
 
-#define VIRTUAL_METHOD_REGBEGIN(type, basetype) \
+#define VIRTUAL_METHOD_MAP_BEGIN(type, basetype) \
 PRECONSTRUCTORS(type)\
 PREDESTRUCTORS(type)\
 type##Vtable g_##type##Vtable = {\
@@ -213,34 +213,29 @@ type##Vtable g_##type##Vtable = {\
     type##Predestructor,
 
 #if defined(__GNUC__) && __GNUC__ >= 4
-#define	METHOD_REGISTER(type, func) .func = type##_X_##func,
+#define	METHOD_MAP(type, func) .func = type##_X_##func,
 #else
-#define	METHOD_REGISTER(type, func) type##_X_##func,
+#define	METHOD_MAP(type, func) type##_X_##func,
 #endif
 
-#define VIRTUAL_METHOD_REGEND };
-/* Alias */
-#define VIRTUAL_METHOD_REGISTER_BEGIN VIRTUAL_METHOD_REGBEGIN
-#define VIRTUAL_METHOD_REGISTER_END   VIRTUAL_METHOD_REGEND
+#define VIRTUAL_METHOD_MAP_END };
 
-#define VIRTUAL_METHOD_REGISTER_PLACEHOLDER(type, basetype) \
-VIRTUAL_METHOD_REGBEGIN(type, basetype) \
-VIRTUAL_METHOD_REGEND 
+#define VIRTUAL_METHOD_MAP_PLACEHOLDER(type, basetype) \
+VIRTUAL_METHOD_MAP_BEGIN(type, basetype) \
+VIRTUAL_METHOD_MAP_END 
 
-#define MAKE_PURE_VIRTUAL_CLASS(type) VIRTUAL_METHOD_REGISTER_PLACEHOLDER(type, NonBase)
+#define MAKE_PURE_VIRTUAL_CLASS(type) VIRTUAL_METHOD_MAP_PLACEHOLDER(type, NonBase)
 
-#define METHOD_REGBEGIN(type) \
+#define METHOD_MAP_BEGIN(type) \
 __INLINE__ type* type##_X_OT(_SELF) { return (type*)self; } \
 struct __##type##Mtable g_##type##Mtable = { \
     type##_X_OT,
 
-#define METHOD_REGEND };
-#define METHOD_REGISTER_BEGIN METHOD_REGBEGIN
-#define METHOD_REGISTER_END METHOD_REGEND
+#define METHOD_MAP_END };
 
-#define METHOD_REGISTER_PLACEHOLDER(type) \
-METHOD_REGBEGIN(type) \
-METHOD_REGEND 
+#define METHOD_MAP_PLACEHOLDER(type) \
+METHOD_MAP_BEGIN(type) \
+METHOD_MAP_END 
 
 #define	METHOD_NAMED(type, func) type##_X_##func
 
@@ -291,8 +286,8 @@ __INLINE__ type * type##ArrayConstructor(_Self(type), int num) { \
 
 #define DESTRUCTOR(type) void type##Destructor(_SELF)
 
-#define CONSTRUCTOR_REGISTER(type) type##Constructor,
-#define DESTRUCTOR_REGISTER(type) type##Destructor,
+#define CONSTRUCTOR_MAP(type) type##Constructor,
+#define DESTRUCTOR_MAP(type) type##Destructor,
 
 #define METHOD_PLACEHOLDER(method) NULL,
 #define NON_CONSTRUCTOR METHOD_PLACEHOLDER(Constructor)

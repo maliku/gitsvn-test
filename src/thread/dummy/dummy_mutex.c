@@ -20,15 +20,15 @@ Sint32 DummyMutex_X_unlock(_SELF)
 
 }
 
-VIRTUAL_METHOD_REGBEGIN(DummyMutex, MIL_mutex)
+VIRTUAL_METHOD_MAP_BEGIN(DummyMutex, MIL_mutex)
     NON_DESTRUCTOR
-    METHOD_REGISTER(DummyMutex, lock)
-    METHOD_REGISTER(DummyMutex, unlock)
-VIRTUAL_METHOD_REGEND
+    METHOD_MAP(DummyMutex, lock)
+    METHOD_MAP(DummyMutex, unlock)
+VIRTUAL_METHOD_MAP_END
 
-METHOD_REGBEGIN(DummyMutex)
+METHOD_MAP_BEGIN(DummyMutex)
     NON_CONSTRUCTOR
-METHOD_REGEND
+METHOD_MAP_END
 
 MIL_mutex* CreateDummyMutex()
 {

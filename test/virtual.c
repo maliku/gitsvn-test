@@ -26,14 +26,14 @@ void METHOD_NAMED(MyBase, vtest)(_SELF, int in)
     printf("MyBase::vtest - Obj from MyBase %p get %d.\n", (MyBase*)self, in);
 }
 
-VIRTUAL_METHOD_REGBEGIN(MyBase, NonBase)
-    DESTRUCTOR_REGISTER(MyBase)
-METHOD_REGISTER(MyBase, vtest)
-    VIRTUAL_METHOD_REGEND
+VIRTUAL_METHOD_MAP_BEGIN(MyBase, NonBase)
+    DESTRUCTOR_MAP(MyBase)
+METHOD_MAP(MyBase, vtest)
+    VIRTUAL_METHOD_MAP_END
 
-METHOD_REGBEGIN(MyBase)
-    CONSTRUCTOR_REGISTER(MyBase)
-    METHOD_REGEND
+METHOD_MAP_BEGIN(MyBase)
+    CONSTRUCTOR_MAP(MyBase)
+    METHOD_MAP_END
 
 /* ====================== for class MyBase ======================*/
 DESTRUCTOR(MySub)
@@ -57,16 +57,16 @@ void METHOD_NAMED(MySub, ptest)(_SELF, int in)
     printf("MySub::ptest - Obj from MySub %p get %d.\n", (MySub*)self, in);
 }
     
-VIRTUAL_METHOD_REGBEGIN(MySub, MyBase)
-    DESTRUCTOR_REGISTER(MySub)
+VIRTUAL_METHOD_MAP_BEGIN(MySub, MyBase)
+    DESTRUCTOR_MAP(MySub)
     NULL,
-//    METHOD_REGISTER(MySub, vtest)
-    METHOD_REGISTER(MySub, ptest)
-    VIRTUAL_METHOD_REGEND
+//    METHOD_MAP(MySub, vtest)
+    METHOD_MAP(MySub, ptest)
+    VIRTUAL_METHOD_MAP_END
 
-METHOD_REGBEGIN(MySub)
-    CONSTRUCTOR_REGISTER(MySub)
-    METHOD_REGEND
+METHOD_MAP_BEGIN(MySub)
+    CONSTRUCTOR_MAP(MySub)
+    METHOD_MAP_END
 
 DESTRUCTOR(MySub2)
 {
@@ -85,14 +85,14 @@ void METHOD_NAMED(MySub2, vtest)(_SELF, int in)
 }
 
 
-VIRTUAL_METHOD_REGBEGIN(MySub2, MySub)
-    DESTRUCTOR_REGISTER(MySub2)
-    METHOD_REGISTER(MySub2, vtest)
-    VIRTUAL_METHOD_REGEND
+VIRTUAL_METHOD_MAP_BEGIN(MySub2, MySub)
+    DESTRUCTOR_MAP(MySub2)
+    METHOD_MAP(MySub2, vtest)
+    VIRTUAL_METHOD_MAP_END
 
-METHOD_REGBEGIN(MySub2)
-    CONSTRUCTOR_REGISTER(MySub2)
-METHOD_REGEND
+METHOD_MAP_BEGIN(MySub2)
+    CONSTRUCTOR_MAP(MySub2)
+METHOD_MAP_END
 
 int main()
 {

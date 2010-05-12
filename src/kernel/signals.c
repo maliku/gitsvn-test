@@ -210,22 +210,22 @@ void* Signal_X_travel(_SELF, SlotNode* head, SlotHandle node_handle)
     return NULL;
 }
 
-VIRTUAL_METHOD_REGBEGIN(Signal, NonBase)
-    DESTRUCTOR_REGISTER(Signal)
-    METHOD_REGISTER(Signal, connect)
-    METHOD_REGISTER(Signal, connectGroup)
-    METHOD_REGISTER(Signal, disconnect)
-    METHOD_REGISTER(Signal, disconnectGroup)
-    METHOD_REGISTER(Signal, disconnectAllGroup)
-    METHOD_REGISTER(Signal, emit)
-    METHOD_REGISTER(Signal, num_slots)
-    METHOD_REGISTER(Signal, empty)
-VIRTUAL_METHOD_REGEND
+VIRTUAL_METHOD_MAP_BEGIN(Signal, NonBase)
+    DESTRUCTOR_MAP(Signal)
+    METHOD_MAP(Signal, connect)
+    METHOD_MAP(Signal, connectGroup)
+    METHOD_MAP(Signal, disconnect)
+    METHOD_MAP(Signal, disconnectGroup)
+    METHOD_MAP(Signal, disconnectAllGroup)
+    METHOD_MAP(Signal, emit)
+    METHOD_MAP(Signal, num_slots)
+    METHOD_MAP(Signal, empty)
+VIRTUAL_METHOD_MAP_END
 
-METHOD_REGBEGIN(Signal)
-    CONSTRUCTOR_REGISTER(Signal)
-    METHOD_REGISTER(Signal, travel)
-METHOD_REGEND
+METHOD_MAP_BEGIN(Signal)
+    CONSTRUCTOR_MAP(Signal)
+    METHOD_MAP(Signal, travel)
+METHOD_MAP_END
 
 
 void* SignalSimple_X_emit(_SELF, ...)
@@ -298,20 +298,20 @@ DESTRUCTOR(SignalSimple)
 
 }
 
-VIRTUAL_METHOD_REGBEGIN(SignalSimple, Signal)
-    DESTRUCTOR_REGISTER(SignalSimple)
+VIRTUAL_METHOD_MAP_BEGIN(SignalSimple, Signal)
+    DESTRUCTOR_MAP(SignalSimple)
     METHOD_PLACEHOLDER(connect)
     METHOD_PLACEHOLDER(connectGroup)
     METHOD_PLACEHOLDER(disconnect)
     METHOD_PLACEHOLDER(disconnectGroup)
     METHOD_PLACEHOLDER(disconnectAllGroup)
-    METHOD_REGISTER(SignalSimple, emit)
+    METHOD_MAP(SignalSimple, emit)
     METHOD_PLACEHOLDER(num_slots)
     METHOD_PLACEHOLDER(empty)
-VIRTUAL_METHOD_REGEND
+VIRTUAL_METHOD_MAP_END
 
-METHOD_REGBEGIN(SignalSimple)
-    CONSTRUCTOR_REGISTER(SignalSimple)
-    METHOD_REGISTER(SignalSimple, travel)
-METHOD_REGEND
+METHOD_MAP_BEGIN(SignalSimple)
+    CONSTRUCTOR_MAP(SignalSimple)
+    METHOD_MAP(SignalSimple, travel)
+METHOD_MAP_END
 

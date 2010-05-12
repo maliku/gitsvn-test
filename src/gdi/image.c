@@ -8,8 +8,8 @@
 
 #include "image.h"
 
-//VIRTUAL_METHOD_REGISTER_PLACEHOLDER(MIL_Image, NonBase)
-//METHOD_REGISTER_PLACEHOLDER(MIL_Image)
+//VIRTUAL_METHOD_MAP_PLACEHOLDER(MIL_Image, NonBase)
+//METHOD_MAP_PLACEHOLDER(MIL_Image)
 
 CONSTRUCTOR(MIL_Image)
 {
@@ -137,25 +137,25 @@ MIL_Status MIL_Image_X_loadFile(_Self(MIL_Image), const char* file)
     return MIL_INVALID_PARAMETER;
 }
 
-VIRTUAL_METHOD_REGBEGIN(MIL_Image, NonBase)
-    DESTRUCTOR_REGISTER(MIL_Image)
-    METHOD_REGISTER(MIL_Image, clone)
-    METHOD_REGISTER(MIL_Image, getBounds)
-    METHOD_REGISTER(MIL_Image, getWidth)
-    METHOD_REGISTER(MIL_Image, getHeight)
-    METHOD_REGISTER(MIL_Image, getPalette)
-    METHOD_REGISTER(MIL_Image, setPalette)
-    METHOD_REGISTER(MIL_Image, getPaletteSize)
-    METHOD_REGISTER(MIL_Image, getPixelFormat)
-    METHOD_REGISTER(MIL_Image, getRawFormat)
-    METHOD_REGISTER(MIL_Image, rotateFlip)
-    METHOD_REGISTER(MIL_Image, save)
-    METHOD_REGISTER(MIL_Image, loadFile)
-VIRTUAL_METHOD_REGEND
+VIRTUAL_METHOD_MAP_BEGIN(MIL_Image, NonBase)
+    DESTRUCTOR_MAP(MIL_Image)
+    METHOD_MAP(MIL_Image, clone)
+    METHOD_MAP(MIL_Image, getBounds)
+    METHOD_MAP(MIL_Image, getWidth)
+    METHOD_MAP(MIL_Image, getHeight)
+    METHOD_MAP(MIL_Image, getPalette)
+    METHOD_MAP(MIL_Image, setPalette)
+    METHOD_MAP(MIL_Image, getPaletteSize)
+    METHOD_MAP(MIL_Image, getPixelFormat)
+    METHOD_MAP(MIL_Image, getRawFormat)
+    METHOD_MAP(MIL_Image, rotateFlip)
+    METHOD_MAP(MIL_Image, save)
+    METHOD_MAP(MIL_Image, loadFile)
+VIRTUAL_METHOD_MAP_END
 
-METHOD_REGBEGIN(MIL_Image)
-    CONSTRUCTOR_REGISTER(MIL_Image)
-METHOD_REGEND
+METHOD_MAP_BEGIN(MIL_Image)
+    CONSTRUCTOR_MAP(MIL_Image)
+METHOD_MAP_END
 
 MIL_Image* LoadImageFromFile(const char* file)
 {

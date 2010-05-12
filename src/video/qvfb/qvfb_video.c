@@ -250,23 +250,23 @@ void QVFbVideoDevice_X_videoQuit(_Self(VideoDevice))
     shmdt(((QVFbVideoDevice*)self)->hw_data->shmrgn);
 }
 
-VIRTUAL_METHOD_REGBEGIN(QVFbVideoDevice, VideoDevice)
+VIRTUAL_METHOD_MAP_BEGIN(QVFbVideoDevice, VideoDevice)
 
-    DESTRUCTOR_REGISTER(QVFbVideoDevice)
-    METHOD_REGISTER(QVFbVideoDevice, videoInit)
-    METHOD_REGISTER(QVFbVideoDevice, listModes)
-    METHOD_REGISTER(QVFbVideoDevice, setVideoMode)
-    METHOD_REGISTER(QVFbVideoDevice, toggleFullScreen)
-    METHOD_REGISTER(QVFbVideoDevice, updateMouse)
-    METHOD_REGISTER(QVFbVideoDevice, createYUVOverlay)
-    METHOD_REGISTER(QVFbVideoDevice, setColors)
-    METHOD_REGISTER(QVFbVideoDevice, updateRects)
-    METHOD_REGISTER(QVFbVideoDevice, videoQuit)
-VIRTUAL_METHOD_REGEND
+    DESTRUCTOR_MAP(QVFbVideoDevice)
+    METHOD_MAP(QVFbVideoDevice, videoInit)
+    METHOD_MAP(QVFbVideoDevice, listModes)
+    METHOD_MAP(QVFbVideoDevice, setVideoMode)
+    METHOD_MAP(QVFbVideoDevice, toggleFullScreen)
+    METHOD_MAP(QVFbVideoDevice, updateMouse)
+    METHOD_MAP(QVFbVideoDevice, createYUVOverlay)
+    METHOD_MAP(QVFbVideoDevice, setColors)
+    METHOD_MAP(QVFbVideoDevice, updateRects)
+    METHOD_MAP(QVFbVideoDevice, videoQuit)
+VIRTUAL_METHOD_MAP_END
 
-METHOD_REGBEGIN(QVFbVideoDevice)
-    CONSTRUCTOR_REGISTER(QVFbVideoDevice)
-METHOD_REGEND
+METHOD_MAP_BEGIN(QVFbVideoDevice)
+    CONSTRUCTOR_MAP(QVFbVideoDevice)
+METHOD_MAP_END
 
 #endif
 

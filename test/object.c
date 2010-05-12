@@ -31,14 +31,14 @@ void test(_Self(Object), int i)
     printf("The public member Object->m0 = %d.\n", _public(Object)->m0);
 }
 
-VIRTUAL_METHOD_REGBEGIN(Object, CooBase)
-    DESTRUCTOR_REGISTER(Object)
-    VIRTUAL_METHOD_REGEND
+VIRTUAL_METHOD_MAP_BEGIN(Object, CooBase)
+    DESTRUCTOR_MAP(Object)
+    VIRTUAL_METHOD_MAP_END
 
-METHOD_REGBEGIN(Object)
-    CONSTRUCTOR_REGISTER(Object)
+METHOD_MAP_BEGIN(Object)
+    CONSTRUCTOR_MAP(Object)
     test
-    METHOD_REGEND
+    METHOD_MAP_END
 
 int main()
 {

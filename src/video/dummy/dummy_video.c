@@ -49,10 +49,10 @@ DESTRUCTOR(DummyVideoDevice)
     printf("DummyVideoDevice %p destructed...\n", self);
 }
 
-VIRTUAL_METHOD_REGBEGIN(DummyVideoDevice, VideoDevice)
-    DESTRUCTOR_REGISTER(DummyVideoDevice)
-VIRTUAL_METHOD_REGEND
+VIRTUAL_METHOD_MAP_BEGIN(DummyVideoDevice, VideoDevice)
+    DESTRUCTOR_MAP(DummyVideoDevice)
+VIRTUAL_METHOD_MAP_END
 
-METHOD_REGBEGIN(DummyVideoDevice)
-    CONSTRUCTOR_REGISTER(DummyVideoDevice)
-METHOD_REGEND
+METHOD_MAP_BEGIN(DummyVideoDevice)
+    CONSTRUCTOR_MAP(DummyVideoDevice)
+METHOD_MAP_END

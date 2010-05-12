@@ -127,15 +127,15 @@ Sint32 PthreadMutex_X_unlock(_SELF)
 
 }
 
-VIRTUAL_METHOD_REGBEGIN(PthreadMutex, MIL_mutex)
-    DESTRUCTOR_REGISTER(PthreadMutex)
-    METHOD_REGISTER(PthreadMutex, lock)
-    METHOD_REGISTER(PthreadMutex, unlock)
-VIRTUAL_METHOD_REGEND
+VIRTUAL_METHOD_MAP_BEGIN(PthreadMutex, MIL_mutex)
+    DESTRUCTOR_MAP(PthreadMutex)
+    METHOD_MAP(PthreadMutex, lock)
+    METHOD_MAP(PthreadMutex, unlock)
+VIRTUAL_METHOD_MAP_END
 
-METHOD_REGBEGIN(PthreadMutex)
-    CONSTRUCTOR_REGISTER(PthreadMutex)
-METHOD_REGEND
+METHOD_MAP_BEGIN(PthreadMutex)
+    CONSTRUCTOR_MAP(PthreadMutex)
+METHOD_MAP_END
 
 MIL_mutex* CreatePthreadMutex()
 {

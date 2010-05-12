@@ -27,27 +27,27 @@ void METHOD_NAMED(MyBase, normal_method)(_Self(MyBase))
     printf("Now count = %d.\n", self->m_count++);
 }
 
-VIRTUAL_METHOD_REGBEGIN(MyBase, NonBase)
+VIRTUAL_METHOD_MAP_BEGIN(MyBase, NonBase)
     NON_DESTRUCTOR
-    METHOD_REGISTER(MyBase, virtual_method)
-VIRTUAL_METHOD_REGEND
+    METHOD_MAP(MyBase, virtual_method)
+VIRTUAL_METHOD_MAP_END
 
-METHOD_REGBEGIN(MyBase)
-    CONSTRUCTOR_REGISTER(MyBase)
-    METHOD_REGISTER(MyBase, normal_method)
-METHOD_REGEND
+METHOD_MAP_BEGIN(MyBase)
+    CONSTRUCTOR_MAP(MyBase)
+    METHOD_MAP(MyBase, normal_method)
+METHOD_MAP_END
 
 void METHOD_NAMED(MySub, virtual_method)(_Self(MyBase))
 {
     printf("Now count = %d.\n", self->m_count++);
 }
 
-VIRTUAL_METHOD_REGBEGIN(MySub, MyBase)
+VIRTUAL_METHOD_MAP_BEGIN(MySub, MyBase)
     NON_DESTRUCTOR
-    METHOD_REGISTER(MySub, virtual_method)
-VIRTUAL_METHOD_REGEND
+    METHOD_MAP(MySub, virtual_method)
+VIRTUAL_METHOD_MAP_END
 
-METHOD_REGISTER_PLACEHOLDER(MySub)
+METHOD_MAP_PLACEHOLDER(MySub)
 
 #define TEST_COUNT 50000
 int main()

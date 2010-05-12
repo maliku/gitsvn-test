@@ -1007,40 +1007,40 @@ void Surface_X_UnRLE(_SELF, int recode)
     }
 }
 
-VIRTUAL_METHOD_REGBEGIN(Surface, NonBase)
-    DESTRUCTOR_REGISTER(Surface)
-    METHOD_REGISTER(Surface, lock)
-    METHOD_REGISTER(Surface, unlock)
-    METHOD_REGISTER(Surface, setColorKey)
-    METHOD_REGISTER(Surface, setAlpha)
-    METHOD_REGISTER(Surface, setClipRect)
-    METHOD_REGISTER(Surface, getClipRect)
-    METHOD_REGISTER(Surface, blit)
-    METHOD_REGISTER(Surface, fillRect)
-    METHOD_REGISTER(Surface, saveBMP)
-    METHOD_REGISTER(Surface, displayFormat)
-    METHOD_REGISTER(Surface, displayFormatAlpha)
-    METHOD_REGISTER(Surface, convert)
-    METHOD_REGISTER(Surface, reallocFormat)
-    METHOD_REGISTER(Surface, formatChanged)
+VIRTUAL_METHOD_MAP_BEGIN(Surface, NonBase)
+    DESTRUCTOR_MAP(Surface)
+    METHOD_MAP(Surface, lock)
+    METHOD_MAP(Surface, unlock)
+    METHOD_MAP(Surface, setColorKey)
+    METHOD_MAP(Surface, setAlpha)
+    METHOD_MAP(Surface, setClipRect)
+    METHOD_MAP(Surface, getClipRect)
+    METHOD_MAP(Surface, blit)
+    METHOD_MAP(Surface, fillRect)
+    METHOD_MAP(Surface, saveBMP)
+    METHOD_MAP(Surface, displayFormat)
+    METHOD_MAP(Surface, displayFormatAlpha)
+    METHOD_MAP(Surface, convert)
+    METHOD_MAP(Surface, reallocFormat)
+    METHOD_MAP(Surface, formatChanged)
 
-    METHOD_REGISTER(Surface, getWidth)
-    METHOD_REGISTER(Surface, getHeight)
-    METHOD_REGISTER(Surface, getPitch)
-    METHOD_REGISTER(Surface, getFlags)
-    METHOD_REGISTER(Surface, getBitsPerPixel)
-    METHOD_REGISTER(Surface, calculatePitch)
-    METHOD_REGISTER(Surface, mapSurface)
-    METHOD_REGISTER(Surface, RLE)
-    METHOD_REGISTER(Surface, UnRLE)
+    METHOD_MAP(Surface, getWidth)
+    METHOD_MAP(Surface, getHeight)
+    METHOD_MAP(Surface, getPitch)
+    METHOD_MAP(Surface, getFlags)
+    METHOD_MAP(Surface, getBitsPerPixel)
+    METHOD_MAP(Surface, calculatePitch)
+    METHOD_MAP(Surface, mapSurface)
+    METHOD_MAP(Surface, RLE)
+    METHOD_MAP(Surface, UnRLE)
 
-METHOD_REGISTER(Surface, getBytesPerPixel)
+METHOD_MAP(Surface, getBytesPerPixel)
 
-VIRTUAL_METHOD_REGEND 
+VIRTUAL_METHOD_MAP_END 
 
-METHOD_REGBEGIN(Surface)
-    CONSTRUCTOR_REGISTER(Surface)
-METHOD_REGEND
+METHOD_MAP_BEGIN(Surface)
+    CONSTRUCTOR_MAP(Surface)
+METHOD_MAP_END
 
 /* Public routines */
 /*

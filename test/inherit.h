@@ -20,13 +20,13 @@ CONSTRUCTOR(CooSub)
     printf("CooSubConstructor:%p\n", self);
     return self;
 }
-    VIRTUAL_METHOD_REGBEGIN(CooSub, CooBase)
-DESTRUCTOR_REGISTER(CooSub)
-    VIRTUAL_METHOD_REGEND
+    VIRTUAL_METHOD_MAP_BEGIN(CooSub, CooBase)
+DESTRUCTOR_MAP(CooSub)
+    VIRTUAL_METHOD_MAP_END
 
-    METHOD_REGBEGIN(CooSub)
-CONSTRUCTOR_REGISTER(CooSub)
-    METHOD_REGEND
+    METHOD_MAP_BEGIN(CooSub)
+CONSTRUCTOR_MAP(CooSub)
+    METHOD_MAP_END
 
 /*============================================================================*/
 CLASS_INHERIT_BEGIN(CooLevel1, CooSub)
@@ -46,13 +46,13 @@ CONSTRUCTOR(CooLevel1)
     return self;
 }
 
-METHOD_REGBEGIN(CooLevel1)
-    CONSTRUCTOR_REGISTER(CooLevel1)
-METHOD_REGEND
+METHOD_MAP_BEGIN(CooLevel1)
+    CONSTRUCTOR_MAP(CooLevel1)
+METHOD_MAP_END
 
-VIRTUAL_METHOD_REGBEGIN(CooLevel1, CooSub)
-    DESTRUCTOR_REGISTER(CooLevel1)
-    VIRTUAL_METHOD_REGEND
+VIRTUAL_METHOD_MAP_BEGIN(CooLevel1, CooSub)
+    DESTRUCTOR_MAP(CooLevel1)
+    VIRTUAL_METHOD_MAP_END
 
 #endif   /* ----- #ifndef _SUBTEST_INC  ----- */
 

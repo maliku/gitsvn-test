@@ -9,8 +9,8 @@
 #include "pixel_format.h"
 #include "pixels.h"
 
-VIRTUAL_METHOD_REGISTER_PLACEHOLDER(MIL_PixelFormat, NonBase)
-METHOD_REGISTER_PLACEHOLDER(MIL_PixelFormat)
+VIRTUAL_METHOD_MAP_PLACEHOLDER(MIL_PixelFormat, NonBase)
+METHOD_MAP_PLACEHOLDER(MIL_PixelFormat)
 
 CONSTRUCTOR(PixelFormat)
 {
@@ -236,23 +236,23 @@ Uint32  PixelFormat_X_getColorKey(_CSELF)
     return _tm(PixelFormat, colorkey);
 }
 
-VIRTUAL_METHOD_REGBEGIN(PixelFormat, MIL_PixelFormat)
-    DESTRUCTOR_REGISTER(PixelFormat)
-    METHOD_REGISTER(PixelFormat, mapRGB)
-    METHOD_REGISTER(PixelFormat, mapRGBA)
-    METHOD_REGISTER(PixelFormat, getRGB)
-    METHOD_REGISTER(PixelFormat, getRGBA)
-    METHOD_REGISTER(PixelFormat, mapNto1)
-    METHOD_REGISTER(PixelFormat, map1toN)
-    METHOD_REGISTER(PixelFormat, getBytesPerPixel)
-    METHOD_REGISTER(PixelFormat, getBitsPerPixel)
-    METHOD_REGISTER(PixelFormat, getAlpha)
-    METHOD_REGISTER(PixelFormat, getColorKey)
-VIRTUAL_METHOD_REGEND
+VIRTUAL_METHOD_MAP_BEGIN(PixelFormat, MIL_PixelFormat)
+    DESTRUCTOR_MAP(PixelFormat)
+    METHOD_MAP(PixelFormat, mapRGB)
+    METHOD_MAP(PixelFormat, mapRGBA)
+    METHOD_MAP(PixelFormat, getRGB)
+    METHOD_MAP(PixelFormat, getRGBA)
+    METHOD_MAP(PixelFormat, mapNto1)
+    METHOD_MAP(PixelFormat, map1toN)
+    METHOD_MAP(PixelFormat, getBytesPerPixel)
+    METHOD_MAP(PixelFormat, getBitsPerPixel)
+    METHOD_MAP(PixelFormat, getAlpha)
+    METHOD_MAP(PixelFormat, getColorKey)
+VIRTUAL_METHOD_MAP_END
 
-METHOD_REGBEGIN(PixelFormat)
-    CONSTRUCTOR_REGISTER(PixelFormat)
-METHOD_REGEND
+METHOD_MAP_BEGIN(PixelFormat)
+    CONSTRUCTOR_MAP(PixelFormat)
+METHOD_MAP_END
 
 /*
  * Allocate a pixel format structure and fill it according to the given info.

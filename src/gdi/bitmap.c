@@ -39,8 +39,8 @@ MIL_Status  MIL_Bitmap_X_unlockBits(_Self(MIL_Bitmap), MIL_BitmapData* locked_da
     return MIL_NOT_IMPLEMENTED;
 }
 
-VIRTUAL_METHOD_REGBEGIN(MIL_Bitmap, MIL_Image)
-    DESTRUCTOR_REGISTER(MIL_Bitmap)
+VIRTUAL_METHOD_MAP_BEGIN(MIL_Bitmap, MIL_Image)
+    DESTRUCTOR_MAP(MIL_Bitmap)
     METHOD_PLACEHOLDER(clone)
     METHOD_PLACEHOLDER(getBounds)
     METHOD_PLACEHOLDER(getWidth)
@@ -52,15 +52,15 @@ VIRTUAL_METHOD_REGBEGIN(MIL_Bitmap, MIL_Image)
     METHOD_PLACEHOLDER(getRawFormat)
     METHOD_PLACEHOLDER(rotateFlip)
     METHOD_PLACEHOLDER(save)
-VIRTUAL_METHOD_REGEND
+VIRTUAL_METHOD_MAP_END
 
-METHOD_REGBEGIN(MIL_Bitmap)
-    CONSTRUCTOR_REGISTER(MIL_Bitmap)
-    METHOD_REGISTER(MIL_Bitmap, getPixel)
-    METHOD_REGISTER(MIL_Bitmap, lockBits)
-    METHOD_REGISTER(MIL_Bitmap, setPixel)
-    METHOD_REGISTER(MIL_Bitmap, unlockBits)
-METHOD_REGEND
+METHOD_MAP_BEGIN(MIL_Bitmap)
+    CONSTRUCTOR_MAP(MIL_Bitmap)
+    METHOD_MAP(MIL_Bitmap, getPixel)
+    METHOD_MAP(MIL_Bitmap, lockBits)
+    METHOD_MAP(MIL_Bitmap, setPixel)
+    METHOD_MAP(MIL_Bitmap, unlockBits)
+METHOD_MAP_END
 
 MIL_Bitmap* LoadBitmapFromFile(const char* file)
 {
