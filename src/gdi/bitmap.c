@@ -52,14 +52,16 @@ VIRTUAL_METHOD_MAP_BEGIN(MIL_Bitmap, MIL_Image)
     METHOD_PLACEHOLDER(getRawFormat)
     METHOD_PLACEHOLDER(rotateFlip)
     METHOD_PLACEHOLDER(save)
-VIRTUAL_METHOD_MAP_END
 
-METHOD_MAP_BEGIN(MIL_Bitmap)
-    CONSTRUCTOR_MAP(MIL_Bitmap)
+    /* Add new method */
     METHOD_MAP(MIL_Bitmap, getPixel)
     METHOD_MAP(MIL_Bitmap, lockBits)
     METHOD_MAP(MIL_Bitmap, setPixel)
     METHOD_MAP(MIL_Bitmap, unlockBits)
+VIRTUAL_METHOD_MAP_END
+
+METHOD_MAP_BEGIN(MIL_Bitmap)
+    CONSTRUCTOR_MAP(MIL_Bitmap)
 METHOD_MAP_END
 
 MIL_Bitmap* LoadBitmapFromFile(const char* file)

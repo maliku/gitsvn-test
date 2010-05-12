@@ -108,12 +108,26 @@ CLASS(MIL_Image)
  * @brief A modifiable container for MIL_Image, you can change it's pixel data.
  */
 CLASS_INHERIT_BEGIN(MIL_Bitmap, MIL_Image)
-    NO_VIRTUAL_METHOD_EXPAND(MIL_Bitmap)
-    METHOD_DECLARE_BEGIN(MIL_Bitmap)
+    VIRTUAL_METHOD_EXPAND_DECLARE_BEGIN(MIL_Bitmap)
+        MIL_Image*  (*clone)(_Self(MIL_Image));
+        MIL_Status  (*getBounds)(_Self(MIL_Image), MIL_Rect* rc);
+        Uint32      (*getWidth)(_Self(MIL_Image));
+        Uint32      (*getHeight)(_Self(MIL_Image));
+        MIL_Status  (*getPalette)(_Self(MIL_Image), MIL_Palette* palette);
+        MIL_Status  (*setPalette)(_Self(MIL_Image), const MIL_Palette* palette);
+        int         (*getPaletteSize)(_Self(MIL_Image));
+        MIL_Status  (*getPixelFormat)(_Self(MIL_Image), MIL_PixelFormat* fmt);
+        const char* (*getRawFormat)(_Self(MIL_Image));
+        MIL_Status  (*rotateFlip)(_Self(MIL_Image), MIL_RotateFlipType);
+        MIL_Status  (*save)(_Self(MIL_Status), const char* file);
+        MIL_Status  (*loadFile)(_Self(MIL_Image), const char* file);
+
         MIL_Status  (*getPixel)(_Self(MIL_Bitmap), int x, int y, MIL_Color* color);
         MIL_Status  (*lockBits)(_Self(MIL_Bitmap), const MIL_Rect* rc, MIL_BitmapData* locked_data);
         MIL_Status  (*setPixel)(_Self(MIL_Bitmap), int x, int y, const MIL_Color* color);
         MIL_Status  (*unlockBits)(_Self(MIL_Bitmap), MIL_BitmapData* locked_data);
+    VIRTUAL_METHOD_EXPAND_DECLARE_END
+    METHOD_DECLARE_BEGIN(MIL_Bitmap)
     METHOD_DECLARE_END
 
     PRIVATE_BEGIN(MIL_Bitmap)
