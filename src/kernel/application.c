@@ -61,8 +61,8 @@ CONSTRUCTOR(Application)
         _VC(vd)->setVideoMode(vd, (Surface*)screen, 640, 480, 32, 0);
         if (NULL != screen->pixels) {
             MIL_Rect rc = {0, 0, 640, 480};
-            MIL_Rect rcbmp = {0, 100, 300, 300};
-            MIL_Rect rcdst = {50, 10, 300, 300};
+            MIL_Rect rcbmp = {0, 100, 300, 200};
+            MIL_Rect rcdst = {50, 10, 200, 200};
             MIL_Rect rclip = {200, 100, 400, 379};
 
             MIL_RWops* ops = MIL_RWFromFile("res/lena16.bmp", "rb");
@@ -89,7 +89,7 @@ CONSTRUCTOR(Application)
                     rcdst.x = j;
                     //                    MIL_SoftStretch(convert, &rcbmp,
 //                            screen, &rcdst);
-                    _vc3(convert, blit, &rcbmp, screen, &rcdst);
+                    _vc3(convert, strechBlit, &rcbmp, screen, &rcdst);
                     _VC(vd)->updateRects(vd, 1, &rc);
                 }
                 Delete(bmp);

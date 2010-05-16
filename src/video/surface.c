@@ -279,7 +279,7 @@ void Surface_X_getClipRect(_SELF, MIL_Rect *rect)
     }
 }
 
-int  Surface_X_blit(_SELF, MIL_Rect *srcrect, Surface *dst, MIL_Point* dstpoint)
+int  Surface_X_blit(_SELF, const MIL_Rect *srcrect, Surface *dst, const MIL_Point* dstpoint)
 {
     MIL_Rect dstrect = {0, 0, 0, 0};
 	int srcx, srcy, w, h;
@@ -570,6 +570,11 @@ int  Surface_X_fillRect(_SELF, MIL_Rect *dstrect, Uint32 color)
 
 int  Surface_X_saveBMP(_SELF, const char *file)
 {}
+
+int  Surface_X_strechBlit(_SELF, const MIL_Rect *srcrect, Surface *dst, const MIL_Rect* dstrect)
+{
+    return MIL_SoftStretch((Surface*)self, srcrect, dst, dstrect);
+}
 
 Surface* Surface_X_displayFormat(_SELF)
 {
@@ -1021,6 +1026,7 @@ VIRTUAL_METHOD_MAP_BEGIN(Surface, NonBase)
     METHOD_MAP(Surface, blit)
     METHOD_MAP(Surface, fillRect)
     METHOD_MAP(Surface, saveBMP)
+    METHOD_MAP(Surface, strechBlit)
     METHOD_MAP(Surface, displayFormat)
     METHOD_MAP(Surface, displayFormatAlpha)
     METHOD_MAP(Surface, convert)

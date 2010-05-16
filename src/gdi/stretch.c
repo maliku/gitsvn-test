@@ -199,8 +199,8 @@ void copy_row3(Uint8 *src, int src_w, Uint8 *dst, int dst_w)
 /* Perform a stretch blit between two surfaces of the same format.
    NOTE:  This function is not safe to call from multiple threads!
 */
-int MIL_SoftStretch(Surface *src, MIL_Rect *srcrect,
-                    Surface *dst, MIL_Rect *dstrect)
+int MIL_SoftStretch(Surface *src, const MIL_Rect *srcrect,
+                    Surface *dst, const MIL_Rect *dstrect)
 {
 	int src_locked;
 	int dst_locked;

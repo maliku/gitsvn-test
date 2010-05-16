@@ -25,9 +25,10 @@ CLASS(Surface)
     int  (*setAlpha)(_SELF, Uint32 flag, Uint8 alpha);
     MIL_Bool (*setClipRect)(_SELF, const MIL_Rect *rect);
     void (*getClipRect)(_SELF, MIL_Rect *rect);
-    int  (*blit)(_SELF, MIL_Rect *srcrect, Surface *dst, MIL_Rect *dstrect);
+    int  (*blit)(_SELF, const MIL_Rect *srcrect, Surface *dst, const MIL_Point* dstpoint);
     int  (*fillRect)(_SELF, MIL_Rect *dstrect, Uint32 color);
     int  (*saveBMP)(_SELF, const char *file);
+    int  (*strechBlit)(_SELF, const MIL_Rect *srcrect, Surface *dst, const MIL_Rect* dstrect);
     Surface* (*displayFormat)(_SELF);
     Surface* (*displayFormatAlpha)(_SELF);
     Surface* (*convert)(_SELF, PixelFormat *fmt, Uint32 flags);
@@ -79,8 +80,8 @@ CLASS(Surface)
 Surface * CreateRGBSurface (Uint32 flags,
 			int width, int height, int depth,
 			Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask);
-int MIL_SoftStretch(Surface *src, MIL_Rect *srcrect,
-                    Surface *dst, MIL_Rect *dstrect);
+int MIL_SoftStretch(Surface *src, const MIL_Rect *srcrect,
+                    Surface *dst, const MIL_Rect *dstrect);
 #define MIL_AUTO_FREE 1
 Surface * MIL_LoadBMP_RW(MIL_RWops* src, int freesrc);
 MIL_Status MIL_SaveBMP_RW (Surface *saveme, MIL_RWops *dst, int freedst);

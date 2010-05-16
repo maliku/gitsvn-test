@@ -1,4 +1,5 @@
 
+[2010-05-17]: Add method strechBlt to class Surface.
 [2010-05-16]: Fix a bug of destination position argument may be changed of 
 Surface::blit.
 [2010-05-12]: Sub class virtual method expand feature surpported, it's make
