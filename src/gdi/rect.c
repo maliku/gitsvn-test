@@ -16,12 +16,23 @@ __INLINE__ MIL_Bool
 MIL_IntersectRect(const MIL_Rect *A, const MIL_Rect *B, MIL_Rect *intersection)
 {
 #if 1
+    int Amax, Bmax;
     intersection->x = (A->x > B->x) ? A->x : B->x;
     intersection->y  = (A->y > B->y) ? A->y : B->y;
-    intersection->w = (A->x + A->w < B->x + B->w) ? 
-        (A->x + A->w - intersection->x) : (B->x + B->w - intersection->x);
-    intersection->h = (A->y + A->h < B->h + B->h) ? 
-        (A->y + A->h - intersection->y) : (B->y + B->h - intersection->y);
+    Amax = A->x + A->w;
+    Bmax = B->x + B->w;
+    if (Bmax < Amax) {
+        Amax = Bmax;
+    }
+    intersection->w = (Amax > intersection->x) ? 
+        (Amax - intersection->x) : 0;
+    Amax = A->y + A->h;
+    Bmax = B->y + B->h;
+    if (Bmax < Amax) {
+        Amax = Bmax;
+    }
+    intersection->h = (Amax > intersection->y) ? 
+        (Amax - intersection->y) : 0;
 
     return (intersection->w && intersection->h);
 #else

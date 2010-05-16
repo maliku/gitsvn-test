@@ -279,9 +279,9 @@ void Surface_X_getClipRect(_SELF, MIL_Rect *rect)
     }
 }
 
-int  Surface_X_blit(_SELF, MIL_Rect *srcrect, Surface *dst, MIL_Rect *dstrect)
+int  Surface_X_blit(_SELF, MIL_Rect *srcrect, Surface *dst, MIL_Point* dstpoint)
 {
-    MIL_Rect fulldst;
+    MIL_Rect dstrect = {0, 0, 0, 0};
 	int srcx, srcy, w, h;
     Surface* src = (Surface*)self;
 	/* Make sure the surfaces aren't locked */
@@ -295,10 +295,10 @@ int  Surface_X_blit(_SELF, MIL_Rect *srcrect, Surface *dst, MIL_Rect *dstrect)
 	}
 
 	/* If the destination rectangle is NULL, use the entire dest surface */
-	if ( dstrect == NULL ) {
-        fulldst.x = fulldst.y = 0;
-        dstrect = &fulldst;
-	}
+	if ( NULL != dstpoint ) {
+        dstrect.x = dstpoint->x;
+        dstrect.y = dstpoint->y;
+    }
 
 	/* clip the source rectangle to the source surface */
 	if(srcrect) {
@@ -308,7 +308,7 @@ int  Surface_X_blit(_SELF, MIL_Rect *srcrect, Surface *dst, MIL_Rect *dstrect)
 		w = srcrect->w;
 		if(srcx < 0) {
             w += srcx;
-            dstrect->x -= srcx;
+            dstrect.x -= srcx;
 			srcx = 0;
 		}
 		maxw = src->w - srcx;
@@ -319,7 +319,7 @@ int  Surface_X_blit(_SELF, MIL_Rect *srcrect, Surface *dst, MIL_Rect *dstrect)
 		h = srcrect->h;
 		if(srcy < 0) {
             h += srcy;
-            dstrect->y -= srcy;
+            dstrect.y -= srcy;
 			srcy = 0;
 		}
 		maxh = src->h - srcy;
@@ -337,23 +337,24 @@ int  Surface_X_blit(_SELF, MIL_Rect *srcrect, Surface *dst, MIL_Rect *dstrect)
         MIL_Rect *clip = &dst->clip_rect;
         int dx, dy;
 
-		dx = clip->x - dstrect->x;
+		dx = clip->x - dstrect.x;
 		if(dx > 0) {
 			w -= dx;
-			dstrect->x += dx;
+			dstrect.x += dx;
 			srcx += dx;
 		}
-		dx = dstrect->x + w - clip->x - clip->w;
+		dx = dstrect.x + w - clip->x - clip->w;
 		if(dx > 0)
 			w -= dx;
 
-		dy = clip->y - dstrect->y;
+		dy = clip->y - dstrect.y;
+        printf("clip->y = %d, dstrect->y = %d.\n", clip->y, dstrect.y);
 		if(dy > 0) {
 			h -= dy;
-			dstrect->y += dy;
+			dstrect.y += dy;
 			srcy += dy;
 		}
-		dy = dstrect->y + h - clip->y - clip->h;
+		dy = dstrect.y + h - clip->y - clip->h;
 		if(dy > 0)
 			h -= dy;
 	}
@@ -362,11 +363,13 @@ int  Surface_X_blit(_SELF, MIL_Rect *srcrect, Surface *dst, MIL_Rect *dstrect)
         MIL_Rect sr;
         sr.x = srcx;
 		sr.y = srcy;
-		sr.w = dstrect->w = w;
-		sr.h = dstrect->h = h;
-		return MIL_LowerBlit(src, &sr, dst, dstrect);
+		sr.w = dstrect.w = w;
+		sr.h = dstrect.h = h;
+        printf("src.x = %d, y = %d, w = %d, h = %d.\n", sr.x, sr.y, sr.w, sr.h);
+        printf("dst.x = %d, y = %d, w = %d, h = %d.\n", dstrect.x, dstrect.y, dstrect.w, dstrect.h);
+		return MIL_LowerBlit(src, &sr, dst, &dstrect);
 	}
-	dstrect->w = dstrect->h = 0;
+//	dstrect.w = dstrect.h = 0;
 	return 0;
 }
 

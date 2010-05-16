@@ -1,4 +1,6 @@
 
+[2010-05-16]: Fix a bug of destination position argument may be changed of 
+Surface::blit.
 [2010-05-12]: Sub class virtual method expand feature surpported, it's make
 the COO framework more useful and more promise strict.
 [2010-05-11]: Adjust MIL_Image & MIL_Bitmap inheritance.

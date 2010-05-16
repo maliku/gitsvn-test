@@ -140,10 +140,12 @@ MIL_Rect** QVFbVideoDevice_X_listModes(_Self(VideoDevice),
 Surface* QVFbVideoDevice_X_setVideoMode(_Self(VideoDevice), 
         Surface *current, int width, int height, int bpp, Uint32 flags)
 {
+    int real_w = ((QVFbVideoDevice*)self)->hw_data->hdr->width;
+    int real_h = ((QVFbVideoDevice*)self)->hw_data->hdr->height;
     /* Set up the mode framebuffer */
     ((Surface*)current)->flags = (MIL_HWSURFACE | MIL_FULLSCREEN);
-    ((Surface*)current)->w = ((QVFbVideoDevice*)self)->hw_data->hdr->width;
-    ((Surface*)current)->h = ((QVFbVideoDevice*)self)->hw_data->hdr->height;
+    ((Surface*)current)->w = width <= real_w ? width : real_w;
+    ((Surface*)current)->h = height <= real_h ? height : real_h;
     ((Surface*)current)->pitch = ((QVFbVideoDevice*)self)->hw_data->hdr->linestep;
     ((Surface*)current)->pixels = ((QVFbVideoDevice*)self)->hw_data->shmrgn + 
         ((QVFbVideoDevice*)self)->hw_data->hdr->dataoffset;
