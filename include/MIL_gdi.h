@@ -136,6 +136,13 @@ CLASS_INHERIT_BEGIN(MIL_Bitmap, MIL_Image)
 
 CLASS_INHERIT_END
 
+CLASS(MIL_Graphics)
+{
+    VIRTUAL_METHOD_DECLARE_BEGIN(MIL_Graphics)
+    VIRTUAL_METHOD_DECLARE_END
+    METHOD_DECLARE_PLACEHOLDER(MIL_Graphics)
+};
+
 /** 
  * @synopsis Load image from a file.
  * 
