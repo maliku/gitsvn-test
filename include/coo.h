@@ -138,6 +138,15 @@ void type##Predestructor(_SELF);\
  * If the virtual method pointer is null, it's will be assigned to the same name method of super class. */
 #define VirtualMethodVerify(p, func) assert(p && _vf(p, func))
 
+#define VIRTUAL_METHOD_VERIFY_ONCE_BEGIN \
+    { \
+        static int is_verified = MIL_FALSE; \
+        if (!is_verified) {
+
+#define VIRTUAL_METHOD_VERIFY_ONCE_END \
+        is_verified = MIL_TRUE;} \
+    }
+
 #define	_m(member)	(self->member)
 #define	_tm(type, member)	(((type*)self)->member)
 

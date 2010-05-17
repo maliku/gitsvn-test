@@ -41,6 +41,33 @@ CONSTRUCTOR(Surface)
     _m(format_version) = 0;
     _m(refcount) = 0;
     memset(&_m(clip_rect), 0, sizeof(_m(clip_rect)));
+    VIRTUAL_METHOD_VERIFY_ONCE_BEGIN
+        VirtualMethodVerify(self, lock);
+        VirtualMethodVerify(self, unlock);
+        VirtualMethodVerify(self, setColorKey);
+        VirtualMethodVerify(self, setAlpha);
+        VirtualMethodVerify(self, setClipRect);
+        VirtualMethodVerify(self, getClipRect);
+        VirtualMethodVerify(self, blit);
+        VirtualMethodVerify(self, fillRect);
+        VirtualMethodVerify(self, saveBMP);
+        VirtualMethodVerify(self, stretchBlit);
+        VirtualMethodVerify(self, displayFormat);
+        VirtualMethodVerify(self, displayFormatAlpha);
+        VirtualMethodVerify(self, convert);
+        VirtualMethodVerify(self, reallocFormat);
+        VirtualMethodVerify(self, formatChanged);
+        VirtualMethodVerify(self, getWidth);
+        VirtualMethodVerify(self, getHeight);
+        VirtualMethodVerify(self, getPitch);
+        VirtualMethodVerify(self, getFlags);
+        VirtualMethodVerify(self, getBitsPerPixel);
+        VirtualMethodVerify(self, calculatePitch);
+        VirtualMethodVerify(self, mapSurface);
+        VirtualMethodVerify(self, RLE);
+        VirtualMethodVerify(self, UnRLE);
+    VIRTUAL_METHOD_VERIFY_ONCE_END
+
     return self;
 }
 
@@ -88,6 +115,7 @@ DESTRUCTOR(Surface)
 int Surface_X_lock(_SELF)
 {
     Surface* surface = (Surface*)self;
+    /* TODO: May be the thread lock should insert here. */
 	if ( ! surface->locked ) {
 		/* Perform the lock */
 		if ( surface->flags & (MIL_HWSURFACE|MIL_ASYNCBLIT) ) {
@@ -97,6 +125,9 @@ int Surface_X_lock(_SELF)
 				return(-1);
 			}
 		}
+        else {
+            /* TODO: Add thread safe lock. */
+        }
 		if ( surface->flags & MIL_RLEACCEL ) {
 			_vc1(surface, UnRLE, 1);
 			surface->flags |= MIL_RLEACCEL;	/* save accel'd state */
@@ -109,7 +140,7 @@ int Surface_X_lock(_SELF)
 	++surface->locked;
 
 	/* Ready to go.. */
-	return(0);
+	return (0);
 }
 
 void Surface_X_unlock(_SELF)
@@ -132,7 +163,7 @@ void Surface_X_unlock(_SELF)
 		/* Update RLE encoded surface with new data */
 		if ( (surface->flags & MIL_RLEACCEL) == MIL_RLEACCEL ) {
 		        surface->flags &= ~MIL_RLEACCEL; /* stop lying */
-//			MIL_RLESurface(surface);
+                _vc0(surface, RLE);
 		}
 	}
 }
@@ -571,7 +602,7 @@ int  Surface_X_fillRect(_SELF, MIL_Rect *dstrect, Uint32 color)
 int  Surface_X_saveBMP(_SELF, const char *file)
 {}
 
-int  Surface_X_strechBlit(_SELF, const MIL_Rect *srcrect, Surface *dst, const MIL_Rect* dstrect)
+int  Surface_X_stretchBlit(_SELF, const MIL_Rect *srcrect, Surface *dst, const MIL_Rect* dstrect)
 {
     return MIL_SoftStretch((Surface*)self, srcrect, dst, dstrect);
 }
@@ -1026,7 +1057,7 @@ VIRTUAL_METHOD_MAP_BEGIN(Surface, NonBase)
     METHOD_MAP(Surface, blit)
     METHOD_MAP(Surface, fillRect)
     METHOD_MAP(Surface, saveBMP)
-    METHOD_MAP(Surface, strechBlit)
+    METHOD_MAP(Surface, stretchBlit)
     METHOD_MAP(Surface, displayFormat)
     METHOD_MAP(Surface, displayFormatAlpha)
     METHOD_MAP(Surface, convert)

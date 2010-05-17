@@ -28,7 +28,7 @@ CLASS(Surface)
     int  (*blit)(_SELF, const MIL_Rect *srcrect, Surface *dst, const MIL_Point* dstpoint);
     int  (*fillRect)(_SELF, MIL_Rect *dstrect, Uint32 color);
     int  (*saveBMP)(_SELF, const char *file);
-    int  (*strechBlit)(_SELF, const MIL_Rect *srcrect, Surface *dst, const MIL_Rect* dstrect);
+    int  (*stretchBlit)(_SELF, const MIL_Rect *srcrect, Surface *dst, const MIL_Rect* dstrect);
     Surface* (*displayFormat)(_SELF);
     Surface* (*displayFormatAlpha)(_SELF);
     Surface* (*convert)(_SELF, PixelFormat *fmt, Uint32 flags);

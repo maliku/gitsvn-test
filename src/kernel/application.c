@@ -62,7 +62,8 @@ CONSTRUCTOR(Application)
         if (NULL != screen->pixels) {
             MIL_Rect rc = {0, 0, 640, 480};
             MIL_Rect rcbmp = {0, 100, 300, 200};
-            MIL_Rect rcdst = {50, 10, 200, 200};
+            MIL_Rect rcdst = {50, 10, 200, 300};
+            MIL_Point rcpos = {50, 5};
             MIL_Rect rclip = {200, 100, 400, 379};
 
             MIL_RWops* ops = MIL_RWFromFile("res/lena16.bmp", "rb");
@@ -82,14 +83,13 @@ CONSTRUCTOR(Application)
             getchar();
             if (NULL != bmp) {
                 Surface* convert = _vc2(bmp, convert, screen->format, screen->flags);
-                _vc2(convert, setColorKey, MIL_SRCCOLORKEY, 0);
-//                printf("img w=%d, h=%d.\n", _vc0((MIL_Image*)img, getWidth), _vc0((MIL_Image*)img, getHeight));
+//                _vc2(convert, setColorKey, MIL_SRCCOLORKEY, 0);
 //                _vc2(convert, setAlpha, MIL_SRCALPHA, 5);
                 for (j = 0; j < 400; ++j) {
                     rcdst.x = j;
-                    //                    MIL_SoftStretch(convert, &rcbmp,
-//                            screen, &rcdst);
-                    _vc3(convert, strechBlit, &rcbmp, screen, &rcdst);
+                    rcpos.x = j;
+                    _VC(convert)->stretchBlit(convert, &rcbmp, screen, &rcdst);
+//                    _vc3(convert, blit, &rcbmp, screen, &rcpos);
                     _VC(vd)->updateRects(vd, 1, &rc);
                 }
                 Delete(bmp);
