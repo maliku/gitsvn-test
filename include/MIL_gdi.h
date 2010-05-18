@@ -136,12 +136,23 @@ CLASS_INHERIT_BEGIN(MIL_Bitmap, MIL_Image)
 
 CLASS_INHERIT_END
 
-CLASS(MIL_Graphics)
+CLASS(MIL_GraphicsContext)
 {
-    VIRTUAL_METHOD_DECLARE_BEGIN(MIL_Graphics)
+    VIRTUAL_METHOD_DECLARE_BEGIN(MIL_GraphicsContext)
+        MIL_Status (*clear)(_Self(MIL_GraphicsContext), MIL_Color*);
+        MIL_Status (*drawImagePos)(_Self(MIL_GraphicsContext), MIL_Image*, int, int);
+        MIL_Status (*drawImageRect)(_Self(MIL_GraphicsContext), MIL_Image*, MIL_Rect*);
+        MIL_Status (*drawString)(_Self(MIL_GraphicsContext), const char*, MIL_Rect*);
+        MIL_Status (*includeClip)(_Self(MIL_GraphicsContext), MIL_Rect*);
+        MIL_Status (*excludeClip)(_Self(MIL_GraphicsContext), MIL_Rect*);
+        MIL_Bool   (*isClipEmpty)(_Self(MIL_GraphicsContext));
+        void       (*store)(_Self(MIL_GraphicsContext));
+        void       (*restore)(_Self(MIL_GraphicsContext));
     VIRTUAL_METHOD_DECLARE_END
-    METHOD_DECLARE_PLACEHOLDER(MIL_Graphics)
+    METHOD_DECLARE_PLACEHOLDER(MIL_GraphicsContext)
 };
+/* Alias of MIL_GraphicsContext */
+typedef MIL_GraphicsContext MIL_Graphics;
 
 /** 
  * @synopsis Load image from a file.

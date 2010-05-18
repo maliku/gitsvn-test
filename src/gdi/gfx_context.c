@@ -6,4 +6,5 @@
  *  Company: www.ds0101.net
  */
 
+#include "MIL_gdi.h"
 
