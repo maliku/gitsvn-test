@@ -45,6 +45,7 @@ extern struct __##type##Vtable g_##type##Vtable;\
 extern struct __##type##Mtable g_##type##Mtable;\
 struct __##type;\
 typedef struct __##type type;\
+typedef type __BaseOf##type; \
 extern void* type##Preconstructor(_SELF);\
 void type##Predestructor(_SELF);\
 struct __##type
@@ -114,19 +115,19 @@ void type##Predestructor(_SELF);\
 /* Macro for call virtual member function of object. */
 #define	_VC(pobj)	(((pobj)->__super).__vptr)
 
+/* _vf macro has a bug which may be type cast down. */
 #if defined(__GNUC__) && __GNUC__ >= 4
 #define _vf(p, func) ({ \
-        RTTI* tmp = *(RTTI**)p; \
         if (NULL == _VC(p)->func) { \
+            RTTI* tmp = *(RTTI**)p; \
             while (NULL != tmp) { \
-                if (NULL != (_VC(p)->func = _VC(_MC(p)->OT(tmp))->func)) break; \
+                if (NULL != (_VC(p)->func = _VC(_MC(p)->BT(tmp))->func)) break; \
                 tmp = *(RTTI**)tmp; \
             } \
         } \
         _VC(p)->func; })
 #else
-#define _vf6(p, func) ( _VC(p)->func ? _VC(p)->func : NULL/* Too more depth of inheritance hierarchy! */ )
-#define _vf5(p, func) ( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf6(_MC(p)->OT((*(RTTI**)(p))), func)) )
+#define _vf5(p, func) ( _VC(p)->func ? _VC(p)->func : NULL/* Too more depth of inheritance hierarchy! */ )
 #define _vf4(p, func) ( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf5(_MC(p)->OT((*(RTTI**)(p))), func)) )
 #define _vf3(p, func) ( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf4(_MC(p)->OT((*(RTTI**)(p))), func)) )
 #define _vf2(p, func) ( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf3(_MC(p)->OT((*(RTTI**)(p))), func)) )
@@ -199,6 +200,7 @@ void type##Predestructor(_SELF);\
 /* Macro for member function declare begin. */
 #define METHOD_DECLARE_BEGIN(type) \
     struct __##type##Mtable {\
+        __BaseOf##type* (*BT)(_SELF); \
         type* (*OT)(_SELF); \
         type* (*type)(type*); /* The constructor can't declare as virtual function because it's need type info. */
 
@@ -236,8 +238,10 @@ VIRTUAL_METHOD_MAP_END
 #define MAKE_PURE_VIRTUAL_CLASS(type) VIRTUAL_METHOD_MAP_PLACEHOLDER(type, NonBase)
 
 #define METHOD_MAP_BEGIN(type) \
+__INLINE__ __BaseOf##type* type##_X_BT(_SELF){ return (__BaseOf##type*)self; } \
 __INLINE__ type* type##_X_OT(_SELF) { return (type*)self; } \
 struct __##type##Mtable g_##type##Mtable = { \
+    type##_X_BT,\
     type##_X_OT,
 
 #define METHOD_MAP_END };
