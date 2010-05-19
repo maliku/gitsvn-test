@@ -1,4 +1,6 @@
 
+[2010-05-18]: Fix a bug of not safe with verify virtual method when sub class
+expand virtual methods, because down-cast is not safe.
 [2010-05-17]: Add method strechBlt to class Surface.
 [2010-05-16]: Fix a bug of destination position argument may be changed of 
 Surface::blit.

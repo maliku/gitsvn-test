@@ -27,6 +27,7 @@ extern "C" {
 typedef struct __RTTI {
     struct __RTTI * __base;
     const char * __name;
+    int*  __vm_checked; /* is virtual method verified. */
 } RTTI;
 
 STRUCT __CommonVtable {
@@ -117,27 +118,28 @@ void type##Predestructor(_SELF);\
 
 /* _vf macro has a bug which may be type cast down. */
 #if defined(__GNUC__) && __GNUC__ >= 4
-#define _vf(p, func) ({ \
+#define _vf_bak(p, func) ({ \
         if (NULL == _VC(p)->func) { \
             RTTI* tmp = *(RTTI**)p; \
             while (NULL != tmp) { \
-                if (NULL != (_VC(p)->func = _VC(_MC(p)->BT(tmp))->func)) break; \
+                if (NULL != (_VC(p)->func = _VC(_MC(p)->OT(tmp))->func)) break; \
                 tmp = *(RTTI**)tmp; \
             } \
         } \
         _VC(p)->func; })
+#define _vf(p, func)  (_VC(p)->func)
 #else
 #define _vf5(p, func) ( _VC(p)->func ? _VC(p)->func : NULL/* Too more depth of inheritance hierarchy! */ )
 #define _vf4(p, func) ( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf5(_MC(p)->OT((*(RTTI**)(p))), func)) )
 #define _vf3(p, func) ( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf4(_MC(p)->OT((*(RTTI**)(p))), func)) )
 #define _vf2(p, func) ( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf3(_MC(p)->OT((*(RTTI**)(p))), func)) )
 #define _vf1(p, func) ( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf2(_MC(p)->OT((*(RTTI**)(p))), func)) )
-#define _vf(p, func)  ( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf1(_MC(p)->OT((*(RTTI**)(p))), func)) )
+#define _vf(p, func)  (_VC(p)->func)//( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf1(_MC(p)->OT((*(RTTI**)(p))), func)) )
 #endif
 
 /* The macro can verify validity of virtual method pointer with a object;
  * If the virtual method pointer is null, it's will be assigned to the same name method of super class. */
-#define VirtualMethodVerify(p, func) assert(p && _vf(p, func))
+#define VirtualMethodVerify(p, func) /*assert(p && _vf(p, func))*/
 
 #define VIRTUAL_METHOD_VERIFY_ONCE_BEGIN \
     { \
@@ -200,7 +202,6 @@ void type##Predestructor(_SELF);\
 /* Macro for member function declare begin. */
 #define METHOD_DECLARE_BEGIN(type) \
     struct __##type##Mtable {\
-        __BaseOf##type* (*BT)(_SELF); \
         type* (*OT)(_SELF); \
         type* (*type)(type*); /* The constructor can't declare as virtual function because it's need type info. */
 
@@ -216,7 +217,7 @@ METHOD_DECLARE_BEGIN(type) \
 METHOD_DECLARE_END 
 
 #define VIRTUAL_METHOD_MAP_BEGIN(type, basetype) \
-PRECONSTRUCTORS(type)\
+PRECONSTRUCTORS(type, basetype)\
 PREDESTRUCTORS(type)\
 type##Vtable g_##type##Vtable = {\
     {(RTTI*)(&g_##basetype##Vtable), #type},\
@@ -238,10 +239,8 @@ VIRTUAL_METHOD_MAP_END
 #define MAKE_PURE_VIRTUAL_CLASS(type) VIRTUAL_METHOD_MAP_PLACEHOLDER(type, NonBase)
 
 #define METHOD_MAP_BEGIN(type) \
-__INLINE__ __BaseOf##type* type##_X_BT(_SELF){ return (__BaseOf##type*)self; } \
 __INLINE__ type* type##_X_OT(_SELF) { return (type*)self; } \
 struct __##type##Mtable g_##type##Mtable = { \
-    type##_X_BT,\
     type##_X_OT,
 
 #define METHOD_MAP_END };
@@ -252,13 +251,23 @@ METHOD_MAP_END
 
 #define	METHOD_NAMED(type, func) type##_X_##func
 
-#define PRECONSTRUCTORS(type) \
+#define PRECONSTRUCTORS(type, base) \
     void * type##OrderConstruct(_SELF) { \
         type * addr = (type*)self;\
-        RTTI * prev = &g_##type##Vtable.__rtti; \
-        assert(NULL != prev);\
-        if (((CommonVtable*)*(CommonVtable**)prev)->OrderConstruct)\
-        ((CommonVtable*)*(CommonVtable**)prev)->OrderConstruct(self);\
+        if (g_##base##Vtable.OrderConstruct) {\
+            g_##base##Vtable.OrderConstruct(self); \
+            if (!g_##type##Vtable.__rtti.__vm_checked) { /* move out may be mute once if */\
+                int i; \
+                /* TODO: int* is not suitable for 16 bits machine. */int* ttype = (int*)((char*)(&g_##type##Vtable) + sizeof(RTTI)); \
+                int* tbase = (int*)((char*)(&g_##base##Vtable) + sizeof(RTTI)); \
+                for (i = 0; i < sizeof(g_##base##Vtable)/sizeof(void*) - sizeof(RTTI)/sizeof(void*); ++i) { \
+                    if (0 == ttype[i] && 0 != tbase[i]) { \
+                        ttype[i] = tbase[i]; \
+                    } \
+                } \
+                g_##type##Vtable.__rtti.__vm_checked = (int*)1; \
+            } \
+        }\
         addr->__mptr = &g_##type##Mtable;\
         return (NULL != g_##type##Mtable.type) ? \
         g_##type##Mtable.type(self) : self; \
