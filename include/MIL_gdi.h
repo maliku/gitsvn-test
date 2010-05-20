@@ -149,7 +149,7 @@ CLASS(MIL_GraphicsContext)
         void       (*store)(_Self(MIL_GraphicsContext));
         void       (*restore)(_Self(MIL_GraphicsContext));
     VIRTUAL_METHOD_DECLARE_END
-    METHOD_DECLARE_PLACEHOLDER(MIL_GraphicsContext)
+    
 };
 /* Alias of MIL_GraphicsContext */
 typedef MIL_GraphicsContext MIL_Graphics;

@@ -38,7 +38,7 @@ CLASS(MIL_mutex)
         Sint32 (*unlock)(_SELF);
         VIRTUAL_METHOD_DECLARE_END
 
-    METHOD_DECLARE_PLACEHOLDER(MIL_mutex)
+    
 };
 
 MIL_mutex * MIL_CreateMutex();

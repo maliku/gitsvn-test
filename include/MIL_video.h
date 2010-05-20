@@ -105,7 +105,7 @@ CLASS(MIL_PixelFormat)
         Uint32 (*getColorKey)(_CSELF);
     VIRTUAL_METHOD_DECLARE_END
 
-    METHOD_DECLARE_PLACEHOLDER(MIL_PixelFormat)
+    
 };
 
 extern MIL_PixelFormat* MIL_AllocFormat(int bpp,
@@ -140,7 +140,7 @@ CLASS(MIL_Surface)
 
     VIRTUAL_METHOD_DECLARE_END
 
-    METHOD_DECLARE_PLACEHOLDER(MIL_Surface)
+    
 };
 #endif
 

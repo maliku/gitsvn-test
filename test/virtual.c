@@ -32,8 +32,8 @@ VIRTUAL_METHOD_MAP_BEGIN(MyBase, NonBase)
 METHOD_MAP(MyBase, vtest)
     VIRTUAL_METHOD_MAP_END
 
-METHOD_MAP_BEGIN(MyBase)
-    METHOD_MAP_END
+
+    
 
 /* ====================== for class MyBase ======================*/
 DESTRUCTOR(MySub)
@@ -66,8 +66,8 @@ VIRTUAL_METHOD_MAP_BEGIN(MySub, MyBase)
     METHOD_MAP(MySub, ptest)
     VIRTUAL_METHOD_MAP_END
 
-METHOD_MAP_BEGIN(MySub)
-    METHOD_MAP_END
+
+    
 
 DESTRUCTOR(MySub2)
 {
@@ -92,8 +92,8 @@ VIRTUAL_METHOD_MAP_BEGIN(MySub2, MySub)
     METHOD_MAP(MySub2, vtest)
     VIRTUAL_METHOD_MAP_END
 
-METHOD_MAP_BEGIN(MySub2)
-METHOD_MAP_END
+
+
 
 int main()
 {

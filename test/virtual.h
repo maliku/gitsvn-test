@@ -14,7 +14,7 @@ CLASS(MyBase)
     VIRTUAL_METHOD_DECLARE_BEGIN(MyBase)
         void (*vtest)(void*, int);
     VIRTUAL_METHOD_DECLARE_END
-    METHOD_DECLARE_PLACEHOLDER(MyBase);
+    
 };
 
 CLASS_INHERIT_BEGIN(MySub, MyBase)
@@ -22,11 +22,11 @@ CLASS_INHERIT_BEGIN(MySub, MyBase)
         void (*vtest)(void*, int);
         void (*ptest)(void*, int);
     VIRTUAL_METHOD_EXPAND_DECLARE_END
-    METHOD_DECLARE_PLACEHOLDER(MySub);
+    
 CLASS_INHERIT_END
 
 CLASS_INHERIT_BEGIN(MySub2, MySub)
     NO_VIRTUAL_METHOD_EXPAND(MySub2)
-    METHOD_DECLARE_PLACEHOLDER(MySub2);
+    
 CLASS_INHERIT_END
 

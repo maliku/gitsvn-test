@@ -33,9 +33,9 @@ VIRTUAL_METHOD_MAP_BEGIN(MyBase, NonBase)
     METHOD_MAP(MyBase, virtual_method)
 VIRTUAL_METHOD_MAP_END
 
-METHOD_MAP_BEGIN(MyBase)
+
 //    METHOD_MAP(MyBase, normal_method)
-METHOD_MAP_END
+
 
 void METHOD_NAMED(MySub, virtual_method)(_Self(MyBase))
 {

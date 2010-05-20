@@ -65,7 +65,7 @@ CLASS(MIL_RWops)
 
     VIRTUAL_METHOD_DECLARE_END
 
-    METHOD_DECLARE_PLACEHOLDER(MIL_RWops)
+    
     Uint32 type;
     union {
         struct {
@@ -86,12 +86,12 @@ CLASS(MIL_RWops)
 
 CLASS_INHERIT_BEGIN(RawFileOperator, MIL_RWops)
     NO_VIRTUAL_METHOD_EXPAND(RawFileOperator)
-    METHOD_DECLARE_PLACEHOLDER(RawFileOperator)
+    
 CLASS_INHERIT_END 
 
 CLASS_INHERIT_BEGIN(MemFileOperator, MIL_RWops)
     NO_VIRTUAL_METHOD_EXPAND(MemFileOperator)
-    METHOD_DECLARE_PLACEHOLDER(MemFileOperator)
+    
 CLASS_INHERIT_END 
 
 /* Functions to create MIL_RWops structures from various data sources */

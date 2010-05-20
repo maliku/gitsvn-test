@@ -36,8 +36,8 @@ VIRTUAL_METHOD_MAP_BEGIN(Object, CooBase)
     DESTRUCTOR_MAP(Object)
     VIRTUAL_METHOD_MAP_END
 
-METHOD_MAP_BEGIN(Object)
-METHOD_MAP_END
+
+
 
 int main()
 {
