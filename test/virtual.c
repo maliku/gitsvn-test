@@ -58,7 +58,8 @@ void METHOD_NAMED(MySub, ptest)(_SELF, int in)
 }
     
 VIRTUAL_METHOD_MAP_BEGIN(MySub, MyBase)
-    DESTRUCTOR_MAP(MySub)
+    NULL,
+    //DESTRUCTOR_MAP(MySub)
     NULL,
 //    METHOD_MAP(MySub, vtest)
     METHOD_MAP(MySub, ptest)

@@ -68,15 +68,6 @@ struct _##type {\
     }__super;
 #endif
 
-#define NO_VIRTUAL_METHOD_EXPAND(type) \
-typedef __VtableTypeOf##type##Base type##Vtable;\
-extern type##Vtable g_##type##Vtable;\
-struct _##type {\
-    union { \
-	    __BaseOf##type __class; \
-        type##Vtable *__vptr; \
-    }__super;
-
 #define VIRTUAL_METHOD_EXPAND_DECLARE_BEGIN(type) \
 struct __##type##Vtable; \
 typedef struct __##type##Vtable type##Vtable;\
@@ -92,6 +83,15 @@ struct _##type {\
 
 /* Macro for virtual member function declare end. */
 #define	VIRTUAL_METHOD_EXPAND_DECLARE_END }*__vptr; } __super;
+
+#define NO_VIRTUAL_METHOD_EXPAND(type) \
+typedef __VtableTypeOf##type##Base type##Vtable;\
+extern type##Vtable g_##type##Vtable;\
+struct _##type {\
+    union { \
+	    __BaseOf##type __class; \
+        type##Vtable *__vptr; \
+    }__super;
 
 #define	CLASS_INHERIT_BEGIN(type, basetype) \
 extern struct __##type##Mtable g_##type##Mtable;\
@@ -218,7 +218,7 @@ METHOD_DECLARE_END
 
 #define VIRTUAL_METHOD_MAP_BEGIN(type, basetype) \
 PRECONSTRUCTORS(type, basetype)\
-PREDESTRUCTORS(type)\
+PREDESTRUCTORS(type, basetype)\
 type##Vtable g_##type##Vtable = {\
     {(RTTI*)(&g_##basetype##Vtable), #type},\
     type##OrderConstruct,\
@@ -258,9 +258,9 @@ METHOD_MAP_END
             g_##base##Vtable.OrderConstruct(self); \
             if (!g_##type##Vtable.__rtti.__vm_checked) { /* move out may be mute once if */\
                 int i; \
-                /* TODO: int* is not suitable for 16 bits machine. */int* ttype = (int*)((char*)(&g_##type##Vtable) + sizeof(RTTI)); \
-                int* tbase = (int*)((char*)(&g_##base##Vtable) + sizeof(RTTI)); \
-                for (i = 0; i < sizeof(g_##base##Vtable)/sizeof(void*) - sizeof(RTTI)/sizeof(void*); ++i) { \
+                /* TODO: int* is not suitable for 16 bits machine. */int* ttype = (int*)((char*)(&g_##type##Vtable) + sizeof(CommonVtable)); \
+                int* tbase = (int*)((char*)(&g_##base##Vtable) + sizeof(CommonVtable)); \
+                for (i = 0; i < sizeof(g_##base##Vtable)/sizeof(void*) - sizeof(CommonVtable)/sizeof(void*); ++i) { \
                     if (0 == ttype[i] && 0 != tbase[i]) { \
                         ttype[i] = tbase[i]; \
                     } \
@@ -285,14 +285,12 @@ __INLINE__ type * type##ArrayConstructor(_Self(type), int num) { \
     return self; \
 }
 
-#define PREDESTRUCTORS(type) \
+#define PREDESTRUCTORS(type, base) \
 	__INLINE__ void type##Predestructor(_SELF) { \
-	RTTI * prev = &g_##type##Vtable.__rtti; \
-	assert(NULL != prev);\
-	if (((CommonVtable*)*(CommonVtable**)prev)->Destructor)\
-	((CommonVtable*)*(CommonVtable**)prev)->Destructor(self);\
-	if (((CommonVtable*)*(CommonVtable**)prev)->Predestructor)\
-	((CommonVtable*)*(CommonVtable**)prev)->Predestructor(self);\
+    if (g_##type##Vtable.Destructor) { \
+        g_##type##Vtable.Destructor(self); } \
+    if (g_##base##Vtable.Predestructor) { \
+        g_##base##Vtable.Predestructor(self); }\
 } \
 	__INLINE__ void type##ArrayDestructor(_Self(type), int num) { \
 	type * head = self; \

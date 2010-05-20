@@ -16,8 +16,12 @@ __INLINE__ void OrderDestruct(void * ptr)
 
 __INLINE__ void Delete(void *ptr)
 {
-    OrderDestruct(ptr);
-    MIL_free(ptr);
+	if (NULL != ptr) {
+//        OrderDestruct(ptr);
+		assert ((*(CommonVtable**)ptr)->Predestructor);
+        (*(CommonVtable**)ptr)->Predestructor(ptr);
+        MIL_free(ptr);
+    }
 }
 
 __INLINE__ void* SafeCast(void* vtable, void* ptr)
