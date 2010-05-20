@@ -253,7 +253,7 @@ void QVFbVideoDevice_X_videoQuit(_Self(VideoDevice))
 }
 
 VIRTUAL_METHOD_MAP_BEGIN(QVFbVideoDevice, VideoDevice)
-
+    CONSTRUCTOR_MAP(QVFbVideoDevice)
     DESTRUCTOR_MAP(QVFbVideoDevice)
     METHOD_MAP(QVFbVideoDevice, videoInit)
     METHOD_MAP(QVFbVideoDevice, listModes)
@@ -267,7 +267,6 @@ VIRTUAL_METHOD_MAP_BEGIN(QVFbVideoDevice, VideoDevice)
 VIRTUAL_METHOD_MAP_END
 
 METHOD_MAP_BEGIN(QVFbVideoDevice)
-    CONSTRUCTOR_MAP(QVFbVideoDevice)
 METHOD_MAP_END
 
 #endif

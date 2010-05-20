@@ -138,6 +138,7 @@ MIL_Status MIL_Image_X_loadFile(_Self(MIL_Image), const char* file)
 }
 
 VIRTUAL_METHOD_MAP_BEGIN(MIL_Image, NonBase)
+    CONSTRUCTOR_MAP(MIL_Image)
     DESTRUCTOR_MAP(MIL_Image)
     METHOD_MAP(MIL_Image, clone)
     METHOD_MAP(MIL_Image, getBounds)
@@ -154,7 +155,6 @@ VIRTUAL_METHOD_MAP_BEGIN(MIL_Image, NonBase)
 VIRTUAL_METHOD_MAP_END
 
 METHOD_MAP_BEGIN(MIL_Image)
-    CONSTRUCTOR_MAP(MIL_Image)
 METHOD_MAP_END
 
 MIL_Image* LoadImageFromFile(const char* file)

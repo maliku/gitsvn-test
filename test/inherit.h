@@ -21,11 +21,11 @@ CONSTRUCTOR(CooSub)
     return self;
 }
     VIRTUAL_METHOD_MAP_BEGIN(CooSub, CooBase)
+CONSTRUCTOR_MAP(CooSub)
 DESTRUCTOR_MAP(CooSub)
     VIRTUAL_METHOD_MAP_END
 
     METHOD_MAP_BEGIN(CooSub)
-CONSTRUCTOR_MAP(CooSub)
     METHOD_MAP_END
 
 /*============================================================================*/
@@ -47,10 +47,10 @@ CONSTRUCTOR(CooLevel1)
 }
 
 METHOD_MAP_BEGIN(CooLevel1)
-    CONSTRUCTOR_MAP(CooLevel1)
 METHOD_MAP_END
 
 VIRTUAL_METHOD_MAP_BEGIN(CooLevel1, CooSub)
+    CONSTRUCTOR_MAP(CooLevel1)
     DESTRUCTOR_MAP(CooLevel1)
     VIRTUAL_METHOD_MAP_END
 

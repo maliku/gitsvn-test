@@ -21,13 +21,13 @@ Sint32 DummyMutex_X_unlock(_SELF)
 }
 
 VIRTUAL_METHOD_MAP_BEGIN(DummyMutex, MIL_mutex)
+    NON_CONSTRUCTOR
     NON_DESTRUCTOR
     METHOD_MAP(DummyMutex, lock)
     METHOD_MAP(DummyMutex, unlock)
 VIRTUAL_METHOD_MAP_END
 
 METHOD_MAP_BEGIN(DummyMutex)
-    NON_CONSTRUCTOR
 METHOD_MAP_END
 
 MIL_mutex* CreateDummyMutex()

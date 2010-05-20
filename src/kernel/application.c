@@ -54,7 +54,7 @@ CONSTRUCTOR(Application)
     _VC(sig)->connectGroup(sig, 1, cbfunc);
     _VC(sig)->connectGroup(sig, -1, cbfunc5);
     _VC(sig)->connectGroup(sig, -1, cbfunc);
-    _VC(sig)->emit(sig, 0xfefe);
+//    _VC(sig)->emit(sig, 0xfefe);
     Delete(sig);
 
     if (NULL != vd) {
@@ -113,10 +113,10 @@ MIL_Application* CreateApplication(char **args, int num)
 }
 
 VIRTUAL_METHOD_MAP_BEGIN(Application, NonBase)
+    CONSTRUCTOR_MAP(Application)
     DESTRUCTOR_MAP(Application)
     VIRTUAL_METHOD_MAP_END
 
 METHOD_MAP_BEGIN(Application)
-    CONSTRUCTOR_MAP(Application)
 METHOD_MAP_END
 

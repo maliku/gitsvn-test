@@ -28,13 +28,13 @@ void METHOD_NAMED(MyBase, normal_method)(_Self(MyBase))
 }
 
 VIRTUAL_METHOD_MAP_BEGIN(MyBase, NonBase)
+    CONSTRUCTOR_MAP(MyBase)
     NON_DESTRUCTOR
     METHOD_MAP(MyBase, virtual_method)
 VIRTUAL_METHOD_MAP_END
 
 METHOD_MAP_BEGIN(MyBase)
-    CONSTRUCTOR_MAP(MyBase)
-    METHOD_MAP(MyBase, normal_method)
+//    METHOD_MAP(MyBase, normal_method)
 METHOD_MAP_END
 
 void METHOD_NAMED(MySub, virtual_method)(_Self(MyBase))
@@ -43,6 +43,7 @@ void METHOD_NAMED(MySub, virtual_method)(_Self(MyBase))
 }
 
 VIRTUAL_METHOD_MAP_BEGIN(MySub, MyBase)
+    NON_CONSTRUCTOR
     NON_DESTRUCTOR
     METHOD_MAP(MySub, virtual_method)
 VIRTUAL_METHOD_MAP_END
@@ -67,7 +68,7 @@ int main()
 
     time(&start);
     for (i = 0; i < TEST_COUNT; i++) {
-        _MC(base)->normal_method(base);
+        MyBase_X_normal_method(base);
     }
     time(&end);
     diff = difftime(end, start);

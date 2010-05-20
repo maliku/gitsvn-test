@@ -2179,6 +2179,7 @@ void FBconVideoDevice_X_GL_SwapBuffers(_Self(VideoDevice))
 
 VIRTUAL_METHOD_MAP_BEGIN(FBconVideoDevice, VideoDevice)
 
+    CONSTRUCTOR_MAP(FBconVideoDevice)
     DESTRUCTOR_MAP(FBconVideoDevice)
     METHOD_MAP(FBconVideoDevice, videoInit)
     METHOD_MAP(FBconVideoDevice, listModes)
@@ -2211,7 +2212,6 @@ VIRTUAL_METHOD_MAP_BEGIN(FBconVideoDevice, VideoDevice)
 VIRTUAL_METHOD_MAP_END
 
 METHOD_MAP_BEGIN(FBconVideoDevice)
-    CONSTRUCTOR_MAP(FBconVideoDevice)
 METHOD_MAP_END
 
 #endif

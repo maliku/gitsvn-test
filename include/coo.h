@@ -34,6 +34,7 @@ STRUCT __CommonVtable {
         RTTI __rtti;
         void* (*OrderConstruct)(void*);
         void  (*Predestructor)(void*);
+        void* (*Constructor)(void*);
         void  (*Destructor)(void*);
 } CommonVtable;
 extern CommonVtable g_NonBaseVtable;
@@ -43,7 +44,6 @@ extern CommonVtable g_NonBaseVtable;
     struct __##type##Vtable;\
 typedef struct __##type##Vtable type##Vtable;\
 extern struct __##type##Vtable g_##type##Vtable;\
-extern struct __##type##Mtable g_##type##Mtable;\
 struct __##type;\
 typedef struct __##type type;\
 typedef type __BaseOf##type; \
@@ -79,6 +79,7 @@ struct _##type {\
         RTTI __rtti;\
         void* (*OrderConstruct)(void*);\
         void (*Predestructor)(void*);\
+        void* (*Constructor)(void*); \
         void (*Destructor)(void*);
 
 /* Macro for virtual member function declare end. */
@@ -94,7 +95,6 @@ struct _##type {\
     }__super;
 
 #define	CLASS_INHERIT_BEGIN(type, basetype) \
-extern struct __##type##Mtable g_##type##Mtable;\
 struct _##type;\
 typedef struct _##type type;\
 typedef basetype __BaseOf##type; \
@@ -112,7 +112,7 @@ void type##Predestructor(_SELF);\
 #define	_RHS	_Rhs(void)		/* 'rhs' pointer for COO framework */
 
 /* Macro for call member function of object. */
-#define	_MC(pobj)	((pobj)->__mptr)
+#define	_MC(pobj)	//((pobj)->__mptr)
 /* Macro for call virtual member function of object. */
 #define	_VC(pobj)	(((pobj)->__super).__vptr)
 
@@ -194,19 +194,22 @@ void type##Predestructor(_SELF);\
         RTTI __rtti;\
         void* (*OrderConstruct)(void*);\
         void (*Predestructor)(void*);\
+        void* (*Constructor)(void*); \
         void (*Destructor)(void*);
 
 /* Macro for virtual member function declare end. */
 #define	VIRTUAL_METHOD_DECLARE_END }*__vptr; } __super;
 
 /* Macro for member function declare begin. */
-#define METHOD_DECLARE_BEGIN(type) \
+#define METHOD_DECLARE_BEGIN(type) 
+#if 0
     struct __##type##Mtable {\
-        type* (*OT)(_SELF); \
+        type* (*OT)(_SELF);
         type* (*type)(type*); /* The constructor can't declare as virtual function because it's need type info. */
+#endif
 
 /* Macro for member function declare end. */
-#define	METHOD_DECLARE_END }*__mptr;
+#define	METHOD_DECLARE_END //}*__mptr;
 
 #define VIRTUAL_METHOD_DECLARE_PLACEHOLDER(type) \
 VIRTUAL_METHOD_DECLARE_BEGIN(type) \
@@ -238,12 +241,14 @@ VIRTUAL_METHOD_MAP_END
 
 #define MAKE_PURE_VIRTUAL_CLASS(type) VIRTUAL_METHOD_MAP_PLACEHOLDER(type, NonBase)
 
-#define METHOD_MAP_BEGIN(type) \
+#define METHOD_MAP_BEGIN(type) 
+#if 0
 __INLINE__ type* type##_X_OT(_SELF) { return (type*)self; } \
 struct __##type##Mtable g_##type##Mtable = { \
     type##_X_OT,
+#endif
 
-#define METHOD_MAP_END };
+#define METHOD_MAP_END //};
 
 #define METHOD_MAP_PLACEHOLDER(type) \
 METHOD_MAP_BEGIN(type) \
@@ -268,9 +273,7 @@ METHOD_MAP_END
                 g_##type##Vtable.__rtti.__vm_checked = (int*)1; \
             } \
         }\
-        addr->__mptr = &g_##type##Mtable;\
-        return (NULL != g_##type##Mtable.type) ? \
-        g_##type##Mtable.type(self) : self; \
+        return (NULL != g_##type##Vtable.Constructor) ? g_##type##Vtable.Constructor(self) : self; \
     } \
 __INLINE__ void * type##Preconstructor(_SELF) { \
     *(type##Vtable**)self = &g_##type##Vtable;\
@@ -306,7 +309,7 @@ __INLINE__ type * type##ArrayConstructor(_Self(type), int num) { \
 
 #define DESTRUCTOR(type) void type##Destructor(_SELF)
 
-#define CONSTRUCTOR_MAP(type) type##Constructor,
+#define CONSTRUCTOR_MAP(type) (void*(*)(void*))type##Constructor,
 #define DESTRUCTOR_MAP(type) type##Destructor,
 
 #define METHOD_PLACEHOLDER(method) NULL,

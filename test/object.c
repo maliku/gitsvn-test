@@ -32,18 +32,17 @@ void test(_Self(Object), int i)
 }
 
 VIRTUAL_METHOD_MAP_BEGIN(Object, CooBase)
+    CONSTRUCTOR_MAP(Object)
     DESTRUCTOR_MAP(Object)
     VIRTUAL_METHOD_MAP_END
 
 METHOD_MAP_BEGIN(Object)
-    CONSTRUCTOR_MAP(Object)
-    test
-    METHOD_MAP_END
+METHOD_MAP_END
 
 int main()
 {
     Object* obj = New(Object);
-    _MC(obj)->test(obj, 666);
+//    _MC(obj)->test(obj, 666);
     Delete(obj);
     return 0;
 }

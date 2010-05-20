@@ -128,13 +128,13 @@ Sint32 PthreadMutex_X_unlock(_SELF)
 }
 
 VIRTUAL_METHOD_MAP_BEGIN(PthreadMutex, MIL_mutex)
+    CONSTRUCTOR_MAP(PthreadMutex)
     DESTRUCTOR_MAP(PthreadMutex)
     METHOD_MAP(PthreadMutex, lock)
     METHOD_MAP(PthreadMutex, unlock)
 VIRTUAL_METHOD_MAP_END
 
 METHOD_MAP_BEGIN(PthreadMutex)
-    CONSTRUCTOR_MAP(PthreadMutex)
 METHOD_MAP_END
 
 MIL_mutex* CreatePthreadMutex()

@@ -211,6 +211,7 @@ void* Signal_X_travel(_SELF, SlotNode* head, SlotHandle node_handle)
 }
 
 VIRTUAL_METHOD_MAP_BEGIN(Signal, NonBase)
+    CONSTRUCTOR_MAP(Signal)
     DESTRUCTOR_MAP(Signal)
     METHOD_MAP(Signal, connect)
     METHOD_MAP(Signal, connectGroup)
@@ -223,28 +224,8 @@ VIRTUAL_METHOD_MAP_BEGIN(Signal, NonBase)
 VIRTUAL_METHOD_MAP_END
 
 METHOD_MAP_BEGIN(Signal)
-    CONSTRUCTOR_MAP(Signal)
-    METHOD_MAP(Signal, travel)
+    //METHOD_MAP(Signal, travel)
 METHOD_MAP_END
-
-
-void* SignalSimple_X_emit(_SELF, ...)
-{
-    va_list arg_ptr;
-    struct list_head* i = NULL;
-    void* arg = NULL;
-    va_start(arg_ptr, self);
-    arg = va_arg(arg_ptr, void*);
-    va_end(arg_ptr);
-
-    _MC((SignalSimple*)self)->travel(self, &_tm(Signal, group).slot_head, CallSlot, arg);
-    /* The default slots list has lowest priority. */
-    _VC(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
-    list_for_each(i, &_tm(Signal, slots).list) {
-        ((void (*)(void*))(((SlotNode*)i)->slot))(arg);
-    }
-    _VC(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
-}
 
 void* SignalSimple_X_travel(_SELF, SlotNode* head, SimpleSlotHandle node_handle, void* arg)
 {
@@ -269,6 +250,25 @@ void* SignalSimple_X_travel(_SELF, SlotNode* head, SimpleSlotHandle node_handle,
     }
     return NULL;
 }
+
+void* SignalSimple_X_emit(_SELF, ...)
+{
+    va_list arg_ptr;
+    struct list_head* i = NULL;
+    void* arg = NULL;
+    va_start(arg_ptr, self);
+    arg = va_arg(arg_ptr, void*);
+    va_end(arg_ptr);
+
+    SignalSimple_X_travel(self, &_tm(Signal, group).slot_head, CallSlot, arg);
+    /* The default slots list has lowest priority. */
+    _VC(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
+    list_for_each(i, &_tm(Signal, slots).list) {
+        ((void (*)(void*))(((SlotNode*)i)->slot))(arg);
+    }
+    _VC(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
+}
+
 
 void* CallSlot(SlotNode* node, void* arg)
 {
@@ -299,6 +299,7 @@ DESTRUCTOR(SignalSimple)
 }
 
 VIRTUAL_METHOD_MAP_BEGIN(SignalSimple, Signal)
+    CONSTRUCTOR_MAP(SignalSimple)
     DESTRUCTOR_MAP(SignalSimple)
     METHOD_PLACEHOLDER(connect)
     METHOD_PLACEHOLDER(connectGroup)
@@ -311,7 +312,6 @@ VIRTUAL_METHOD_MAP_BEGIN(SignalSimple, Signal)
 VIRTUAL_METHOD_MAP_END
 
 METHOD_MAP_BEGIN(SignalSimple)
-    CONSTRUCTOR_MAP(SignalSimple)
-    METHOD_MAP(SignalSimple, travel)
+    //METHOD_MAP(SignalSimple, travel)
 METHOD_MAP_END
 

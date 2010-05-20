@@ -237,6 +237,7 @@ Uint32  PixelFormat_X_getColorKey(_CSELF)
 }
 
 VIRTUAL_METHOD_MAP_BEGIN(PixelFormat, MIL_PixelFormat)
+    CONSTRUCTOR_MAP(PixelFormat)
     DESTRUCTOR_MAP(PixelFormat)
     METHOD_MAP(PixelFormat, mapRGB)
     METHOD_MAP(PixelFormat, mapRGBA)
@@ -251,7 +252,6 @@ VIRTUAL_METHOD_MAP_BEGIN(PixelFormat, MIL_PixelFormat)
 VIRTUAL_METHOD_MAP_END
 
 METHOD_MAP_BEGIN(PixelFormat)
-    CONSTRUCTOR_MAP(PixelFormat)
 METHOD_MAP_END
 
 /*

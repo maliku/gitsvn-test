@@ -50,9 +50,9 @@ DESTRUCTOR(DummyVideoDevice)
 }
 
 VIRTUAL_METHOD_MAP_BEGIN(DummyVideoDevice, VideoDevice)
+    CONSTRUCTOR_MAP(DummyVideoDevice)
     DESTRUCTOR_MAP(DummyVideoDevice)
 VIRTUAL_METHOD_MAP_END
 
 METHOD_MAP_BEGIN(DummyVideoDevice)
-    CONSTRUCTOR_MAP(DummyVideoDevice)
 METHOD_MAP_END

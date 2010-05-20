@@ -1047,6 +1047,7 @@ void Surface_X_UnRLE(_SELF, int recode)
 }
 
 VIRTUAL_METHOD_MAP_BEGIN(Surface, NonBase)
+    CONSTRUCTOR_MAP(Surface)
     DESTRUCTOR_MAP(Surface)
     METHOD_MAP(Surface, lock)
     METHOD_MAP(Surface, unlock)
@@ -1079,7 +1080,6 @@ METHOD_MAP(Surface, getBytesPerPixel)
 VIRTUAL_METHOD_MAP_END 
 
 METHOD_MAP_BEGIN(Surface)
-    CONSTRUCTOR_MAP(Surface)
 METHOD_MAP_END
 
 /* Public routines */
@@ -1384,3 +1384,4 @@ int MIL_FillRect(Surface *dst, MIL_Rect *dstrect, Uint32 color)
 	/* We're done! */
 	return(0);
 }
+
