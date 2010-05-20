@@ -47,7 +47,7 @@ typedef struct {
 
 CLASS_INHERIT_BEGIN(QVFbVideoDevice, VideoDevice)
     NO_VIRTUAL_METHOD_EXPAND(QVFbVideoDevice)
-    METHOD_DECLARE_PLACEHOLDER(QVFbVideoDevice)
+    
     /* Private display data */
     QVFbHardwareDependent* hw_data;
 

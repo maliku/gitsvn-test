@@ -61,8 +61,8 @@ VIRTUAL_METHOD_MAP_BEGIN(MIL_Bitmap, MIL_Image)
     METHOD_MAP(MIL_Bitmap, unlockBits)
 VIRTUAL_METHOD_MAP_END
 
-METHOD_MAP_BEGIN(MIL_Bitmap)
-METHOD_MAP_END
+
+
 
 MIL_Bitmap* LoadBitmapFromFile(const char* file)
 {

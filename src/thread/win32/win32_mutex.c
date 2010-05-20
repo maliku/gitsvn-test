@@ -62,9 +62,9 @@ VIRTUAL_METHOD_MAP_BEGIN(Win32Mutex, MIL_mutex)
     METHOD_MAP(Win32Mutex, unlock)
 VIRTUAL_METHOD_MAP_END
 
-METHOD_MAP_BEGIN(Win32Mutex)
+
     CONSTRUCTOR_MAP(Win32Mutex)
-METHOD_MAP_END
+
 
 MIL_mutex* CreateWin32Mutex()
 {

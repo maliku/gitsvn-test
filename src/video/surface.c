@@ -1079,8 +1079,8 @@ METHOD_MAP(Surface, getBytesPerPixel)
 
 VIRTUAL_METHOD_MAP_END 
 
-METHOD_MAP_BEGIN(Surface)
-METHOD_MAP_END
+
+
 
 /* Public routines */
 /*

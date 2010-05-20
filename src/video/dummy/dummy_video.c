@@ -54,5 +54,5 @@ VIRTUAL_METHOD_MAP_BEGIN(DummyVideoDevice, VideoDevice)
     DESTRUCTOR_MAP(DummyVideoDevice)
 VIRTUAL_METHOD_MAP_END
 
-METHOD_MAP_BEGIN(DummyVideoDevice)
-METHOD_MAP_END
+
+

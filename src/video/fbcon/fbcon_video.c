@@ -2211,7 +2211,7 @@ VIRTUAL_METHOD_MAP_BEGIN(FBconVideoDevice, VideoDevice)
 
 VIRTUAL_METHOD_MAP_END
 
-METHOD_MAP_BEGIN(FBconVideoDevice)
-METHOD_MAP_END
+
+
 
 #endif

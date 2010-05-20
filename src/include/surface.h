@@ -49,7 +49,7 @@ CLASS(Surface)
 
     VIRTUAL_METHOD_DECLARE_END
 
-    METHOD_DECLARE_PLACEHOLDER(Surface)
+    
     
     Uint32 flags;				/* Read-only */
 	PixelFormat* format;		/* Read-only */

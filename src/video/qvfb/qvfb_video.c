@@ -266,8 +266,8 @@ VIRTUAL_METHOD_MAP_BEGIN(QVFbVideoDevice, VideoDevice)
     METHOD_MAP(QVFbVideoDevice, videoQuit)
 VIRTUAL_METHOD_MAP_END
 
-METHOD_MAP_BEGIN(QVFbVideoDevice)
-METHOD_MAP_END
+
+
 
 #endif
 

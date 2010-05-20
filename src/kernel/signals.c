@@ -223,9 +223,9 @@ VIRTUAL_METHOD_MAP_BEGIN(Signal, NonBase)
     METHOD_MAP(Signal, empty)
 VIRTUAL_METHOD_MAP_END
 
-METHOD_MAP_BEGIN(Signal)
+
     //METHOD_MAP(Signal, travel)
-METHOD_MAP_END
+
 
 void* SignalSimple_X_travel(_SELF, SlotNode* head, SimpleSlotHandle node_handle, void* arg)
 {
@@ -311,7 +311,7 @@ VIRTUAL_METHOD_MAP_BEGIN(SignalSimple, Signal)
     METHOD_PLACEHOLDER(empty)
 VIRTUAL_METHOD_MAP_END
 
-METHOD_MAP_BEGIN(SignalSimple)
+
     //METHOD_MAP(SignalSimple, travel)
-METHOD_MAP_END
+
 

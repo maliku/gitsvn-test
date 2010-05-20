@@ -52,9 +52,9 @@ CLASS(Signal)
         Uint32 (*num_slots)(_SELF);
         MIL_Bool (*empty)(_SELF);
     VIRTUAL_METHOD_DECLARE_END
-    METHOD_DECLARE_BEGIN(Signal)
+    /*METHOD_DECLARE_BEGIN(Signal)
     void* (*travel)(_SELF, SlotNode*, SlotHandle);
-    METHOD_DECLARE_END
+    METHOD_DECLARE_END*/
 
     Uint32 num_slots;
     SlotNode   slots; /* Default slots, lowest priority. */
@@ -67,9 +67,9 @@ void* DelSlot(SlotNode*);
 
 CLASS_INHERIT_BEGIN(SignalSimple, Signal)
     NO_VIRTUAL_METHOD_EXPAND(SignalSimple)
-    METHOD_DECLARE_BEGIN(SignalSimple)
+    /*METHOD_DECLARE_BEGIN(SignalSimple)
     void* (*travel)(_SELF, SlotNode*, SimpleSlotHandle, void*);
-    METHOD_DECLARE_END
+    METHOD_DECLARE_END*/
 CLASS_INHERIT_END
 
 #endif   /* ----- #ifndef SIGNALS_INC  ----- */

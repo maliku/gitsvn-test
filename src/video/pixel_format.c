@@ -251,8 +251,8 @@ VIRTUAL_METHOD_MAP_BEGIN(PixelFormat, MIL_PixelFormat)
     METHOD_MAP(PixelFormat, getColorKey)
 VIRTUAL_METHOD_MAP_END
 
-METHOD_MAP_BEGIN(PixelFormat)
-METHOD_MAP_END
+
+
 
 /*
  * Allocate a pixel format structure and fill it according to the given info.

@@ -139,9 +139,9 @@ CLASS(VideoDevice) {
 
     VIRTUAL_METHOD_DECLARE_END 
 
-    METHOD_DECLARE_BEGIN(VideoDevice)
+    /*METHOD_DECLARE_BEGIN(VideoDevice)
         char* (*getName)(_Self(VideoDevice), char* buff, Uint32 len);
-    METHOD_DECLARE_END
+    METHOD_DECLARE_END*/
 
     const char *name;
 	/* Information about the video hardware */

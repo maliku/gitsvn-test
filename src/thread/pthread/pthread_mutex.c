@@ -134,8 +134,8 @@ VIRTUAL_METHOD_MAP_BEGIN(PthreadMutex, MIL_mutex)
     METHOD_MAP(PthreadMutex, unlock)
 VIRTUAL_METHOD_MAP_END
 
-METHOD_MAP_BEGIN(PthreadMutex)
-METHOD_MAP_END
+
+
 
 MIL_mutex* CreatePthreadMutex()
 {

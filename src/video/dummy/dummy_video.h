@@ -14,6 +14,6 @@
 
 CLASS_INHERIT_BEGIN(DummyVideoDevice, VideoDevice)
     NO_VIRTUAL_METHOD_EXPAND(DummyVideoDevice)
-METHOD_DECLARE_PLACEHOLDER(DummyVideoDevice)
+
 CLASS_INHERIT_END
 #endif   /* ----- #ifndef DUMMYVIDEO_INC  ----- */
