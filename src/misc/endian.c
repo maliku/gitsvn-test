@@ -1,6 +1,6 @@
 /*
-    MIL - Simple DirectMedia Layer
-    Copyright (C) 1997-2004 Sam Lantinga
+    MIL - A embedded system graphics Middle Interface Layer.
+    Copyright (C) 1997-2004 Dong Kai
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -16,8 +16,8 @@
     License along with this library; if not, write to the Free
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-    Sam Lantinga
-    slouken@libsdl.org
+    Dong Kai
+    libmilui@gmail.com
 */
 
 /* Functions for dynamically reading and writing endian-specific values */

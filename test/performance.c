@@ -80,7 +80,7 @@ int main()
     MySub* sub = (MySub*)New(MySub);
     time(&start);
     for (i = 0; i < TEST_COUNT; i++) {
-        _VC(sub)->virtual_method((MyBase*)sub);
+        _C(sub)->virtual_method((MyBase*)sub);
     }
     time(&end);
     diff = difftime(end, start);

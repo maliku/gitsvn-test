@@ -83,10 +83,6 @@ CLASS(MIL_Image)
         MIL_Status  (*loadFile)(_Self(MIL_Image), const char* file);
     VIRTUAL_METHOD_DECLARE_END
 
-    METHOD_DECLARE_BEGIN(MIL_Image)
-    METHOD_DECLARE_END
-
-
     PRIVATE_BEGIN(MIL_Image)
 
     /** The width of the bitmap */
@@ -127,13 +123,10 @@ CLASS_INHERIT_BEGIN(MIL_Bitmap, MIL_Image)
         MIL_Status  (*setPixel)(_Self(MIL_Bitmap), int x, int y, const MIL_Color* color);
         MIL_Status  (*unlockBits)(_Self(MIL_Bitmap), MIL_BitmapData* locked_data);
     VIRTUAL_METHOD_EXPAND_DECLARE_END
-    METHOD_DECLARE_BEGIN(MIL_Bitmap)
-    METHOD_DECLARE_END
 
     PRIVATE_BEGIN(MIL_Bitmap)
         MIL_BitmapData* data;
     PRIVATE_END
-
 CLASS_INHERIT_END
 
 CLASS(MIL_GraphicsContext)
@@ -149,7 +142,6 @@ CLASS(MIL_GraphicsContext)
         void       (*store)(_Self(MIL_GraphicsContext));
         void       (*restore)(_Self(MIL_GraphicsContext));
     VIRTUAL_METHOD_DECLARE_END
-    
 };
 /* Alias of MIL_GraphicsContext */
 typedef MIL_GraphicsContext MIL_Graphics;

@@ -113,7 +113,7 @@ VideoDevice* CreateFBconVideoDevice(void)
     VideoDevice* video = (VideoDevice*)New(FBconVideoDevice);
     if (NULL != video) {
         PixelFormat* vformat = (PixelFormat*)New(PixelFormat);
-        if (0 != _VC(video)->videoInit(video, vformat)) {
+        if (0 != _C(video)->videoInit(video, vformat)) {
             Delete(vformat);
             Delete(video);
             return NULL;
@@ -525,7 +525,7 @@ static Surface *FB_SetVGA16Mode(_Self(VideoDevice), Surface *cur,
 	current->pixels = MIL_malloc(current->h*current->pitch);
 
 	/* Set the update rectangle function */
-	_VC(self)->updateRects = FB_VGA16Update;
+	_C(self)->updateRects = FB_VGA16Update;
 
 	/* We're done */
 	return(cur);
@@ -562,7 +562,7 @@ static int FBconVideoDevice_X_videoInit(_Self(VideoDevice), PixelFormat *format)
 	((FBconVideoDevice*)self)->hw_data->hw_lock = MIL_CreateMutex();
 	if ( ((FBconVideoDevice*)self)->hw_data->hw_lock == NULL ) {
 		MIL_SetError("Unable to create lock mutex");
-		_VC(self)->videoQuit(self);
+		_C(self)->videoQuit(self);
 		return(-1);
 	}
 #endif
@@ -570,7 +570,7 @@ static int FBconVideoDevice_X_videoInit(_Self(VideoDevice), PixelFormat *format)
 	/* Get the type of video hardware */
 	if ( ioctl(((FBconVideoDevice*)self)->hw_data->console_fd, FBIOGET_FSCREENINFO, &finfo) < 0 ) {
 		MIL_SetError("Couldn't get console hardware info");
-		_VC(self)->videoQuit(self);
+		_C(self)->videoQuit(self);
 		return(-1);
 	}
 	switch (finfo.type) {
@@ -583,17 +583,17 @@ static int FBconVideoDevice_X_videoInit(_Self(VideoDevice), PixelFormat *format)
 			if ( finfo.type_aux == FB_AUX_VGA_PLANES_VGA4 ) {
 				if ( ioperm(0x3b4, 0x3df - 0x3b4 + 1, 1) < 0 ) {
 					MIL_SetError("No I/O port permissions");
-					_VC(self)->videoQuit(self);
+					_C(self)->videoQuit(self);
 					return(-1);
 				}
-				_VC(self)->setVideoMode = FB_SetVGA16Mode;
+				_C(self)->setVideoMode = FB_SetVGA16Mode;
 				break;
 			}
 			/* Fall through to unsupported case */
 #endif /* VGA16_FBCON_SUPPORT */
 		default:
 			MIL_SetError("Unsupported console hardware");
-			_VC(self)->videoQuit(self);
+			_C(self)->videoQuit(self);
 			return(-1);
 	}
 	switch (finfo.visual) {
@@ -604,7 +604,7 @@ static int FBconVideoDevice_X_videoInit(_Self(VideoDevice), PixelFormat *format)
 			break;
 		default:
 			MIL_SetError("Unsupported console hardware");
-			_VC(self)->videoQuit(self);
+			_C(self)->videoQuit(self);
 			return(-1);
 	}
 
@@ -625,14 +625,14 @@ static int FBconVideoDevice_X_videoInit(_Self(VideoDevice), PixelFormat *format)
 	if ( ((FBconVideoDevice*)self)->hw_data->mapped_mem == (char *)-1 ) {
 		MIL_SetError("Unable to memory map the video hardware");
 		((FBconVideoDevice*)self)->hw_data->mapped_mem = NULL;
-		_VC(self)->videoQuit(self);
+		_C(self)->videoQuit(self);
 		return(-1);
 	}
 
 	/* Determine the current screen depth */
 	if ( ioctl(((FBconVideoDevice*)self)->hw_data->console_fd, FBIOGET_VSCREENINFO, &vinfo) < 0 ) {
 		MIL_SetError("Couldn't get console pixel format");
-		_VC(self)->videoQuit(self);
+		_C(self)->videoQuit(self);
 		return(-1);
 	}
 	vformat->BitsPerPixel = vinfo.bits_per_pixel;
@@ -844,7 +844,7 @@ static int FBconVideoDevice_X_videoInit(_Self(VideoDevice), PixelFormat *format)
 	/* Enable mouse and keyboard support */
 #if 0
 	if ( FB_OpenKeyboard(self) < 0 ) {
-		_VC(self)->videoQuit(self);
+		_C(self)->videoQuit(self);
 		return(-1);
 	}
 	if ( FB_OpenMouse(self) < 0 ) {
@@ -853,7 +853,7 @@ static int FBconVideoDevice_X_videoInit(_Self(VideoDevice), PixelFormat *format)
 		sdl_nomouse = MIL_getenv("MIL_NOMOUSE");
 		if ( ! sdl_nomouse ) {
 			MIL_SetError("Unable to open mouse");
-			_VC(self)->videoQuit(self);
+			_C(self)->videoQuit(self);
 			return(-1);
 		}
 	}
@@ -1302,7 +1302,7 @@ static Surface* FBconVideoDevice_X_setVideoMode(_Self(VideoDevice),
 	}
 
 	/* Set the update rectangle function */
-/* 	_VC(self)->updateRects = FB_DirectUpdate;
+/* 	_C(self)->updateRects = FB_DirectUpdate;
  */
 
 	/* We're done */
@@ -1385,11 +1385,11 @@ static int FBconVideoDevice_X_allocHWSurface(_Self(VideoDevice), Surface *sur)
        to be the same.  Others have interesting alignment restrictions.
        Until someone who knows these details looks at the code...
        */
-    if ( surface->pitch > _VC(screen)->getPitch((Surface*)screen) ) {
+    if ( surface->pitch > _C(screen)->getPitch((Surface*)screen) ) {
         MIL_SetError("Surface requested wider than screen");
         return(-1);
     }
-    surface->pitch = _VC(screen)->getPitch((Surface*)screen);
+    surface->pitch = _C(screen)->getPitch((Surface*)screen);
     size = surface->h * surface->pitch;
 #ifdef FBCON_DEBUG
     fprintf(stderr, "Allocating bucket of %d bytes\n", size);
@@ -1508,7 +1508,7 @@ static int FBconVideoDevice_X_lockHWSurface(_Self(VideoDevice), Surface *sur)
 	}
 	if ( surface == ((FBconVideoDevice*)self)->screen ) {
         MIL_mutex* mutex = ((FBconVideoDevice*)self)->hw_data->hw_lock;
-		_VC(mutex)->lock(mutex);
+		_C(mutex)->lock(mutex);
 		if ( FB_IsSurfaceBusy(surface) ) {
 			FB_WaitBusySurfaces(self);
 		}
@@ -1524,7 +1524,7 @@ static void FBconVideoDevice_X_unlockHWSurface(_Self(VideoDevice), Surface* surf
 {
 	if ( (Surface*)surface == ((FBconVideoDevice*)self)->screen ) {
         MIL_mutex* mutex = ((FBconVideoDevice*)self)->hw_data->hw_lock;
-		_VC(mutex)->unlock(mutex);
+		_C(mutex)->unlock(mutex);
 	}
 }
 

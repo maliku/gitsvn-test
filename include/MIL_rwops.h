@@ -1,6 +1,6 @@
 /*
-    MIL - Simple DirectMedia Layer
-    Copyright (C) 1997-2004 Sam Lantinga
+    MIL - A embedded system graphics Middle Interface Layer.
+    Copyright (C) 1997-2004 Dong Kai
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -16,8 +16,8 @@
     License along with this library; if not, write to the Free
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-    Sam Lantinga
-    slouken@libsdl.org
+    Dong Kai
+    libmilui@gmail.com
 */
 
 /* This file provides a general interface for MIL to read and write
@@ -64,7 +64,6 @@ CLASS(MIL_RWops)
     int (MILCALL *close)(_Self(MIL_RWops));
 
     VIRTUAL_METHOD_DECLARE_END
-
     
     Uint32 type;
     union {
@@ -86,12 +85,10 @@ CLASS(MIL_RWops)
 
 CLASS_INHERIT_BEGIN(RawFileOperator, MIL_RWops)
     NO_VIRTUAL_METHOD_EXPAND(RawFileOperator)
-    
 CLASS_INHERIT_END 
 
 CLASS_INHERIT_BEGIN(MemFileOperator, MIL_RWops)
     NO_VIRTUAL_METHOD_EXPAND(MemFileOperator)
-    
 CLASS_INHERIT_END 
 
 /* Functions to create MIL_RWops structures from various data sources */
@@ -116,11 +113,11 @@ extern DECLSPEC MIL_RWops * MILCALL MIL_RWFromConstMem(const void *mem, int size
 
 
 /* Macros to easily read and write from an MIL_RWops structure */
-#define MIL_RWseek(ctx, offset, whence)	_VC(ctx)->seek(ctx, offset, whence)
-#define MIL_RWtell(ctx)			_VC(ctx)->seek(ctx, 0, SEEK_CUR)
-#define MIL_RWread(ctx, ptr, size, n)	_VC(ctx)->read(ctx, ptr, size, n)
-#define MIL_RWwrite(ctx, ptr, size, n)	_VC(ctx)->write(ctx, ptr, size, n)
-#define MIL_RWclose(ctx)		_VC(ctx)->close(ctx)
+#define MIL_RWseek(ctx, offset, whence)	_C(ctx)->seek(ctx, offset, whence)
+#define MIL_RWtell(ctx)			_C(ctx)->seek(ctx, 0, SEEK_CUR)
+#define MIL_RWread(ctx, ptr, size, n)	_C(ctx)->read(ctx, ptr, size, n)
+#define MIL_RWwrite(ctx, ptr, size, n)	_C(ctx)->write(ctx, ptr, size, n)
+#define MIL_RWclose(ctx)		_C(ctx)->close(ctx)
 
 
 /* Ends C function definitions when using C++ */

@@ -1,6 +1,6 @@
 /*
-    MIL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    MIL - A embedded system graphics Middle Interface Layer.
+    Copyright (C) 2009-2010 Dong Kai
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -16,8 +16,8 @@
     License along with this library; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-    Sam Lantinga
-    slouken@libsdl.org
+    Dong Kai
+    libmilui@gmail.com
 */
 
 #ifndef _MIL_config_h

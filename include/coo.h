@@ -111,31 +111,11 @@ void type##Predestructor(_SELF);\
 #define	_CSELF  _CSelf(void)		/* 'this' pointer for COO framework */
 #define	_RHS	_Rhs(void)		/* 'rhs' pointer for COO framework */
 
-/* Macro for call member function of object. */
-#define	_MC(pobj)	//((pobj)->__mptr)
 /* Macro for call virtual member function of object. */
-#define	_VC(pobj)	(((pobj)->__super).__vptr)
+#define	_C(pobj)	(((pobj)->__super).__vptr)
+#define	_M(method)	__super.__vptr->method
 
-/* _vf macro has a bug which may be type cast down. */
-#if defined(__GNUC__) && __GNUC__ >= 4
-#define _vf_bak(p, func) ({ \
-        if (NULL == _VC(p)->func) { \
-            RTTI* tmp = *(RTTI**)p; \
-            while (NULL != tmp) { \
-                if (NULL != (_VC(p)->func = _VC(_MC(p)->OT(tmp))->func)) break; \
-                tmp = *(RTTI**)tmp; \
-            } \
-        } \
-        _VC(p)->func; })
-#define _vf(p, func)  (_VC(p)->func)
-#else
-#define _vf5(p, func) ( _VC(p)->func ? _VC(p)->func : NULL/* Too more depth of inheritance hierarchy! */ )
-#define _vf4(p, func) ( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf5(_MC(p)->OT((*(RTTI**)(p))), func)) )
-#define _vf3(p, func) ( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf4(_MC(p)->OT((*(RTTI**)(p))), func)) )
-#define _vf2(p, func) ( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf3(_MC(p)->OT((*(RTTI**)(p))), func)) )
-#define _vf1(p, func) ( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf2(_MC(p)->OT((*(RTTI**)(p))), func)) )
-#define _vf(p, func)  (_VC(p)->func)//( _VC(p)->func ? _VC(p)->func : (_VC(p)->func = _vf1(_MC(p)->OT((*(RTTI**)(p))), func)) )
-#endif
+#define _vf(p, func)  ((p)->_M(func))
 
 /* The macro can verify validity of virtual method pointer with a object;
  * If the virtual method pointer is null, it's will be assigned to the same name method of super class. */
@@ -153,19 +133,9 @@ void type##Predestructor(_SELF);\
 #define	_m(member)	(self->member)
 #define	_tm(type, member)	(((type*)self)->member)
 
-#define _mc(pobj, method, ...) (_MC(pobj)->method ? _MC(pobj)->method((pobj), ##__VA_ARGS__) : assert(0))
-#define _mc0(pobj, method) (_MC(pobj)->method ? _MC(pobj)->method((pobj)) : assert(0))
-#define _mc1(pobj, method, arg1) (_MC(pobj)->method ? _MC(pobj)->method((pobj), arg1) : assert(0))
-#define _mc2(pobj, method, arg1, arg2) (_MC(pobj)->method ? _MC(pobj)->method((pobj), arg1, arg2) : assert(0))
-#define _mc3(pobj, method, arg1, arg2, arg3) (_MC(pobj)->method ? _MC(pobj)->method((pobj), arg1, arg2, arg3) : assert(0))
-#define _mc4(pobj, method, arg1, arg2, arg3, arg4) (_MC(pobj)->method ? _MC(pobj)->method((pobj), arg1, arg2, arg3, arg4) : assert(0))
-#define _mc5(pobj, method, arg1, arg2, arg3, arg4, arg5) (_MC(pobj)->method ? _MC(pobj)->method((pobj), arg1, arg2, arg3, arg4, arg5) : assert(0))
-#define _mc6(pobj, method, arg1, arg2, arg3, arg4, arg5, arg6) (_MC(pobj)->method ? _MC(pobj)->method((pobj), arg1, arg2, arg3, arg4, arg5, arg6) : assert(0))
-#define _mc7(pobj, method, arg1, arg2, arg3, arg4, arg5, arg6, arg7) (_MC(pobj)->method ? _MC(pobj)->method((pobj), arg1, arg2, arg3, arg4, arg5, arg6, arg7) : assert(0))
-#define _mc8(pobj, method, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) (_MC(pobj)->method ? _MC(pobj)->method((pobj), arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) : assert(0))
-#define _mc9(pobj, method, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) (_MC(pobj)->method ? _MC(pobj)->method((pobj), arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) : assert(0))
-
+#if defined(__GNUC__) && __GNUC__ >= 4
 #define _vc(pobj, method, ...) _vf(pobj, method)((pobj), ##__VA_ARGS__)
+#endif
 #define _vc0(pobj, method) _vf(pobj, method)((pobj))
 #define _vc1(pobj, method, arg1) _vf(pobj, method)((pobj), arg1)
 #define _vc2(pobj, method, arg1, arg2) _vf(pobj, method)((pobj), arg1, arg2)
@@ -307,10 +277,10 @@ __INLINE__ type * type##ArrayConstructor(_Self(type), int num) { \
 #define CONSTRUCTOR(type) type* type##Constructor(_Self(type))
 #define COPY_CONSTRUCTOR(type) type* type##Duplicator(_Self(type), _Rhs(type))
 
-#define DESTRUCTOR(type) void type##Destructor(_SELF)
+#define DESTRUCTOR(type) void type##Destructor(_Self(type))
 
 #define CONSTRUCTOR_MAP(type) (void*(*)(void*))type##Constructor,
-#define DESTRUCTOR_MAP(type) type##Destructor,
+#define DESTRUCTOR_MAP(type) (void(*)(void*))type##Destructor,
 
 #define METHOD_PLACEHOLDER(method) NULL,
 #define NON_CONSTRUCTOR METHOD_PLACEHOLDER(Constructor)

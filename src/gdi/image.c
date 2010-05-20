@@ -36,8 +36,8 @@ MIL_Status  MIL_Image_X_getBounds(_Self(MIL_Image), MIL_Rect* rc)
 {
     if (NULL != rc) {
         rc->x = rc->y = 0;
-        rc->w = _VC(self)->getWidth(self);
-        rc->h = _VC(self)->getHeight(self);
+        rc->w = _C(self)->getWidth(self);
+        rc->h = _C(self)->getHeight(self);
     }
     return MIL_NOT_IMPLEMENTED;
 }
@@ -162,7 +162,7 @@ MIL_Image* LoadImageFromFile(const char* file)
     if (NULL != file) {
         MIL_Image* img = (MIL_Image*)New(MIL_Image);
         if (NULL != img) {
-            if (MIL_OK == _VC(img)->loadFile(img, file)) {
+            if (MIL_OK == _C(img)->loadFile(img, file)) {
                 return (MIL_Image*)img;
             }
             else {

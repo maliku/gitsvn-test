@@ -99,15 +99,15 @@ int main()
 {
     MyBase* base = (MyBase*)New(MyBase);
     assert(NULL == DynamicCast(MySub, base));
-    _VC(base)->vtest(base, 123);
+    _C(base)->vtest(base, 123);
     Delete(base);
     printf("==============================\n\n");
     MySub* sub = (MySub*)New(MySub2);
     assert(NULL != DynamicCast(MyBase, sub));
     puts(GetTypeName(sub));
 //    VirtualMethodVerify(sub, vtest);
-    _VC(sub)->vtest(sub, 456);
-    _VC(sub)->ptest(sub, 123);
+    _C(sub)->vtest(sub, 456);
+    _C(sub)->ptest(sub, 123);
     Delete(sub);
     printf("==============================\n\n");
     MySub* sub2 = (MySub*)New(MySub);
@@ -116,7 +116,7 @@ int main()
     assert(NULL != DynamicCast(MySub, sub2));
     puts(GetTypeName(sub2));
 //    VirtualMethodVerify(sub2, vtest);
-    _VC(sub2)->vtest(sub2, 789);
+    _C(sub2)->vtest(sub2, 789);
     _vc1(sub2, ptest, 456);
     Delete(sub2);
 
