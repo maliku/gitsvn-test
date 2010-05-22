@@ -42,23 +42,23 @@ CONSTRUCTOR(Application)
     Surface* screen = New(Surface);
     VideoDevice* vd = CreateVideoDevice("qvfb");
     SignalSimple* sig = New(SignalSimple);
-    _C(sig)->connect(sig, cbfunc);
-    _C(sig)->connect(sig, cbfunc2);
-    _C(sig)->connect(sig, cbfunc3);
-    _C(sig)->connectGroup(sig, 15, cbfunc3);
-    _C(sig)->connectGroup(sig, 5, cbfunc2);
-    _C(sig)->connectGroup(sig, 20, cbfunc4);
-    _C(sig)->connectGroup(sig, 20, cbfunc);
-    _C(sig)->connectGroup(sig, 20, cbfunc2);
-    _C(sig)->connectGroup(sig, 20, cbfunc3);
-    _C(sig)->connectGroup(sig, 1, cbfunc);
-    _C(sig)->connectGroup(sig, -1, cbfunc5);
-    _C(sig)->connectGroup(sig, -1, cbfunc);
-    sig->_M(emit)(sig, 0xfefe);
+    _c(sig)->connect(sig, cbfunc);
+    _c(sig)->connect(sig, cbfunc2);
+    _c(sig)->connect(sig, cbfunc3);
+    _c(sig)->connectGroup(sig, 15, cbfunc3);
+    _c(sig)->connectGroup(sig, 5, cbfunc2);
+    _c(sig)->connectGroup(sig, 20, cbfunc4);
+    _c(sig)->connectGroup(sig, 20, cbfunc);
+    _c(sig)->connectGroup(sig, 20, cbfunc2);
+    _c(sig)->connectGroup(sig, 20, cbfunc3);
+    _c(sig)->connectGroup(sig, 1, cbfunc);
+    _c(sig)->connectGroup(sig, -1, cbfunc5);
+    _c(sig)->connectGroup(sig, -1, cbfunc);
+    _c(sig)->emit(sig, 0xfefe);
     Delete(sig);
 
     if (NULL != vd) {
-        _C(vd)->setVideoMode(vd, (Surface*)screen, 640, 480, 32, 0);
+        _c(vd)->setVideoMode(vd, (Surface*)screen, 640, 480, 32, 0);
         if (NULL != screen->pixels) {
             MIL_Rect rc = {0, 0, 640, 480};
             MIL_Rect rcbmp = {0, 100, 300, 200};
@@ -79,7 +79,7 @@ CONSTRUCTOR(Application)
                 pixels += _vc0((Surface*)screen, getPitch);
             }
             _vc2(screen, fillRect, &rc, 0xffffffff);
-            _C(vd)->updateRects(vd, 1, &rc);
+            _c(vd)->updateRects(vd, 1, &rc);
             getchar();
             if (NULL != bmp) {
                 Surface* convert = _vc2(bmp, convert, screen->format, screen->flags);
@@ -88,9 +88,9 @@ CONSTRUCTOR(Application)
                 for (j = 0; j < 400; ++j) {
                     rcdst.x = j;
                     rcpos.x = j;
-                    _C(convert)->stretchBlit(convert, &rcbmp, screen, &rcdst);
+                    _c(convert)->stretchBlit(convert, &rcbmp, screen, &rcdst);
 //                    _vc3(convert, blit, &rcbmp, screen, &rcpos);
-                    _C(vd)->updateRects(vd, 1, &rc);
+                    _c(vd)->updateRects(vd, 1, &rc);
                 }
                 Delete(bmp);
                 Delete(convert);

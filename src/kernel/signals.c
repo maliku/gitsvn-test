@@ -26,8 +26,8 @@ CONSTRUCTOR(Signal)
 
 DESTRUCTOR(Signal)
 {
-    _C((Signal*)self)->disconnect(self);
-    _C((Signal*)self)->disconnectAllGroup(self);
+    _c((Signal*)self)->disconnect(self);
+    _c((Signal*)self)->disconnectAllGroup(self);
     MIL_DestroyMutex(_tm(Signal, mutex));
 }
 
@@ -41,9 +41,9 @@ int Signal_X_connect(_SELF, void* slot)
 #ifdef MIL_USE_SLOT_TYPE
             slotnew->type = SLOT_FUNCTION;
 #endif
-            _C(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
+            _c(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
             list_add((struct list_head *)slotnew, (struct list_head *)(&_tm(Signal, slots))); 
-            _C(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
+            _c(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
             return 0;
         }
     }
@@ -56,7 +56,7 @@ int Signal_X_connectGroup(_SELF, Sint32 group, void* slot)
     MIL_Bool is_break = MIL_FALSE;
 
     if (NULL != slot) {
-        _C(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
+        _c(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
         list_for_each(i, &_tm(Signal, group).slot_head.list) {
             if (group == ((SlotsGroup*)i)->id) {
                 SlotNode* slot_new = (SlotNode*)MIL_malloc(sizeof(*slot_new));
@@ -67,11 +67,11 @@ int Signal_X_connectGroup(_SELF, Sint32 group, void* slot)
                     slot_new->type = SLOT_FUNCTION;
 #endif
                     list_add((struct list_head*)slot_new, &((SlotsGroup*)i)->sub_slots);
-                    _C(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
+                    _c(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
                     return 0;
                 }
                 else {
-                    _C(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
+                    _c(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
                     return -1;
                 }
             }
@@ -80,7 +80,7 @@ int Signal_X_connectGroup(_SELF, Sint32 group, void* slot)
                 break;
             }
         }
-        _C(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
+        _c(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
 
         SlotsGroup* group_new = (SlotsGroup*)MIL_malloc(sizeof(*group_new));
         if (NULL != group_new) {
@@ -91,7 +91,7 @@ int Signal_X_connectGroup(_SELF, Sint32 group, void* slot)
             group_new->slot_head.type = SLOT_GROUP;
 #endif
             group_new->id = group;
-            _C(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
+            _c(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
             if (is_break) {
                 list_add_tail((struct list_head*)group_new, i);
             }
@@ -99,7 +99,7 @@ int Signal_X_connectGroup(_SELF, Sint32 group, void* slot)
                 list_add_tail((struct list_head*)group_new, 
                         &_tm(Signal, group).slot_head.list);
             }
-            _C(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
+            _c(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
             return 0;
         }
     }
@@ -110,12 +110,12 @@ void Signal_X_disconnect(_SELF)
 {
     struct list_head* k = NULL;
     struct list_head* n = NULL;
-    _C(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
+    _c(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
     list_for_each_safe(k, n, (struct list_head*)(&_tm(Signal, slots))) {
         list_del(k);
         MIL_free(k);
     }
-    _C(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
+    _c(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
 }
 
 void Signal_X_disconnectGroup(_SELF, Sint32 group)
@@ -128,7 +128,7 @@ void Signal_X_disconnectGroup(_SELF, Sint32 group)
         struct list_head* i = NULL;
         struct list_head* k = NULL;
         struct list_head* n = NULL;
-        _C(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
+        _c(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
         list_for_each(i, head) {
             if (group == ((SlotsGroup*)i)->id) {
                 list_for_each_safe(k, n, (struct list_head*)&((SlotsGroup*)i)->sub_slots) {
@@ -138,7 +138,7 @@ void Signal_X_disconnectGroup(_SELF, Sint32 group)
                 break;
             }
         }
-        _C(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
+        _c(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
     }
 }
 
@@ -152,7 +152,7 @@ void Signal_X_disconnectAllGroup(_SELF)
         struct list_head* k = NULL;
         struct list_head* n = NULL;
         struct list_head* m = NULL;
-        _C(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
+        _c(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
         list_for_each_safe(i, m, (struct list_head*)(&_tm(Signal, group))) {
             list_for_each_safe(k, n, 
                     (struct list_head*)&((SlotsGroup*)i)->sub_slots) {
@@ -162,7 +162,7 @@ void Signal_X_disconnectAllGroup(_SELF)
             list_del(i);
             MIL_free(i);
         }
-        _C(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
+        _c(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
     }
 }
 
@@ -180,9 +180,9 @@ Uint32 Signal_X_num_slots(_SELF)
 MIL_Bool Signal_X_empty(_SELF)
 {
     int ret = 0;
-    _C(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
+    _c(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
     ret = list_empty_careful((struct list_head*)(&_tm(Signal, slots)));
-    _C(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
+    _c(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
     return ret;
 }
 
@@ -195,14 +195,14 @@ void* Signal_X_travel(_SELF, SlotNode* head, SlotHandle node_handle)
         ) {
         struct list_head* i = NULL;
         struct list_head* k = NULL;
-        _C(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
+        _c(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
         list_for_each(i, (struct list_head*)(head)) {
             list_for_each(k, (struct list_head*)&((SlotsGroup*)i)->sub_slots) {
                 node_handle((SlotNode*)k);
             }
             node_handle((SlotNode*)i);
         }
-        _C(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
+        _c(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
     }
     else {
         assert(0);
@@ -224,9 +224,6 @@ VIRTUAL_METHOD_MAP_BEGIN(Signal, NonBase)
 VIRTUAL_METHOD_MAP_END
 
 
-    //METHOD_MAP(Signal, travel)
-
-
 void* SignalSimple_X_travel(_SELF, SlotNode* head, SimpleSlotHandle node_handle, void* arg)
 {
     if (NULL != head && NULL != node_handle
@@ -236,14 +233,14 @@ void* SignalSimple_X_travel(_SELF, SlotNode* head, SimpleSlotHandle node_handle,
         ) {
         struct list_head* i = NULL;
         struct list_head* k = NULL;
-        _C(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
+        _c(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
         list_for_each(i, (struct list_head*)(head)) {
             list_for_each(k, (struct list_head*)&((SlotsGroup*)i)->sub_slots) {
                 node_handle((SlotNode*)k, arg);
             }
             node_handle((SlotNode*)i, arg);
         }
-        _C(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
+        _c(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
     }
     else {
         assert(0);
@@ -262,13 +259,12 @@ void* SignalSimple_X_emit(_SELF, ...)
 
     SignalSimple_X_travel(self, &_tm(Signal, group).slot_head, CallSlot, arg);
     /* The default slots list has lowest priority. */
-    _C(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
+    _c(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
     list_for_each(i, &_tm(Signal, slots).list) {
         ((void (*)(void*))(((SlotNode*)i)->slot))(arg);
     }
-    _C(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
+    _c(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
 }
-
 
 void* CallSlot(SlotNode* node, void* arg)
 {

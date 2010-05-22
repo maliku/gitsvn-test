@@ -113,11 +113,11 @@ extern DECLSPEC MIL_RWops * MILCALL MIL_RWFromConstMem(const void *mem, int size
 
 
 /* Macros to easily read and write from an MIL_RWops structure */
-#define MIL_RWseek(ctx, offset, whence)	_C(ctx)->seek(ctx, offset, whence)
-#define MIL_RWtell(ctx)			_C(ctx)->seek(ctx, 0, SEEK_CUR)
-#define MIL_RWread(ctx, ptr, size, n)	_C(ctx)->read(ctx, ptr, size, n)
-#define MIL_RWwrite(ctx, ptr, size, n)	_C(ctx)->write(ctx, ptr, size, n)
-#define MIL_RWclose(ctx)		_C(ctx)->close(ctx)
+#define MIL_RWseek(ctx, offset, whence)	_c(ctx)->seek(ctx, offset, whence)
+#define MIL_RWtell(ctx)			_c(ctx)->seek(ctx, 0, SEEK_CUR)
+#define MIL_RWread(ctx, ptr, size, n)	_c(ctx)->read(ctx, ptr, size, n)
+#define MIL_RWwrite(ctx, ptr, size, n)	_c(ctx)->write(ctx, ptr, size, n)
+#define MIL_RWclose(ctx)		_c(ctx)->close(ctx)
 
 
 /* Ends C function definitions when using C++ */

@@ -28,6 +28,7 @@ typedef struct __RTTI {
     struct __RTTI * __base;
     const char * __name;
     int*  __vm_checked; /* is virtual method verified. */
+    void* __reserve; /* reserved for align. */
 } RTTI;
 
 STRUCT __CommonVtable {
@@ -112,10 +113,9 @@ void type##Predestructor(_SELF);\
 #define	_RHS	_Rhs(void)		/* 'rhs' pointer for COO framework */
 
 /* Macro for call virtual member function of object. */
-#define	_C(pobj)	(((pobj)->__super).__vptr)
-#define	_M(method)	__super.__vptr->method
+#define	_c(pobj)	(((pobj)->__super).__vptr)
 
-#define _vf(p, func)  ((p)->_M(func))
+#define _vf(p, func)  (_c(p)->func)
 
 /* The macro can verify validity of virtual method pointer with a object;
  * If the virtual method pointer is null, it's will be assigned to the same name method of super class. */
@@ -132,6 +132,8 @@ void type##Predestructor(_SELF);\
 
 #define	_m(member)	(self->member)
 #define	_tm(type, member)	(((type*)self)->member)
+#define	_M(method)	(_c(self)->method)
+#define	_TM(type, method)	(_c((type*)self)->method)
 
 #if defined(__GNUC__) && __GNUC__ >= 4
 #define _vc(pobj, method, ...) _vf(pobj, method)((pobj), ##__VA_ARGS__)
@@ -227,8 +229,8 @@ METHOD_MAP_END
 #define	METHOD_NAMED(type, func) type##_X_##func
 
 #define PRECONSTRUCTORS(type, base) \
-    void * type##OrderConstruct(_SELF) { \
-        type * addr = (type*)self;\
+void* type##OrderConstruct(_SELF) { \
+        type* addr = (type*)self;\
         if (g_##base##Vtable.OrderConstruct) {\
             g_##base##Vtable.OrderConstruct(self); \
             if (!g_##type##Vtable.__rtti.__vm_checked) { /* move out may be mute once if */\
@@ -245,12 +247,12 @@ METHOD_MAP_END
         }\
         return (NULL != g_##type##Vtable.Constructor) ? g_##type##Vtable.Constructor(self) : self; \
     } \
-__INLINE__ void * type##Preconstructor(_SELF) { \
+__INLINE__ void* type##Preconstructor(_SELF) { \
     *(type##Vtable**)self = &g_##type##Vtable;\
     return type##OrderConstruct(self);\
 }\
 __INLINE__ type * type##ArrayConstructor(_Self(type), int num) { \
-    type * head = self; \
+    type* head = self; \
     int  i = num; \
     while (i--) { \
         type##Preconstructor(head++); \

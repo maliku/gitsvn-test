@@ -59,10 +59,8 @@ void METHOD_NAMED(MySub, ptest)(_SELF, int in)
     
 VIRTUAL_METHOD_MAP_BEGIN(MySub, MyBase)
     CONSTRUCTOR_MAP(MySub)
-    NULL,
-    //DESTRUCTOR_MAP(MySub)
-    NULL,
-//    METHOD_MAP(MySub, vtest)
+    DESTRUCTOR_MAP(MySub)
+    METHOD_MAP(MySub, vtest)
     METHOD_MAP(MySub, ptest)
     VIRTUAL_METHOD_MAP_END
 
@@ -99,24 +97,22 @@ int main()
 {
     MyBase* base = (MyBase*)New(MyBase);
     assert(NULL == DynamicCast(MySub, base));
-    _C(base)->vtest(base, 123);
+    _c(base)->vtest(base, 123);
     Delete(base);
     printf("==============================\n\n");
     MySub* sub = (MySub*)New(MySub2);
     assert(NULL != DynamicCast(MyBase, sub));
+    assert(NULL != DynamicCast(MySub2, sub));
     puts(GetTypeName(sub));
-//    VirtualMethodVerify(sub, vtest);
-    _C(sub)->vtest(sub, 456);
-    _C(sub)->ptest(sub, 123);
+    _c(sub)->vtest(sub, 456);
+    _c(sub)->ptest(sub, 123);
     Delete(sub);
     printf("==============================\n\n");
     MySub* sub2 = (MySub*)New(MySub);
     assert(NULL != DynamicCast(MyBase, sub2));
-//    assert(NULL != DynamicCast(MySub2, sub2));
     assert(NULL != DynamicCast(MySub, sub2));
     puts(GetTypeName(sub2));
-//    VirtualMethodVerify(sub2, vtest);
-    _C(sub2)->vtest(sub2, 789);
+    _c(sub2)->vtest(sub2, 789);
     _vc1(sub2, ptest, 456);
     Delete(sub2);
 

@@ -15,7 +15,7 @@ VideoDevice* CreateDummyVideoDevice(void)
 {
     VideoDevice* video = (VideoDevice*)New(DummyVideoDevice);
     if (NULL != video) {
-        _C(video)->videoInit(video, NULL);
+        _c(video)->videoInit(video, NULL);
     }
     return video;
 }

@@ -29,7 +29,7 @@ VideoDevice* CreateVideoDevice(const char* driver_name)
 
 	/* Check to make sure we don't overwrite 'g_current_video' */
 	if ( NULL != g_current_video ) {
-        _C(g_current_video)->videoQuit(g_current_video);
+        _c(g_current_video)->videoQuit(g_current_video);
 	}
 
 	/* Select the proper video driver */

@@ -27,7 +27,7 @@ VideoDevice* CreateQVFbVideoDevice(void)
     VideoDevice* vd = (VideoDevice*)New(QVFbVideoDevice);
     if (NULL != vd) {
         PixelFormat *vf = (PixelFormat*)New(PixelFormat);
-        if (0 != _C(vd)->videoInit(vd, vf)) {
+        if (0 != _c(vd)->videoInit(vd, vf)) {
             Delete(vd);
             Delete(vf);
             return NULL;
