@@ -104,6 +104,7 @@ INTERFACE_BEGIN(MIL_PixelFormat)
     MIL_Bool (*equals)(_CSelf(MIL_PixelFormat), const MIL_PixelFormat*);
 INTERFACE_END
 
+struct Surface;
 extern MIL_PixelFormat* MIL_AllocFormat(int bpp,
         Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask);
 

@@ -59,7 +59,7 @@ STRUCT {
     Uint32 h;
     Sint32  stride;
     void*  scan0;
-    MIL_PixelFormat* format;
+//    MIL_PixelFormat* format;
 }MIL_DIBitmapData;
 
 CLASS(MIL_GdiObject)
@@ -112,6 +112,7 @@ CLASS_INHERIT_BEGIN(MIL_Image, MIL_GdiObject)
     void*  bits;
     /** The private pixel format */
     MIL_PixelFormat* format;
+    char* raw_format[16];
 
     PRIVATE_END
 CLASS_INHERIT_END
