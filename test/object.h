@@ -13,11 +13,7 @@
 
 /* ====================== for class Object ======================*/
 CLASS_INHERIT_BEGIN(Object, CooBase)
-    NO_VIRTUAL_METHOD_EXPAND(Object)
-
-    METHOD_DECLARE_BEGIN(Object)
-    void (*test)(_Self(Object), int);
-    METHOD_DECLARE_END
+    NO_METHOD_EXPAND(Object)
 
     int m0;
     PRIVATE_BEGIN(Object)

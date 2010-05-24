@@ -12,7 +12,7 @@
 
 /** Everything in the pixel format structure is read-only */
 CLASS_INHERIT_BEGIN(PixelFormat, MIL_PixelFormat)
-    NO_VIRTUAL_METHOD_EXPAND(PixelFormat)
+    NO_METHOD_EXPAND(PixelFormat)
     
 
 	MIL_Palette *palette;

@@ -14,7 +14,6 @@
 #include "bitmap.h"
 
 MAKE_PURE_VIRTUAL_CLASS(MIL_Application)
-METHOD_MAP_PLACEHOLDER(MIL_Application)
 
 void cbfunc(void* arg)
 {
@@ -112,10 +111,10 @@ MIL_Application* CreateApplication(char **args, int num)
     return New(Application);
 }
 
-VIRTUAL_METHOD_MAP_BEGIN(Application, NonBase)
+METHOD_MAP_BEGIN(Application, NonBase)
     CONSTRUCTOR_MAP(Application)
     DESTRUCTOR_MAP(Application)
-    VIRTUAL_METHOD_MAP_END
+METHOD_MAP_END
 
 
 

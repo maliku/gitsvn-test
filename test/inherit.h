@@ -4,10 +4,7 @@
 #include <milui/coobase.h>
 
 CLASS_INHERIT_BEGIN(CooSub, CooBase)
-    NO_VIRTUAL_METHOD_EXPAND(CooSub)
-
-        METHOD_DECLARE_BEGIN(CooSub)
-        METHOD_DECLARE_END
+    NO_METHOD_EXPAND(CooSub)
 CLASS_INHERIT_END
 
 DESTRUCTOR(CooSub)
@@ -20,19 +17,15 @@ CONSTRUCTOR(CooSub)
     printf("CooSubConstructor:%p\n", self);
     return self;
 }
-    VIRTUAL_METHOD_MAP_BEGIN(CooSub, CooBase)
-CONSTRUCTOR_MAP(CooSub)
-DESTRUCTOR_MAP(CooSub)
-    VIRTUAL_METHOD_MAP_END
 
-    METHOD_MAP_BEGIN(CooSub)
-    METHOD_MAP_END
+METHOD_MAP_BEGIN(CooSub, CooBase)
+    CONSTRUCTOR_MAP(CooSub)
+    DESTRUCTOR_MAP(CooSub)
+METHOD_MAP_END
 
 /*============================================================================*/
 CLASS_INHERIT_BEGIN(CooLevel1, CooSub)
-    NO_VIRTUAL_METHOD_EXPAND(CooLevel1)
-        METHOD_DECLARE_BEGIN(CooLevel1)
-        METHOD_DECLARE_END
+    NO_METHOD_EXPAND(CooLevel1)
 CLASS_INHERIT_END
 
 DESTRUCTOR(CooLevel1)
@@ -46,13 +39,10 @@ CONSTRUCTOR(CooLevel1)
     return self;
 }
 
-METHOD_MAP_BEGIN(CooLevel1)
-METHOD_MAP_END
-
-VIRTUAL_METHOD_MAP_BEGIN(CooLevel1, CooSub)
+METHOD_MAP_BEGIN(CooLevel1, CooSub)
     CONSTRUCTOR_MAP(CooLevel1)
     DESTRUCTOR_MAP(CooLevel1)
-    VIRTUAL_METHOD_MAP_END
+METHOD_MAP_END
 
 #endif   /* ----- #ifndef _SUBTEST_INC  ----- */
 

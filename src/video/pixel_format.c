@@ -9,8 +9,7 @@
 #include "pixel_format.h"
 #include "pixels.h"
 
-VIRTUAL_METHOD_MAP_PLACEHOLDER(MIL_PixelFormat, NonBase)
-METHOD_MAP_PLACEHOLDER(MIL_PixelFormat)
+METHOD_MAP_PLACEHOLDER(MIL_PixelFormat, NonBase)
 
 CONSTRUCTOR(PixelFormat)
 {
@@ -236,7 +235,7 @@ Uint32  PixelFormat_X_getColorKey(_CSELF)
     return _tm(PixelFormat, colorkey);
 }
 
-VIRTUAL_METHOD_MAP_BEGIN(PixelFormat, MIL_PixelFormat)
+METHOD_MAP_BEGIN(PixelFormat, MIL_PixelFormat)
     CONSTRUCTOR_MAP(PixelFormat)
     DESTRUCTOR_MAP(PixelFormat)
     METHOD_MAP(PixelFormat, mapRGB)
@@ -249,7 +248,7 @@ VIRTUAL_METHOD_MAP_BEGIN(PixelFormat, MIL_PixelFormat)
     METHOD_MAP(PixelFormat, getBitsPerPixel)
     METHOD_MAP(PixelFormat, getAlpha)
     METHOD_MAP(PixelFormat, getColorKey)
-VIRTUAL_METHOD_MAP_END
+METHOD_MAP_END
 
 
 

@@ -69,7 +69,7 @@ struct _##type {\
     }__super;
 #endif
 
-#define VIRTUAL_METHOD_EXPAND_DECLARE_BEGIN(type) \
+#define METHOD_EXPAND_DECLARE_BEGIN(type) \
 struct __##type##Vtable; \
 typedef struct __##type##Vtable type##Vtable;\
 extern type##Vtable g_##type##Vtable;\
@@ -84,9 +84,9 @@ struct _##type {\
         void (*Destructor)(void*);
 
 /* Macro for virtual member function declare end. */
-#define	VIRTUAL_METHOD_EXPAND_DECLARE_END }*__vptr; } __super;
+#define	METHOD_EXPAND_DECLARE_END }*__vptr; } __super;
 
-#define NO_VIRTUAL_METHOD_EXPAND(type) \
+#define NO_METHOD_EXPAND(type) \
 typedef __VtableTypeOf##type##Base type##Vtable;\
 extern type##Vtable g_##type##Vtable;\
 struct _##type {\
@@ -121,12 +121,12 @@ void type##Predestructor(_SELF);\
  * If the virtual method pointer is null, it's will be assigned to the same name method of super class. */
 #define VirtualMethodVerify(p, func) /*assert(p && _vf(p, func))*/
 
-#define VIRTUAL_METHOD_VERIFY_ONCE_BEGIN \
+#define METHOD_VERIFY_ONCE_BEGIN \
     { \
         static int is_verified = MIL_FALSE; \
         if (!is_verified) {
 
-#define VIRTUAL_METHOD_VERIFY_ONCE_END \
+#define METHOD_VERIFY_ONCE_END \
         is_verified = MIL_TRUE;} \
     }
 
@@ -159,7 +159,7 @@ void type##Predestructor(_SELF);\
 #define _public(type)  ((type*)self)
 
 /* Macro for virtual member function declare begin. */
-#define VIRTUAL_METHOD_DECLARE_BEGIN(type) \
+#define METHOD_DECLARE_BEGIN(type) \
     union { \
         void * __class; \
     struct __##type##Vtable {\
@@ -170,28 +170,17 @@ void type##Predestructor(_SELF);\
         void (*Destructor)(void*);
 
 /* Macro for virtual member function declare end. */
-#define	VIRTUAL_METHOD_DECLARE_END }*__vptr; } __super;
-
-/* Macro for member function declare begin. */
-#define METHOD_DECLARE_BEGIN(type) 
-#if 0
-    struct __##type##Mtable {\
-        type* (*OT)(_SELF);
-        type* (*type)(type*); /* The constructor can't declare as virtual function because it's need type info. */
-#endif
-
-/* Macro for member function declare end. */
-#define	METHOD_DECLARE_END //}*__mptr;
-
-#define VIRTUAL_METHOD_DECLARE_PLACEHOLDER(type) \
-VIRTUAL_METHOD_DECLARE_BEGIN(type) \
-VIRTUAL_METHOD_DECLARE_END 
+#define	METHOD_DECLARE_END }*__vptr; } __super;
 
 #define METHOD_DECLARE_PLACEHOLDER(type) \
 METHOD_DECLARE_BEGIN(type) \
 METHOD_DECLARE_END 
 
-#define VIRTUAL_METHOD_MAP_BEGIN(type, basetype) \
+#define METHOD_DECLARE_PLACEHOLDER(type) \
+METHOD_DECLARE_BEGIN(type) \
+METHOD_DECLARE_END 
+
+#define METHOD_MAP_BEGIN(type, basetype) \
 PRECONSTRUCTORS(type, basetype)\
 PREDESTRUCTORS(type, basetype)\
 type##Vtable g_##type##Vtable = {\
@@ -205,26 +194,13 @@ type##Vtable g_##type##Vtable = {\
 #define	METHOD_MAP(type, func) type##_X_##func,
 #endif
 
-#define VIRTUAL_METHOD_MAP_END };
+#define METHOD_MAP_END };
 
-#define VIRTUAL_METHOD_MAP_PLACEHOLDER(type, basetype) \
-VIRTUAL_METHOD_MAP_BEGIN(type, basetype) \
-VIRTUAL_METHOD_MAP_END 
-
-#define MAKE_PURE_VIRTUAL_CLASS(type) VIRTUAL_METHOD_MAP_PLACEHOLDER(type, NonBase)
-
-#define METHOD_MAP_BEGIN(type) 
-#if 0
-__INLINE__ type* type##_X_OT(_SELF) { return (type*)self; } \
-struct __##type##Mtable g_##type##Mtable = { \
-    type##_X_OT,
-#endif
-
-#define METHOD_MAP_END //};
-
-#define METHOD_MAP_PLACEHOLDER(type) \
-METHOD_MAP_BEGIN(type) \
+#define METHOD_MAP_PLACEHOLDER(type, basetype) \
+METHOD_MAP_BEGIN(type, basetype) \
 METHOD_MAP_END 
+
+#define MAKE_PURE_VIRTUAL_CLASS(type) METHOD_MAP_PLACEHOLDER(type, NonBase)
 
 #define	METHOD_NAMED(type, func) type##_X_##func
 

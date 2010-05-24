@@ -13,7 +13,7 @@
 #include "video_device.h"
 
 CLASS_INHERIT_BEGIN(DummyVideoDevice, VideoDevice)
-    NO_VIRTUAL_METHOD_EXPAND(DummyVideoDevice)
+    NO_METHOD_EXPAND(DummyVideoDevice)
 
 CLASS_INHERIT_END
 #endif   /* ----- #ifndef DUMMYVIDEO_INC  ----- */

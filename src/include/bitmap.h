@@ -13,7 +13,7 @@
 
 #if 0
 CLASS_INHERIT_BEGIN(Bitmap, MIL_Image)
-    NO_VIRTUAL_METHOD_EXPAND(Bitmap)
+    NO_METHOD_EXPAND(Bitmap)
     
 
 CLASS_INHERIT_END

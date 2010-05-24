@@ -39,7 +39,7 @@ MIL_Status  MIL_Bitmap_X_unlockBits(_Self(MIL_Bitmap), MIL_BitmapData* locked_da
     return MIL_NOT_IMPLEMENTED;
 }
 
-VIRTUAL_METHOD_MAP_BEGIN(MIL_Bitmap, MIL_Image)
+METHOD_MAP_BEGIN(MIL_Bitmap, MIL_Image)
     CONSTRUCTOR_MAP(MIL_Bitmap)
     DESTRUCTOR_MAP(MIL_Bitmap)
 
@@ -62,7 +62,7 @@ VIRTUAL_METHOD_MAP_BEGIN(MIL_Bitmap, MIL_Image)
     METHOD_MAP(MIL_Bitmap, lockBits)
     METHOD_MAP(MIL_Bitmap, setPixel)
     METHOD_MAP(MIL_Bitmap, unlockBits)
-VIRTUAL_METHOD_MAP_END
+METHOD_MAP_END
 
 
 

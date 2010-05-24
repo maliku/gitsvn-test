@@ -41,7 +41,7 @@ extern "C" {
 
 CLASS(MIL_RWops) 
 {
-    VIRTUAL_METHOD_DECLARE_BEGIN(MIL_RWops)
+    METHOD_DECLARE_BEGIN(MIL_RWops)
         /* Seek to 'offset' relative to whence, one of stdio's whence values:
            SEEK_SET, SEEK_CUR, SEEK_END
            Returns the final offset in the data source.
@@ -63,7 +63,7 @@ CLASS(MIL_RWops)
     /* Close and free an allocated MIL_FSops structure */
     int (MILCALL *close)(_Self(MIL_RWops));
 
-    VIRTUAL_METHOD_DECLARE_END
+    METHOD_DECLARE_END
     
     Uint32 type;
     union {
@@ -84,11 +84,11 @@ CLASS(MIL_RWops)
 };
 
 CLASS_INHERIT_BEGIN(RawFileOperator, MIL_RWops)
-    NO_VIRTUAL_METHOD_EXPAND(RawFileOperator)
+    NO_METHOD_EXPAND(RawFileOperator)
 CLASS_INHERIT_END 
 
 CLASS_INHERIT_BEGIN(MemFileOperator, MIL_RWops)
-    NO_VIRTUAL_METHOD_EXPAND(MemFileOperator)
+    NO_METHOD_EXPAND(MemFileOperator)
 CLASS_INHERIT_END 
 
 /* Functions to create MIL_RWops structures from various data sources */

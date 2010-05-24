@@ -42,7 +42,7 @@ typedef void*(*SimpleSlotHandle)(SlotNode*, void*);
 
 CLASS(Signal)
 {
-    VIRTUAL_METHOD_DECLARE_BEGIN(Signal)    
+    METHOD_DECLARE_BEGIN(Signal)    
         int  (*connect)(_SELF, void* slot);
         int  (*connectGroup)(_SELF, Sint32 group, void* slot);
         void (*disconnect)(_SELF);
@@ -51,7 +51,7 @@ CLASS(Signal)
         void*  (*emit)(_SELF, ...);
         Uint32 (*num_slots)(_SELF);
         MIL_Bool (*empty)(_SELF);
-    VIRTUAL_METHOD_DECLARE_END
+    METHOD_DECLARE_END
 
     Uint32 num_slots;
     SlotNode   slots; /* Default slots, lowest priority. */
@@ -63,7 +63,7 @@ void* CallSlot(SlotNode*, void* arg);
 void* DelSlot(SlotNode*);
 
 CLASS_INHERIT_BEGIN(SignalSimple, Signal)
-    NO_VIRTUAL_METHOD_EXPAND(SignalSimple)
+    NO_METHOD_EXPAND(SignalSimple)
 CLASS_INHERIT_END
 
 #endif   /* ----- #ifndef SIGNALS_INC  ----- */

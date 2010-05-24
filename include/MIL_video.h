@@ -92,7 +92,7 @@ typedef struct MIL_Palette {
  */
 CLASS(MIL_PixelFormat) 
 {
-    VIRTUAL_METHOD_DECLARE_BEGIN(MIL_PixelFormat)
+    METHOD_DECLARE_BEGIN(MIL_PixelFormat)
         Uint32 (*mapRGB)(_CSELF, Uint8 r, Uint8 g, Uint8 b);
         Uint32 (*mapRGBA)(_CSELF, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
         void (*getRGB)(_CSELF, Uint32 pixel, Uint8 *r,Uint8 *g,Uint8 *b);
@@ -103,7 +103,7 @@ CLASS(MIL_PixelFormat)
         Uint8  (*getBitsPerPixel)(_CSELF);
         Uint8  (*getAlpha)(_CSELF);
         Uint32 (*getColorKey)(_CSELF);
-    VIRTUAL_METHOD_DECLARE_END
+    METHOD_DECLARE_END
 };
 
 extern MIL_PixelFormat* MIL_AllocFormat(int bpp,
@@ -115,7 +115,7 @@ extern MIL_PixelFormat* MIL_AllocFormat(int bpp,
  */
 CLASS(MIL_Surface) 
 {
-    VIRTUAL_METHOD_DECLARE_BEGIN(MIL_Surface)
+    METHOD_DECLARE_BEGIN(MIL_Surface)
     void* (*lock)(_SELF);
     void (*unlock)(_SELF);
     int  (*setColorKey)(_SELF, Uint32 flag, Uint32 key);
@@ -136,7 +136,7 @@ CLASS(MIL_Surface)
     Uint8 (*getBitsPerPixel)(_CSELF);
     Uint8 (*getBytesPerPixel)(_CSELF);
 
-    VIRTUAL_METHOD_DECLARE_END
+    METHOD_DECLARE_END
 
     
 };

@@ -49,10 +49,10 @@ DESTRUCTOR(DummyVideoDevice)
     printf("DummyVideoDevice %p destructed...\n", self);
 }
 
-VIRTUAL_METHOD_MAP_BEGIN(DummyVideoDevice, VideoDevice)
+METHOD_MAP_BEGIN(DummyVideoDevice, VideoDevice)
     CONSTRUCTOR_MAP(DummyVideoDevice)
     DESTRUCTOR_MAP(DummyVideoDevice)
-VIRTUAL_METHOD_MAP_END
+METHOD_MAP_END
 
 
 

@@ -295,23 +295,20 @@ MIL_RWops *MIL_RWFromMem(void *mem, int size)
 
 /* Make MIL_RWops to a pure vitrual class. */
 MAKE_PURE_VIRTUAL_CLASS(MIL_RWops)
-METHOD_MAP_PLACEHOLDER(MIL_RWops)
 
-VIRTUAL_METHOD_MAP_BEGIN(RawFileOperator, MIL_RWops)
+METHOD_MAP_BEGIN(RawFileOperator, MIL_RWops)
     NON_DESTRUCTOR
     METHOD_MAP(RawFileOperator, seek)
     METHOD_MAP(RawFileOperator, read)
     METHOD_MAP(RawFileOperator, write)
     METHOD_MAP(RawFileOperator, close)
-VIRTUAL_METHOD_MAP_END
-METHOD_MAP_PLACEHOLDER(RawFileOperator)
+METHOD_MAP_END
 
-VIRTUAL_METHOD_MAP_BEGIN(MemFileOperator, MIL_RWops)
+METHOD_MAP_BEGIN(MemFileOperator, MIL_RWops)
     NON_DESTRUCTOR
     METHOD_MAP(MemFileOperator, seek)
     METHOD_MAP(MemFileOperator, read)
     METHOD_MAP(MemFileOperator, write)
     METHOD_MAP(MemFileOperator, close)
-VIRTUAL_METHOD_MAP_END
-METHOD_MAP_PLACEHOLDER(MemFileOperator)
+METHOD_MAP_END
 

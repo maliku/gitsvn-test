@@ -19,8 +19,8 @@ extern "C" {
 
 CLASS(MIL_Application)
 {
-    VIRTUAL_METHOD_DECLARE_BEGIN(MIL_Application)
-    VIRTUAL_METHOD_DECLARE_END
+    METHOD_DECLARE_BEGIN(MIL_Application)
+    METHOD_DECLARE_END
 };
 
 MIL_Application* CreateApplication(char **args, int num);

@@ -210,7 +210,7 @@ void* Signal_X_travel(_SELF, SlotNode* head, SlotHandle node_handle)
     return NULL;
 }
 
-VIRTUAL_METHOD_MAP_BEGIN(Signal, NonBase)
+METHOD_MAP_BEGIN(Signal, NonBase)
     CONSTRUCTOR_MAP(Signal)
     DESTRUCTOR_MAP(Signal)
     METHOD_MAP(Signal, connect)
@@ -221,7 +221,7 @@ VIRTUAL_METHOD_MAP_BEGIN(Signal, NonBase)
     METHOD_MAP(Signal, emit)
     METHOD_MAP(Signal, num_slots)
     METHOD_MAP(Signal, empty)
-VIRTUAL_METHOD_MAP_END
+METHOD_MAP_END
 
 
 void* SignalSimple_X_travel(_SELF, SlotNode* head, SimpleSlotHandle node_handle, void* arg)
@@ -294,7 +294,7 @@ DESTRUCTOR(SignalSimple)
 
 }
 
-VIRTUAL_METHOD_MAP_BEGIN(SignalSimple, Signal)
+METHOD_MAP_BEGIN(SignalSimple, Signal)
     CONSTRUCTOR_MAP(SignalSimple)
     DESTRUCTOR_MAP(SignalSimple)
     METHOD_PLACEHOLDER(connect)
@@ -305,7 +305,7 @@ VIRTUAL_METHOD_MAP_BEGIN(SignalSimple, Signal)
     METHOD_MAP(SignalSimple, emit)
     METHOD_PLACEHOLDER(num_slots)
     METHOD_PLACEHOLDER(empty)
-VIRTUAL_METHOD_MAP_END
+METHOD_MAP_END
 
 
     //METHOD_MAP(SignalSimple, travel)

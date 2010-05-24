@@ -56,11 +56,11 @@ Sint32 METHOD_NAMED(Win32Mutex, unlock)(_SELF)
 	return(0);
 }
 
-VIRTUAL_METHOD_MAP_BEGIN(Win32Mutex, MIL_mutex)
+METHOD_MAP_BEGIN(Win32Mutex, MIL_mutex)
     DESTRUCTOR_MAP(Win32Mutex)
     METHOD_MAP(Win32Mutex, lock)
     METHOD_MAP(Win32Mutex, unlock)
-VIRTUAL_METHOD_MAP_END
+METHOD_MAP_END
 
 
     CONSTRUCTOR_MAP(Win32Mutex)

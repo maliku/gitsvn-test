@@ -18,7 +18,7 @@ typedef struct _MIL_BlitMap MIL_BlitMap;
 
 CLASS(Surface)
 {
-    VIRTUAL_METHOD_DECLARE_BEGIN(Surface)
+    METHOD_DECLARE_BEGIN(Surface)
     int  (*lock)(_SELF);
     void (*unlock)(_SELF);
     int  (*setColorKey)(_SELF, Uint32 flag, Uint32 key);
@@ -47,7 +47,7 @@ CLASS(Surface)
     int  (*RLE)(_SELF);
     void (*UnRLE)(_SELF, int recode);
 
-    VIRTUAL_METHOD_DECLARE_END
+    METHOD_DECLARE_END
 
     
     

@@ -13,7 +13,7 @@
 #include "MIL_application.h"
 
 CLASS_INHERIT_BEGIN(Application, MIL_Application)
-    NO_VIRTUAL_METHOD_EXPAND(Application)
+    NO_METHOD_EXPAND(Application)
     
 CLASS_INHERIT_END
 

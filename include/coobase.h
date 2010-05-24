@@ -14,8 +14,8 @@
 
 CLASS(CooBase)
 {
-    VIRTUAL_METHOD_DECLARE_BEGIN(CooBase)
-    VIRTUAL_METHOD_DECLARE_END
+    METHOD_DECLARE_BEGIN(CooBase)
+    METHOD_DECLARE_END
 };
 
 #endif   /* ----- #ifndef COOBASE_INC  ----- */

@@ -20,7 +20,7 @@
 #include "MIL_mutex.h"
 
 CLASS_INHERIT_BEGIN(Win32Mutex, MIL_mutex)
-    NO_VIRTUAL_METHOD_EXPAND(Win32Mutex)
+    NO_METHOD_EXPAND(Win32Mutex)
     
 
 	HANDLE id;

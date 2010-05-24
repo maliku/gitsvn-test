@@ -26,11 +26,11 @@ void METHOD_NAMED(MyBase, vtest)(_SELF, int in)
     printf("MyBase::vtest - Obj from MyBase %p get %d.\n", (MyBase*)self, in);
 }
 
-VIRTUAL_METHOD_MAP_BEGIN(MyBase, NonBase)
+METHOD_MAP_BEGIN(MyBase, NonBase)
     CONSTRUCTOR_MAP(MyBase)
     DESTRUCTOR_MAP(MyBase)
 METHOD_MAP(MyBase, vtest)
-    VIRTUAL_METHOD_MAP_END
+    METHOD_MAP_END
 
 
     
@@ -57,12 +57,12 @@ void METHOD_NAMED(MySub, ptest)(_SELF, int in)
     printf("MySub::ptest - Obj from MySub %p get %d.\n", (MySub*)self, in);
 }
     
-VIRTUAL_METHOD_MAP_BEGIN(MySub, MyBase)
+METHOD_MAP_BEGIN(MySub, MyBase)
     CONSTRUCTOR_MAP(MySub)
     DESTRUCTOR_MAP(MySub)
     METHOD_MAP(MySub, vtest)
     METHOD_MAP(MySub, ptest)
-    VIRTUAL_METHOD_MAP_END
+    METHOD_MAP_END
 
 
     
@@ -84,11 +84,11 @@ void METHOD_NAMED(MySub2, vtest)(_SELF, int in)
 }
 
 
-VIRTUAL_METHOD_MAP_BEGIN(MySub2, MySub)
+METHOD_MAP_BEGIN(MySub2, MySub)
     CONSTRUCTOR_MAP(MySub2)
     DESTRUCTOR_MAP(MySub2)
     METHOD_MAP(MySub2, vtest)
-    VIRTUAL_METHOD_MAP_END
+    METHOD_MAP_END
 
 
 

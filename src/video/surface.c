@@ -41,7 +41,7 @@ CONSTRUCTOR(Surface)
     _m(format_version) = 0;
     _m(refcount) = 0;
     memset(&_m(clip_rect), 0, sizeof(_m(clip_rect)));
-    VIRTUAL_METHOD_VERIFY_ONCE_BEGIN
+    METHOD_VERIFY_ONCE_BEGIN
         VirtualMethodVerify(self, lock);
         VirtualMethodVerify(self, unlock);
         VirtualMethodVerify(self, setColorKey);
@@ -66,7 +66,7 @@ CONSTRUCTOR(Surface)
         VirtualMethodVerify(self, mapSurface);
         VirtualMethodVerify(self, RLE);
         VirtualMethodVerify(self, UnRLE);
-    VIRTUAL_METHOD_VERIFY_ONCE_END
+    METHOD_VERIFY_ONCE_END
 
     return self;
 }
@@ -1046,7 +1046,7 @@ void Surface_X_UnRLE(_SELF, int recode)
     }
 }
 
-VIRTUAL_METHOD_MAP_BEGIN(Surface, NonBase)
+METHOD_MAP_BEGIN(Surface, NonBase)
     CONSTRUCTOR_MAP(Surface)
     DESTRUCTOR_MAP(Surface)
     METHOD_MAP(Surface, lock)
@@ -1077,7 +1077,7 @@ VIRTUAL_METHOD_MAP_BEGIN(Surface, NonBase)
 
 METHOD_MAP(Surface, getBytesPerPixel)
 
-VIRTUAL_METHOD_MAP_END 
+METHOD_MAP_END 
 
 
 

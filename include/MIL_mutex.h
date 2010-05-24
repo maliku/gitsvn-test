@@ -33,10 +33,10 @@ extern "C" {
 
 CLASS(MIL_mutex)
 {
-    VIRTUAL_METHOD_DECLARE_BEGIN(MIL_mutex)
+    METHOD_DECLARE_BEGIN(MIL_mutex)
         Sint32 (*lock)(_SELF);
         Sint32 (*unlock)(_SELF);
-        VIRTUAL_METHOD_DECLARE_END
+        METHOD_DECLARE_END
 };
 
 MIL_mutex * MIL_CreateMutex();

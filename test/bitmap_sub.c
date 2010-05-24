@@ -9,9 +9,8 @@
 #include <milui/MIL_gdi.h>
 
 CLASS_INHERIT_BEGIN(MyBitmap, MIL_Bitmap)
-    NO_VIRTUAL_METHOD_EXPAND(MyBitmap)
+    NO_METHOD_EXPAND(MyBitmap)
     
-
     int member;
 CLASS_INHERIT_END
 
@@ -21,13 +20,11 @@ MIL_Image*  MyBitmap_X_clone(_Self(MIL_Image))
     return NULL;
 }
 
-VIRTUAL_METHOD_MAP_BEGIN(MyBitmap, MIL_Bitmap)
+METHOD_MAP_BEGIN(MyBitmap, MIL_Bitmap)
     NON_CONSTRUCTOR
     NON_DESTRUCTOR
     METHOD_MAP(MyBitmap, clone)
-VIRTUAL_METHOD_MAP_END
-
-METHOD_MAP_PLACEHOLDER(MyBitmap)
+METHOD_MAP_END
 
 int main()
 {

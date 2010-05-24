@@ -11,19 +11,14 @@
 
 CLASS(MyBase)
 {
-    VIRTUAL_METHOD_DECLARE_BEGIN(MyBase)
-        void (*virtual_method)(_Self(MyBase));
-    VIRTUAL_METHOD_DECLARE_END
-
     METHOD_DECLARE_BEGIN(MyBase)
-        void (*normal_method)(_Self(MyBase));
+        void (*virtual_method)(_Self(MyBase));
     METHOD_DECLARE_END
-    
+
     int m_count;
 };
 
 CLASS_INHERIT_BEGIN(MySub, MyBase)
-    NO_VIRTUAL_METHOD_EXPAND(MySub)
-    
+    NO_METHOD_EXPAND(MySub)
 CLASS_INHERIT_END
 
