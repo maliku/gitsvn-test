@@ -42,6 +42,9 @@ MIL_Status  MIL_Bitmap_X_unlockBits(_Self(MIL_Bitmap), MIL_BitmapData* locked_da
 VIRTUAL_METHOD_MAP_BEGIN(MIL_Bitmap, MIL_Image)
     CONSTRUCTOR_MAP(MIL_Bitmap)
     DESTRUCTOR_MAP(MIL_Bitmap)
+
+    METHOD_PLACEHOLDER(addHoldRef)
+    METHOD_PLACEHOLDER(decHoldRef)
     METHOD_PLACEHOLDER(clone)
     METHOD_PLACEHOLDER(getBounds)
     METHOD_PLACEHOLDER(getWidth)

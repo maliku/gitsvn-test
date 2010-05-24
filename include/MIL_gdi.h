@@ -62,13 +62,27 @@ STRUCT {
     MIL_PixelFormat* format;
 }MIL_BitmapData;
 
+#define MIL_GDIOBJECT_METHOD_TABLE \
+        void (*addHoldRef)(_Self(MIL_GdiObject)); \
+        void (*decHoldRef)(_Self(MIL_GdiObject));
+
+CLASS(MIL_GdiObject)
+{
+    VIRTUAL_METHOD_DECLARE_BEGIN(MIL_GdiObject)
+    VIRTUAL_METHOD_DECLARE_END
+
+    PRIVATE_BEGIN(MIL_GdiObject)
+        int hold_counter;
+    PRIVATE_END
+};
+
 /** 
  * @name MIL_Image
  * @brief A readonly container of kinds of image format.
  */
-CLASS(MIL_Image)
-{
-    VIRTUAL_METHOD_DECLARE_BEGIN(MIL_Image)
+CLASS_INHERIT_BEGIN(MIL_Image, MIL_GdiObject)
+    VIRTUAL_METHOD_EXPAND_DECLARE_BEGIN(MIL_Image)
+        MIL_GDIOBJECT_METHOD_TABLE 
         MIL_Image*  (*clone)(_Self(MIL_Image));
         MIL_Status  (*getBounds)(_Self(MIL_Image), MIL_Rect* rc);
         Uint32      (*getWidth)(_Self(MIL_Image));
@@ -81,7 +95,7 @@ CLASS(MIL_Image)
         MIL_Status  (*rotateFlip)(_Self(MIL_Image), MIL_RotateFlipType);
         MIL_Status  (*save)(_Self(MIL_Status), const char* file);
         MIL_Status  (*loadFile)(_Self(MIL_Image), const char* file);
-    VIRTUAL_METHOD_DECLARE_END
+    VIRTUAL_METHOD_EXPAND_DECLARE_END
 
     PRIVATE_BEGIN(MIL_Image)
 
@@ -97,7 +111,7 @@ CLASS(MIL_Image)
     MIL_PixelFormat* format;
 
     PRIVATE_END
-};
+CLASS_INHERIT_END
 
 /** 
  * @name MIL_Bitmap
@@ -105,6 +119,7 @@ CLASS(MIL_Image)
  */
 CLASS_INHERIT_BEGIN(MIL_Bitmap, MIL_Image)
     VIRTUAL_METHOD_EXPAND_DECLARE_BEGIN(MIL_Bitmap)
+        MIL_GDIOBJECT_METHOD_TABLE 
         MIL_Image*  (*clone)(_Self(MIL_Image));
         MIL_Status  (*getBounds)(_Self(MIL_Image), MIL_Rect* rc);
         Uint32      (*getWidth)(_Self(MIL_Image));
@@ -129,9 +144,9 @@ CLASS_INHERIT_BEGIN(MIL_Bitmap, MIL_Image)
     PRIVATE_END
 CLASS_INHERIT_END
 
-CLASS(MIL_GraphicsContext)
-{
-    VIRTUAL_METHOD_DECLARE_BEGIN(MIL_GraphicsContext)
+CLASS_INHERIT_BEGIN(MIL_GraphicsContext, MIL_GdiObject)
+    VIRTUAL_METHOD_EXPAND_DECLARE_BEGIN(MIL_GraphicsContext)
+        MIL_GDIOBJECT_METHOD_TABLE 
         MIL_Status (*clear)(_Self(MIL_GraphicsContext), MIL_Color*);
         MIL_Status (*drawImagePos)(_Self(MIL_GraphicsContext), MIL_Image*, int, int);
         MIL_Status (*drawImageRect)(_Self(MIL_GraphicsContext), MIL_Image*, MIL_Rect*);
@@ -141,8 +156,8 @@ CLASS(MIL_GraphicsContext)
         MIL_Bool   (*isClipEmpty)(_Self(MIL_GraphicsContext));
         void       (*store)(_Self(MIL_GraphicsContext));
         void       (*restore)(_Self(MIL_GraphicsContext));
-    VIRTUAL_METHOD_DECLARE_END
-};
+    VIRTUAL_METHOD_EXPAND_DECLARE_END
+CLASS_INHERIT_END
 /* Alias of MIL_GraphicsContext */
 typedef MIL_GraphicsContext MIL_Graphics;
 

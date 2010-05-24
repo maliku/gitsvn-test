@@ -8,8 +8,7 @@
 
 #include "image.h"
 
-//VIRTUAL_METHOD_MAP_PLACEHOLDER(MIL_Image, NonBase)
-//METHOD_MAP_PLACEHOLDER(MIL_Image)
+VIRTUAL_METHOD_MAP_PLACEHOLDER(MIL_GdiObject, NonBase)
 
 CONSTRUCTOR(MIL_Image)
 {
@@ -137,9 +136,11 @@ MIL_Status MIL_Image_X_loadFile(_Self(MIL_Image), const char* file)
     return MIL_INVALID_PARAMETER;
 }
 
-VIRTUAL_METHOD_MAP_BEGIN(MIL_Image, NonBase)
+VIRTUAL_METHOD_MAP_BEGIN(MIL_Image, MIL_GdiObject)
     CONSTRUCTOR_MAP(MIL_Image)
     DESTRUCTOR_MAP(MIL_Image)
+    METHOD_PLACEHOLDER(addHoldRef)
+    METHOD_PLACEHOLDER(decHoldRef)
     METHOD_MAP(MIL_Image, clone)
     METHOD_MAP(MIL_Image, getBounds)
     METHOD_MAP(MIL_Image, getWidth)
