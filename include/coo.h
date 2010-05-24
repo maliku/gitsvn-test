@@ -52,22 +52,14 @@ extern void* type##Preconstructor(_SELF);\
 void type##Predestructor(_SELF);\
 struct __##type
 
-/* Macro for inherit class decalre. */
-#if 0
-#define	CLASS_INHERIT_BEGIN(type, basetype) \
-typedef basetype##Vtable type##Vtable;\
-extern type##Vtable g_##type##Vtable;\
-extern struct __##type##Mtable g_##type##Mtable;\
-struct _##type;\
-typedef struct _##type type;\
-extern void* type##Preconstructor(_SELF);\
-void type##Predestructor(_SELF);\
-struct _##type {\
-    union { \
-	    basetype __class; \
-        type##Vtable *__vptr; \
-    }__super;
-#endif
+/* Declare a interface, it can't include any data member. */
+#define INTERFACE_BEGIN(type) \
+CLASS(type) \
+{\
+    METHOD_DECLARE_BEGIN(type)
+
+#define INTERFACE_END \
+    METHOD_DECLARE_END };
 
 #define METHOD_EXPAND_DECLARE_BEGIN(type) \
 struct __##type##Vtable; \

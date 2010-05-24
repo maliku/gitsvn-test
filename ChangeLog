@@ -1,4 +1,5 @@
-[2010-05-24]: Make a base class MIL_GdiObject for all gdi class.
+[2010-05-24]: Make a base class MIL_GdiObject for all gdi class. Add interface
+define macro.
 [2010-05-21]: Change the copy-left declare.refactoring head file cause of
 normal method mechanism was removed.
 [2010-05-20]: Fix a bug which may be cover the destructor of base class form the sub.

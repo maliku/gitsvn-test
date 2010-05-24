@@ -90,21 +90,19 @@ typedef struct MIL_Palette {
  * name MIL_PixelFormat
  * brief Interface for Pixel Format, which is readonly structure for user.
  */
-CLASS(MIL_PixelFormat) 
-{
-    METHOD_DECLARE_BEGIN(MIL_PixelFormat)
-        Uint32 (*mapRGB)(_CSELF, Uint8 r, Uint8 g, Uint8 b);
-        Uint32 (*mapRGBA)(_CSELF, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
-        void (*getRGB)(_CSELF, Uint32 pixel, Uint8 *r,Uint8 *g,Uint8 *b);
-        void (*getRGBA)(_CSELF, Uint32 pixel, Uint8 *r, Uint8 *g, Uint8 *b, Uint8 *a);
-        Uint8* (*mapNto1)(_CSELF, MIL_PixelFormat *dst, int *identical);
-        Uint8* (*map1toN)(_CSELF, MIL_PixelFormat *dst);
-        Uint8  (*getBytesPerPixel)(_CSELF);
-        Uint8  (*getBitsPerPixel)(_CSELF);
-        Uint8  (*getAlpha)(_CSELF);
-        Uint32 (*getColorKey)(_CSELF);
-    METHOD_DECLARE_END
-};
+INTERFACE_BEGIN(MIL_PixelFormat) 
+    Uint32 (*mapRGB)(_CSELF, Uint8 r, Uint8 g, Uint8 b);
+    Uint32 (*mapRGBA)(_CSELF, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+    void  (*getRGB)(_CSELF, Uint32 pixel, Uint8 *r,Uint8 *g,Uint8 *b);
+    void  (*getRGBA)(_CSELF, Uint32 pixel, Uint8 *r, Uint8 *g, Uint8 *b, Uint8 *a);
+    Uint8* (*mapNto1)(_CSELF, MIL_PixelFormat *dst, int *identical);
+    Uint8* (*map1toN)(_CSELF, MIL_PixelFormat *dst);
+    Uint8  (*getBytesPerPixel)(_CSELF);
+    Uint8  (*getBitsPerPixel)(_CSELF);
+    Uint8  (*getAlpha)(_CSELF);
+    Uint32 (*getColorKey)(_CSELF);
+    MIL_Bool (*equals)(_CSelf(MIL_PixelFormat), const MIL_PixelFormat*);
+INTERFACE_END
 
 extern MIL_PixelFormat* MIL_AllocFormat(int bpp,
         Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask);

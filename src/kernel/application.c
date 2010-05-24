@@ -67,7 +67,7 @@ CONSTRUCTOR(Application)
 
             MIL_RWops* ops = MIL_RWFromFile("res/lena16.bmp", "rb");
             Surface* bmp = MIL_LoadBMP_RW(ops, MIL_AUTO_FREE);
-            MIL_Bitmap* img = LoadBitmapFromFile("res/mil.bmp");
+            MIL_DIBitmap* img = LoadBitmapFromFile("res/mil.bmp");
             int i, j;
             char *pixels = (char*)screen->pixels;
             _vc1(screen, setClipRect, &rclip);
