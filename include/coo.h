@@ -172,9 +172,19 @@ void type##Predestructor(_SELF);\
 /* Macro for virtual member function declare end. */
 #define	METHOD_DECLARE_END }*__vptr; } __super;
 
-#define METHOD_DECLARE_PLACEHOLDER(type) \
-METHOD_DECLARE_BEGIN(type) \
-METHOD_DECLARE_END 
+/* Macro for virtual member function declare begin. */
+#define TMP_METHOD_DECLARE_BEGIN(type) \
+    union { \
+        void * __class; \
+    struct __##type##Vtable {\
+        RTTI __rtti;\
+        void* (*OrderConstruct)(void*);\
+        void (*Predestructor)(void*);\
+        void* (*Constructor)(void*); \
+        void (*Destructor)(void*);
+
+/* Macro for virtual member function declare end. */
+#define	TMP_METHOD_DECLARE_END }*__vptr; } __super;
 
 #define METHOD_DECLARE_PLACEHOLDER(type) \
 METHOD_DECLARE_BEGIN(type) \
