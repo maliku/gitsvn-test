@@ -12,18 +12,14 @@ METHOD_MAP_PLACEHOLDER(MIL_GdiObject, NonBase)
 
 CONSTRUCTOR(MIL_Image)
 {
-    _private(MIL_Image)->width = 0;
-    _private(MIL_Image)->height = 0;
-    _private(MIL_Image)->pitch = 0;
-    _private(MIL_Image)->bits = NULL;
-    _private(MIL_Image)->format = NULL;
+    _private(MIL_Image)->data = NULL;
+    _private(MIL_Image)->raw_format = NULL;
     return self;
 }
 
 DESTRUCTOR(MIL_Image)
 {
-    MIL_free(_private(MIL_Image)->bits);
-    Delete(_private(MIL_Image)->format);
+    Delete(_private(MIL_Image)->data);
 }
 
 MIL_Image*  MIL_Image_X_clone(_Self(MIL_Image))
@@ -34,21 +30,24 @@ MIL_Image*  MIL_Image_X_clone(_Self(MIL_Image))
 MIL_Status  MIL_Image_X_getBounds(_Self(MIL_Image), MIL_Rect* rc)
 {
     if (NULL != rc) {
+        Surface* surface = _private(MIL_Image)->data;
         rc->x = rc->y = 0;
-        rc->w = _c(self)->getWidth(self);
-        rc->h = _c(self)->getHeight(self);
+        rc->w = _c(surface)->getWidth(surface);
+        rc->h = _c(surface)->getHeight(surface);
     }
     return MIL_NOT_IMPLEMENTED;
 }
 
 Uint32      MIL_Image_X_getWidth(_Self(MIL_Image))
 {
-    return _private(MIL_Image)->width;
+    Surface* surface = _private(MIL_Image)->data;
+    return _c(surface)->getWidth(surface);
 }
 
 Uint32      MIL_Image_X_getHeight(_Self(MIL_Image))
 {
-    return _private(MIL_Image)->height;
+    Surface* surface = _private(MIL_Image)->data;
+    return _c(surface)->getHeight(surface);
 }
 
 MIL_Status  MIL_Image_X_getPalette(_Self(MIL_Image), MIL_Palette* palette)
@@ -69,7 +68,8 @@ int         MIL_Image_X_getPaletteSize(_Self(MIL_Image))
 MIL_Status  MIL_Image_X_getPixelFormat(_Self(MIL_Image), MIL_PixelFormat* fmt)
 {
     if (NULL != fmt) {
-        memcpy(fmt, _private(MIL_Image)->format, sizeof(*fmt));
+        Surface* surface = _private(MIL_Image)->data;
+        memcpy(fmt, surface->format, sizeof(*fmt));
     }
     return MIL_INVALID_PARAMETER;
 }
@@ -101,23 +101,17 @@ MIL_Status MIL_Image_X_loadFile(_Self(MIL_Image), const char* file)
 {
     if (NULL != file) {
         MIL_RWops* ops;
-        if (NULL != _private(MIL_Image)->bits) {
-            Delete(_private(MIL_Image)->bits);
-            _private(MIL_Image)->bits = NULL;
+        if (NULL != _private(MIL_Image)->data) {
+            Delete(_private(MIL_Image)->data);
+            _private(MIL_Image)->data = NULL;
         }
-        if (NULL != _private(MIL_Image)->format) {
-            Delete(_private(MIL_Image)->format);
-            _private(MIL_Image)->format = NULL;
-        }
+
         ops = MIL_RWFromFile(file, "rb");
         if (NULL != ops) {
             Surface* surface = MIL_LoadBMP_RW(ops, MIL_AUTO_FREE);
             if (NULL != surface) {
-                _private(MIL_Image)->width = _vc0(surface, getWidth);
-                _private(MIL_Image)->height = _vc0(surface, getHeight);
-                _private(MIL_Image)->pitch = _vc0(surface, getPitch);
-                _private(MIL_Image)->format = (MIL_PixelFormat*)surface->format;
-                _private(MIL_Image)->bits = surface->pixels;
+                _private(MIL_Image)->data = surface;
+                _private(MIL_Image)->raw_format = "bmp";
                 printf("format=%p, pixels=%p.\n", surface->format, surface->pixels);
                 if ( surface->map != NULL ) {
                     MIL_FreeBlitMap(surface->map);

@@ -54,7 +54,7 @@ typedef enum  {
     MIL_ROTATE_270_FLIP_XY      = MIL_ROTATE_90_FLIP_NONE 
 } MIL_RotateFlipType;
 
-STRUCT {
+STRUCT MIL_DIBitmapData{
     Uint32 w;
     Uint32 h;
     Sint32  stride;
@@ -67,16 +67,19 @@ CLASS(MIL_GdiObject)
     METHOD_DECLARE_BEGIN(MIL_GdiObject)
 #define MIL_GDIOBJECT_METHOD_TABLE \
         MIL_Status (*getLastStatus)(_Self(MIL_GdiObject));\
-        void (*addHoldRef)(_Self(MIL_GdiObject));\
-        void (*decHoldRef)(_Self(MIL_GdiObject));
+        void (*addHoldRef)(_Self(MIL_GdiObject), int type);\
+        void (*decHoldRef)(_Self(MIL_GdiObject), int type);
         MIL_GDIOBJECT_METHOD_TABLE 
     METHOD_DECLARE_END
 
     PRIVATE_BEGIN(MIL_GdiObject)
-        int hold_counter;
+        int counters[3];
+        MIL_Status status;
     PRIVATE_END
 };
 
+/* forward declare of internal class. */
+struct __Surface;
 /** 
  * @name MIL_Image
  * @brief A readonly container of kinds of image format.The Image object must be device-independent.
@@ -102,17 +105,8 @@ CLASS_INHERIT_BEGIN(MIL_Image, MIL_GdiObject)
 
     PRIVATE_BEGIN(MIL_Image)
 
-    /** The width of the bitmap */
-    Uint32 width;
-    /** The height of the bitmap */
-    Uint32 height;
-    /** The pitch of the bitmap */
-    Uint32 pitch;
-    /** The bits of the bitmap */
-    void*  bits;
-    /** The private pixel format */
-    MIL_PixelFormat* format;
-    char* raw_format[16];
+    const char* raw_format;
+    struct __Surface* data;
 
     PRIVATE_END
 CLASS_INHERIT_END
@@ -138,12 +132,12 @@ CLASS_INHERIT_BEGIN(MIL_DIBitmap, MIL_Image)
 CLASS_INHERIT_END
 
 typedef enum  {
-    MIL_DASHSTYLE_SOLID        = 0,
-    MIL_DASHSTYLE_DASH         = 1,
-    MIL_DASHSTYLE_DOT          = 2,
-    MIL_DASHSTYLE_DASHDOT      = 3,
-    MIL_DASHSTYLE_DASHDOTDOT   = 4,
-    MIL_DASHSTYLE_CUSTOM       = 5 
+    MIL_DASH_SOLID        = 0,
+    MIL_DASH_DASH         = 1,
+    MIL_DASH_DOT          = 2,
+    MIL_DASH_DASHDOT      = 3,
+    MIL_DASH_DASHDOTDOT   = 4,
+    MIL_DASH_CUSTOM       = 5 
 } MIL_DashStyle;
 
 typedef enum  {

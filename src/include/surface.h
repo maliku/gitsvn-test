@@ -49,8 +49,6 @@ CLASS(Surface)
 
     METHOD_DECLARE_END
 
-    
-    
     Uint32 flags;				/* Read-only */
 	PixelFormat* format;		/* Read-only */
 	Uint32 w, h;				/* Read-only */

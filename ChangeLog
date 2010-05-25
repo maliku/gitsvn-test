@@ -1,3 +1,4 @@
+[2010-05-26]: Add GdiBase class for common reference count support.
 [2010-05-24]: Make a base class MIL_GdiObject for all gdi class. Add interface
 define macro.
 [2010-05-21]: Change the copy-left declare.refactoring head file cause of
