@@ -268,13 +268,13 @@ CLASS_INHERIT_BEGIN(MIL_GraphicsContext, MIL_GdiObject)
 #define MIL_GC_METHOD_TABLE \
         MIL_GDIOBJECT_METHOD_TABLE  \
         MIL_Status (*clear)(_Self(MIL_GraphicsContext), MIL_Color*); \
-        MIL_Status (*drawImagePos)(_Self(MIL_GraphicsContext), MIL_Image*, int, int); \
-        MIL_Status (*drawImageRect)(_Self(MIL_GraphicsContext), MIL_Image*, MIL_Rect*); \
+        MIL_Status (*drawImageByPos)(_Self(MIL_GraphicsContext), MIL_Image*, int, int); \
+        MIL_Status (*drawImageByRect)(_Self(MIL_GraphicsContext), MIL_Image*, MIL_Rect*); \
         MIL_Status (*drawString)(_Self(MIL_GraphicsContext), const char*, MIL_Rect*); \
         MIL_Status (*includeClip)(_Self(MIL_GraphicsContext), MIL_Rect*); \
         MIL_Status (*excludeClip)(_Self(MIL_GraphicsContext), MIL_Rect*); \
         MIL_Bool   (*isClipEmpty)(_Self(MIL_GraphicsContext)); \
-        void       (*save)(_Self(MIL_GraphicsContext)); \
+        void       (*store)(_Self(MIL_GraphicsContext)); \
         void       (*restore)(_Self(MIL_GraphicsContext));
         MIL_GC_METHOD_TABLE
     METHOD_EXPAND_DECLARE_END
