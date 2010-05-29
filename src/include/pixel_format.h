@@ -11,10 +11,9 @@
 #include "MIL_video.h"
 
 /** Everything in the pixel format structure is read-only */
-CLASS_INHERIT_BEGIN(PixelFormat, MIL_PixelFormat)
+BEGIN_CLASS_INHERIT(PixelFormat, MIL_PixelFormat)
     NO_METHOD_EXPAND(PixelFormat)
     
-
 	MIL_Palette *palette;
 	Uint8  BitsPerPixel;
 	Uint8  BytesPerPixel;
@@ -36,7 +35,7 @@ CLASS_INHERIT_BEGIN(PixelFormat, MIL_PixelFormat)
 
 	/** RGB color key information */
 	Uint32 colorkey;
-CLASS_INHERIT_END
+END_CLASS_INHERIT
 
 Uint8* Map1to1(MIL_Palette *src, MIL_Palette *dst, int *identical);
 #endif   /* ----- #ifndef PIXEL_FORMAT_INC  ----- */

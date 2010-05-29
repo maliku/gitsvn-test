@@ -19,8 +19,8 @@ extern "C" {
 
 CLASS(MIL_Application)
 {
-    METHOD_DECLARE_BEGIN(MIL_Application)
-    METHOD_DECLARE_END
+    BEGIN_METHOD_DECLARE(MIL_Application)
+    END_METHOD_DECLARE
 };
 
 MIL_Application* CreateApplication(char **args, int num);

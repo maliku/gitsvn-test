@@ -210,7 +210,7 @@ void* Signal_X_travel(_SELF, SlotNode* head, SlotHandle node_handle)
     return NULL;
 }
 
-METHOD_MAP_BEGIN(Signal, NonBase)
+BEGIN_METHOD_MAP(Signal, NonBase)
     CONSTRUCTOR_MAP(Signal)
     DESTRUCTOR_MAP(Signal)
     METHOD_MAP(Signal, connect)
@@ -221,7 +221,7 @@ METHOD_MAP_BEGIN(Signal, NonBase)
     METHOD_MAP(Signal, emit)
     METHOD_MAP(Signal, num_slots)
     METHOD_MAP(Signal, empty)
-METHOD_MAP_END
+END_METHOD_MAP
 
 
 void* SignalSimple_X_travel(_SELF, SlotNode* head, SimpleSlotHandle node_handle, void* arg)
@@ -248,7 +248,7 @@ void* SignalSimple_X_travel(_SELF, SlotNode* head, SimpleSlotHandle node_handle,
     return NULL;
 }
 
-void* SignalSimple_X_emit(_SELF, ...)
+void* METHOD_NAMED(SignalSimple,emit)(_SELF, ...)
 {
     va_list arg_ptr;
     struct list_head* i = NULL;
@@ -294,7 +294,7 @@ DESTRUCTOR(SignalSimple)
 
 }
 
-METHOD_MAP_BEGIN(SignalSimple, Signal)
+BEGIN_METHOD_MAP(SignalSimple, Signal)
     CONSTRUCTOR_MAP(SignalSimple)
     DESTRUCTOR_MAP(SignalSimple)
     METHOD_PLACEHOLDER(connect)
@@ -305,7 +305,7 @@ METHOD_MAP_BEGIN(SignalSimple, Signal)
     METHOD_MAP(SignalSimple, emit)
     METHOD_PLACEHOLDER(num_slots)
     METHOD_PLACEHOLDER(empty)
-METHOD_MAP_END
+END_METHOD_MAP
 
 
     //METHOD_MAP(SignalSimple, travel)

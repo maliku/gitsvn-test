@@ -13,15 +13,15 @@
 #include "MIL_rwops.h"
 #include "MIL_gdi.h"
 
-INTERFACE_BEGIN(ImageLoader)
+BEGIN_INTERFACE(ImageLoader)
 #define IMAGELOADER_METHOD_TABLE \
     MIL_Image* (*load)(_Self(ImageLoader), MIL_RWops*); \
     MIL_Status (*save)(_Self(ImageLoader), MIL_Image*, MIL_RWops*);
-INTERFACE_END
+END_INTERFACE
 
-CLASS_INHERIT_BEGIN(BmpLoader, ImageLoader)
+BEGIN_CLASS_INHERIT(BmpLoader, ImageLoader)
     NO_METHOD_EXPAND(BmpLoader)
-CLASS_INHERIT_END
+END_CLASS_INHERIT
 
 #endif   /* ----- #ifndef IMG_LOADER_INC  ----- */
 

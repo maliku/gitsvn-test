@@ -15,7 +15,7 @@
 #include <pthread.h>
 #include "MIL_mutex.h"
 
-CLASS_INHERIT_BEGIN(PthreadMutex, MIL_mutex)
+BEGIN_CLASS_INHERIT(PthreadMutex, MIL_mutex)
     NO_METHOD_EXPAND(PthreadMutex)
     
 
@@ -24,7 +24,7 @@ CLASS_INHERIT_BEGIN(PthreadMutex, MIL_mutex)
     int recursive;
     pthread_t owner;
 #endif
-CLASS_INHERIT_END
+END_CLASS_INHERIT
 
 #endif
 

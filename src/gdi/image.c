@@ -6,9 +6,8 @@
  *  Organization: http://www.ds0101.net
  */
 
+#include "misc.h"
 #include "image.h"
-
-METHOD_MAP_PLACEHOLDER(MIL_GdiObject, NonBase)
 
 CONSTRUCTOR(MIL_Image)
 {
@@ -65,13 +64,11 @@ int         MIL_Image_X_getPaletteSize(_Self(MIL_Image))
     return MIL_NOT_IMPLEMENTED;
 }
 
-MIL_Status  MIL_Image_X_getPixelFormat(_Self(MIL_Image), MIL_PixelFormat* fmt)
+const MIL_PixelFormat* METHOD_NAMED(MIL_Image, getPixelFormat)
+    (_Self(MIL_Image))
 {
-    if (NULL != fmt) {
-        Surface* surface = _private(MIL_Image)->data;
-        memcpy(fmt, surface->format, sizeof(*fmt));
-    }
-    return MIL_INVALID_PARAMETER;
+    Surface* surface = _private(MIL_Image)->data;
+    return (const MIL_PixelFormat*)surface->format;
 }
 
 const char* MIL_Image_X_getRawFormat(_Self(MIL_Image))
@@ -97,7 +94,7 @@ MIL_Status  MIL_Image_X_save(_Self(MIL_Status), const char* file)
     return MIL_INVALID_PARAMETER;
 }
 
-MIL_Status MIL_Image_X_loadFile(_Self(MIL_Image), const char* file)
+MIL_Status METHOD_NAMED(MIL_Image, loadFile)(_Self(MIL_Image), const char* file)
 {
     if (NULL != file) {
         MIL_RWops* ops;
@@ -130,7 +127,7 @@ MIL_Status MIL_Image_X_loadFile(_Self(MIL_Image), const char* file)
     return MIL_INVALID_PARAMETER;
 }
 
-METHOD_MAP_BEGIN(MIL_Image, MIL_GdiObject)
+BEGIN_METHOD_MAP(MIL_Image, MIL_GdiObject)
     CONSTRUCTOR_MAP(MIL_Image)
     DESTRUCTOR_MAP(MIL_Image)
     METHOD_PLACEHOLDER(addHoldRef)
@@ -147,10 +144,7 @@ METHOD_MAP_BEGIN(MIL_Image, MIL_GdiObject)
     METHOD_MAP(MIL_Image, rotateFlip)
     METHOD_MAP(MIL_Image, save)
     METHOD_MAP(MIL_Image, loadFile)
-METHOD_MAP_END
-
-
-
+END_METHOD_MAP
 
 MIL_Image* LoadImageFromFile(const char* file)
 {
@@ -166,6 +160,19 @@ MIL_Image* LoadImageFromFile(const char* file)
         }
     }
 
+    return NULL;
+}
+
+MIL_Image*
+CreateImageFromSurface(Surface* surface)
+{
+    if (NULL != surface) {
+        MIL_Image* img = (MIL_Image*)New(MIL_Image);
+        if (NULL != img) {
+            _friend(MIL_Image, img)->data = surface;
+            return img;
+        }
+    }
     return NULL;
 }
 

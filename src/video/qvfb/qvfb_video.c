@@ -252,7 +252,7 @@ void QVFbVideoDevice_X_videoQuit(_Self(VideoDevice))
     shmdt(((QVFbVideoDevice*)self)->hw_data->shmrgn);
 }
 
-METHOD_MAP_BEGIN(QVFbVideoDevice, VideoDevice)
+BEGIN_METHOD_MAP(QVFbVideoDevice, VideoDevice)
     CONSTRUCTOR_MAP(QVFbVideoDevice)
     DESTRUCTOR_MAP(QVFbVideoDevice)
     METHOD_MAP(QVFbVideoDevice, videoInit)
@@ -264,7 +264,7 @@ METHOD_MAP_BEGIN(QVFbVideoDevice, VideoDevice)
     METHOD_MAP(QVFbVideoDevice, setColors)
     METHOD_MAP(QVFbVideoDevice, updateRects)
     METHOD_MAP(QVFbVideoDevice, videoQuit)
-METHOD_MAP_END
+END_METHOD_MAP
 
 
 

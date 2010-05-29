@@ -39,7 +39,7 @@ MIL_Status  MIL_DIBitmap_X_unlockBits(_Self(MIL_DIBitmap), MIL_DIBitmapData* loc
     return MIL_NOT_IMPLEMENTED;
 }
 
-METHOD_MAP_BEGIN(MIL_DIBitmap, MIL_Image)
+BEGIN_METHOD_MAP(MIL_DIBitmap, MIL_Image)
     CONSTRUCTOR_MAP(MIL_DIBitmap)
     DESTRUCTOR_MAP(MIL_DIBitmap)
 
@@ -62,7 +62,7 @@ METHOD_MAP_BEGIN(MIL_DIBitmap, MIL_Image)
     METHOD_MAP(MIL_DIBitmap, lockBits)
     METHOD_MAP(MIL_DIBitmap, setPixel)
     METHOD_MAP(MIL_DIBitmap, unlockBits)
-METHOD_MAP_END
+END_METHOD_MAP
 
 
 

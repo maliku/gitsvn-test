@@ -87,10 +87,11 @@ typedef struct MIL_Palette {
 /*@}*/
 
 /**
- * name MIL_PixelFormat
- * brief Interface for Pixel Format, which is readonly structure for user.
+ * @class MIL_PixelFormat
+ * @brief Interface for Pixel Format, which is readonly structure for user.
  */
-INTERFACE_BEGIN(MIL_PixelFormat) 
+BEGIN_INTERFACE(MIL_PixelFormat) 
+    Uint32 (*mapColor)(_CSELF, MIL_Color* color);
     Uint32 (*mapRGB)(_CSELF, Uint8 r, Uint8 g, Uint8 b);
     Uint32 (*mapRGBA)(_CSELF, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
     void  (*getRGB)(_CSELF, Uint32 pixel, Uint8 *r,Uint8 *g,Uint8 *b);
@@ -102,7 +103,7 @@ INTERFACE_BEGIN(MIL_PixelFormat)
     Uint8  (*getAlpha)(_CSELF);
     Uint32 (*getColorKey)(_CSELF);
     MIL_Bool (*equals)(_CSelf(MIL_PixelFormat), const MIL_PixelFormat*);
-INTERFACE_END
+END_INTERFACE
 
 struct Surface;
 extern MIL_PixelFormat* MIL_AllocFormat(int bpp,
@@ -114,7 +115,7 @@ extern MIL_PixelFormat* MIL_AllocFormat(int bpp,
  */
 CLASS(MIL_Surface) 
 {
-    METHOD_DECLARE_BEGIN(MIL_Surface)
+    BEGIN_METHOD_DECLARE(MIL_Surface)
     void* (*lock)(_SELF);
     void (*unlock)(_SELF);
     int  (*setColorKey)(_SELF, Uint32 flag, Uint32 key);
@@ -135,7 +136,7 @@ CLASS(MIL_Surface)
     Uint8 (*getBitsPerPixel)(_CSELF);
     Uint8 (*getBytesPerPixel)(_CSELF);
 
-    METHOD_DECLARE_END
+    END_METHOD_DECLARE
 
     
 };

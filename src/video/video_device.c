@@ -210,7 +210,7 @@ void VideoDevice_X_GL_SwapBuffers(_Self(VideoDevice))
 {
 }
 
-METHOD_MAP_BEGIN(VideoDevice, NonBase)
+BEGIN_METHOD_MAP(VideoDevice, NonBase)
 
     NON_DESTRUCTOR
     METHOD_MAP(VideoDevice, videoInit)
@@ -241,5 +241,5 @@ METHOD_MAP_BEGIN(VideoDevice, NonBase)
     METHOD_MAP(VideoDevice, GL_MakeCurrent)
     METHOD_MAP(VideoDevice, GL_SwapBuffers)
 
-METHOD_MAP_END
+END_METHOD_MAP
 

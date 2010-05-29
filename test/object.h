@@ -12,14 +12,14 @@
 #include <milui/coobase.h>
 
 /* ====================== for class Object ======================*/
-CLASS_INHERIT_BEGIN(Object, CooBase)
+BEGIN_CLASS_INHERIT(Object, CooBase)
     NO_METHOD_EXPAND(Object)
 
     int m0;
-    PRIVATE_BEGIN(Object)
+    BEGIN_PRIVATE(Object)
     int p_m1;
     char p_m2;
-    PRIVATE_END
-CLASS_INHERIT_END
+    END_PRIVATE
+END_CLASS_INHERIT
 
 #endif

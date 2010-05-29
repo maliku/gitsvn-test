@@ -14,20 +14,6 @@ METHOD_MAP_PLACEHOLDER(MIL_PixelFormat, NonBase)
 CONSTRUCTOR(PixelFormat)
 {
     static MIL_Bool method_verify = MIL_FALSE;
-    if (!method_verify) {
-        VirtualMethodVerify(self, mapRGB);
-        VirtualMethodVerify(self, mapRGBA);
-        VirtualMethodVerify(self, getRGB);
-        VirtualMethodVerify(self, getRGBA);
-        VirtualMethodVerify(self, mapNto1);
-        VirtualMethodVerify(self, map1toN);
-        VirtualMethodVerify(self, getBitsPerPixel);
-        VirtualMethodVerify(self, getBytesPerPixel);
-        VirtualMethodVerify(self, getAlpha);
-        VirtualMethodVerify(self, getColorKey);
-        method_verify = MIL_TRUE;
-    }
-
     _m(palette) = NULL;
     _m(BitsPerPixel) = 0;
 	_m(BytesPerPixel) = 0;
@@ -62,6 +48,13 @@ DESTRUCTOR(PixelFormat)
     }
 }
 
+/** 
+ *  @fn Uint32 PixelFormat::mapRGB(_CSELF, Uint8 r, Uint8 g, Uint8 b)
+ *  @name PixelFormat::mapRGB
+ *  @brief Map the Red/Green/Blue in the pixel format.
+ *  @param r The red value.
+ *  @return A color value.
+ */
 Uint32 PixelFormat_X_mapRGB(_CSELF, Uint8 r, Uint8 g, Uint8 b)
 {
     PixelFormat* format = (PixelFormat*)self;
@@ -73,6 +66,14 @@ Uint32 PixelFormat_X_mapRGB(_CSELF, Uint8 r, Uint8 g, Uint8 b)
 	} else {
 		return MIL_FindColor(format->palette, r, g, b);
 	}
+}
+
+Uint32 METHOD_NAMED(PixelFormat, mapColor)(_CSELF, MIL_Color* color)
+{
+    if (NULL != color) {
+        return PixelFormat_X_mapRGB(self, color->r, color->g, color->b);
+    }
+    return 0;
 }
 
 Uint32 PixelFormat_X_mapRGBA(_CSELF, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
@@ -235,9 +236,10 @@ Uint32  PixelFormat_X_getColorKey(_CSELF)
     return _tm(PixelFormat, colorkey);
 }
 
-METHOD_MAP_BEGIN(PixelFormat, MIL_PixelFormat)
+BEGIN_METHOD_MAP(PixelFormat, MIL_PixelFormat)
     CONSTRUCTOR_MAP(PixelFormat)
     DESTRUCTOR_MAP(PixelFormat)
+    METHOD_MAP(PixelFormat, mapColor)
     METHOD_MAP(PixelFormat, mapRGB)
     METHOD_MAP(PixelFormat, mapRGBA)
     METHOD_MAP(PixelFormat, getRGB)
@@ -248,10 +250,7 @@ METHOD_MAP_BEGIN(PixelFormat, MIL_PixelFormat)
     METHOD_MAP(PixelFormat, getBitsPerPixel)
     METHOD_MAP(PixelFormat, getAlpha)
     METHOD_MAP(PixelFormat, getColorKey)
-METHOD_MAP_END
-
-
-
+END_METHOD_MAP
 
 /*
  * Allocate a pixel format structure and fill it according to the given info.

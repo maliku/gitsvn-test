@@ -19,12 +19,12 @@
 #include <windows.h>
 #include "MIL_mutex.h"
 
-CLASS_INHERIT_BEGIN(Win32Mutex, MIL_mutex)
+BEGIN_CLASS_INHERIT(Win32Mutex, MIL_mutex)
     NO_METHOD_EXPAND(Win32Mutex)
     
 
 	HANDLE id;
-CLASS_INHERIT_END
+END_CLASS_INHERIT
 
 #endif
 

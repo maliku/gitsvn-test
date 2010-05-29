@@ -20,10 +20,10 @@ DESTRUCTOR(CooBase)
     printf("CooBaseDestructor:%p\n", self);
 }
 
-METHOD_MAP_BEGIN(CooBase, NonBase)
+BEGIN_METHOD_MAP(CooBase, NonBase)
 CONSTRUCTOR_MAP(CooBase)
 DESTRUCTOR_MAP(CooBase)
-METHOD_MAP_END
+END_METHOD_MAP
 
 
 

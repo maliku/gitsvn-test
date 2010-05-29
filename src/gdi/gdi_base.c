@@ -6,14 +6,7 @@
  *  Organization: http://www.ds0101.net
  */
 
-#include "MIL_gdi.h"
-
-enum {
-    LIFE_COUNTER = 0,
-    HOLD_COUNTER = 1,
-    SAVE_COUNTER = 2,
-    MAX_COUNTER_TYPE = 3
-} RefCounterType;
+#include "gdi.h"
 
 CONSTRUCTOR(MIL_GdiObject)
 {
@@ -22,28 +15,48 @@ CONSTRUCTOR(MIL_GdiObject)
     _private(MIL_GdiObject)->status = MIL_OK;
 }
 
-MIL_Status MIL_GdiObject_X_getLastStatus(_Self(MIL_GdiObject))
+MIL_Status METHOD_NAMED(MIL_GdiObject, getLastStatus)
+    (_Self(MIL_GdiObject))
 {
     return _private(MIL_GdiObject)->status;
 }
 
-void MIL_GdiObject_X_addHoldRef(_Self(MIL_GdiObject), int type)
+MIL_GdiObject*
+METHOD_NAMED(MIL_GdiObject, ref)(_SELF, int type)
 {
-    if (type > 0 && type < MAX_COUNTER_TYPE) {
+    if (type > 0 && type < MAX_REF_TYPE) {
         ++(_private(MIL_GdiObject)->counters[type]);
     }
 }
 
-void MIL_GdiObject_X_decHoldRef(_Self(MIL_GdiObject), int type)
+void 
+METHOD_NAMED(MIL_GdiObject, unRef)(_SELF, int type)
 {
-    if (type > 0 && type < MAX_COUNTER_TYPE) {
+    if (type > 0 && type < MAX_REF_TYPE) {
         --(_private(MIL_GdiObject)->counters[type]);
-        if (_private(MIL_GdiObject)->counters[LIFE_COUNTER] <= 0 &&
-                _private(MIL_GdiObject)->counters[HOLD_COUNTER] <= 0 &&
-                _private(MIL_GdiObject)->counters[SAVE_COUNTER] <= 0) {
+        if (_private(MIL_GdiObject)->counters[LIFE_REF] <= 0 &&
+                _private(MIL_GdiObject)->counters[HOLD_REF] <= 0 &&
+                _private(MIL_GdiObject)->counters[SAVE_REF] <= 0) {
             printf("Ref counter of %s make zero, deleted.\n", GetTypeName(self));
             Delete(self);
         }
     }
 }
+
+int METHOD_NAMED(MIL_GdiObject, getRef)(_SELF, int type)
+{
+    if (type > 0 && type < MAX_REF_TYPE) {
+        return (_private(MIL_GdiObject)->counters[type]);
+    }
+    return -1;
+}
+
+BEGIN_METHOD_MAP(MIL_GdiObject, NonBase)
+    CONSTRUCTOR_MAP(MIL_GdiObject)
+    NON_DESTRUCTOR
+    METHOD_MAP(MIL_GdiObject, getLastStatus)
+    METHOD_MAP(MIL_GdiObject, ref)
+    METHOD_MAP(MIL_GdiObject, unRef)
+    METHOD_MAP(MIL_GdiObject, getRef)
+END_METHOD_MAP
 

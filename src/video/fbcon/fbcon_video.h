@@ -102,7 +102,7 @@ STRUCT {
 #define FB_ACCEL_3DFX_BANSHEE	31	/* 3Dfx Banshee			*/
 #endif
 
-CLASS_INHERIT_BEGIN(FBconVideoDevice, VideoDevice)
+BEGIN_CLASS_INHERIT(FBconVideoDevice, VideoDevice)
     NO_METHOD_EXPAND(FBconVideoDevice)
     
     /* Private display data */
@@ -110,7 +110,7 @@ CLASS_INHERIT_BEGIN(FBconVideoDevice, VideoDevice)
     Surface* screen;
 	int offset_x;
 	int offset_y;
-CLASS_INHERIT_END
+END_CLASS_INHERIT
 
 
 /* These functions are defined in MIL_fbvideo.c */

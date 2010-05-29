@@ -3,9 +3,9 @@
 
 #include <milui/coobase.h>
 
-CLASS_INHERIT_BEGIN(CooSub, CooBase)
+BEGIN_CLASS_INHERIT(CooSub, CooBase)
     NO_METHOD_EXPAND(CooSub)
-CLASS_INHERIT_END
+END_CLASS_INHERIT
 
 DESTRUCTOR(CooSub)
 {
@@ -18,15 +18,15 @@ CONSTRUCTOR(CooSub)
     return self;
 }
 
-METHOD_MAP_BEGIN(CooSub, CooBase)
+BEGIN_METHOD_MAP(CooSub, CooBase)
     CONSTRUCTOR_MAP(CooSub)
     DESTRUCTOR_MAP(CooSub)
-METHOD_MAP_END
+END_METHOD_MAP
 
 /*============================================================================*/
-CLASS_INHERIT_BEGIN(CooLevel1, CooSub)
+BEGIN_CLASS_INHERIT(CooLevel1, CooSub)
     NO_METHOD_EXPAND(CooLevel1)
-CLASS_INHERIT_END
+END_CLASS_INHERIT
 
 DESTRUCTOR(CooLevel1)
 {
@@ -39,10 +39,10 @@ CONSTRUCTOR(CooLevel1)
     return self;
 }
 
-METHOD_MAP_BEGIN(CooLevel1, CooSub)
+BEGIN_METHOD_MAP(CooLevel1, CooSub)
     CONSTRUCTOR_MAP(CooLevel1)
     DESTRUCTOR_MAP(CooLevel1)
-METHOD_MAP_END
+END_METHOD_MAP
 
 #endif   /* ----- #ifndef _SUBTEST_INC  ----- */
 

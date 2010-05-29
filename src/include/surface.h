@@ -18,7 +18,7 @@ typedef struct _MIL_BlitMap MIL_BlitMap;
 
 CLASS(Surface)
 {
-    METHOD_DECLARE_BEGIN(Surface)
+    BEGIN_METHOD_DECLARE(Surface)
     int  (*lock)(_SELF);
     void (*unlock)(_SELF);
     int  (*setColorKey)(_SELF, Uint32 flag, Uint32 key);
@@ -42,12 +42,13 @@ CLASS(Surface)
     Uint32 (*getFlags)(_CSELF);
     Uint8 (*getBitsPerPixel)(_CSELF);
     Uint8 (*getBytesPerPixel)(_CSELF);
+    const PixelFormat* (*getPixelFormat)(_SELF);
     Uint32 (*calculatePitch)(_SELF);
     int  (*mapSurface)(_SELF, Surface *dst);
     int  (*RLE)(_SELF);
     void (*UnRLE)(_SELF, int recode);
 
-    METHOD_DECLARE_END
+    END_METHOD_DECLARE
 
     Uint32 flags;				/* Read-only */
 	PixelFormat* format;		/* Read-only */

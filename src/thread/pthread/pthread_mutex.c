@@ -127,12 +127,12 @@ Sint32 PthreadMutex_X_unlock(_SELF)
 
 }
 
-METHOD_MAP_BEGIN(PthreadMutex, MIL_mutex)
+BEGIN_METHOD_MAP(PthreadMutex, MIL_mutex)
     CONSTRUCTOR_MAP(PthreadMutex)
     DESTRUCTOR_MAP(PthreadMutex)
     METHOD_MAP(PthreadMutex, lock)
     METHOD_MAP(PthreadMutex, unlock)
-METHOD_MAP_END
+END_METHOD_MAP
 
 
 

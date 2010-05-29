@@ -60,7 +60,7 @@ CONSTRUCTOR(Application)
         _c(vd)->setVideoMode(vd, (Surface*)screen, 640, 480, 32, 0);
         if (NULL != screen->pixels) {
             MIL_Rect rc = {0, 0, 640, 480};
-            MIL_Rect rcbmp = {0, 100, 300, 200};
+            MIL_Rect rcbmp = {0, 0, 300, 300};
             MIL_Rect rcdst = {50, 10, 200, 300};
             MIL_Point rcpos = {50, 5};
             MIL_Rect rclip = {200, 100, 400, 379};
@@ -68,6 +68,8 @@ CONSTRUCTOR(Application)
             MIL_RWops* ops = MIL_RWFromFile("res/lena16.bmp", "rb");
             Surface* bmp = MIL_LoadBMP_RW(ops, MIL_AUTO_FREE);
             MIL_DIBitmap* img = LoadBitmapFromFile("res/mil.bmp");
+//            MIL_Graphics* gc = CreateMemGCFromSurface(screen);
+            MIL_Color color = {2, 0, 0};
             int i, j;
             char *pixels = (char*)screen->pixels;
             _vc1(screen, setClipRect, &rclip);
@@ -79,6 +81,7 @@ CONSTRUCTOR(Application)
             }
             _vc2(screen, fillRect, &rc, 0xffffffff);
             _c(vd)->updateRects(vd, 1, &rc);
+//            _c(gc)->clear(gc, &color);
             getchar();
             if (NULL != bmp) {
                 Surface* convert = _vc2(bmp, convert, screen->format, screen->flags);
@@ -87,8 +90,8 @@ CONSTRUCTOR(Application)
                 for (j = 0; j < 400; ++j) {
                     rcdst.x = j;
                     rcpos.x = j;
-                    _c(convert)->stretchBlit(convert, &rcbmp, screen, &rcdst);
-//                    _vc3(convert, blit, &rcbmp, screen, &rcpos);
+//                    _c(convert)->stretchBlit(convert, &rcbmp, screen, &rcdst);
+                    _vc3(convert, blit, &rcbmp, screen, &rcpos);
                     _c(vd)->updateRects(vd, 1, &rc);
                 }
                 Delete(bmp);
@@ -111,10 +114,10 @@ MIL_Application* CreateApplication(char **args, int num)
     return New(Application);
 }
 
-METHOD_MAP_BEGIN(Application, NonBase)
+BEGIN_METHOD_MAP(Application, NonBase)
     CONSTRUCTOR_MAP(Application)
     DESTRUCTOR_MAP(Application)
-METHOD_MAP_END
+END_METHOD_MAP
 
 
 

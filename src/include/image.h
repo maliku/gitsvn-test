@@ -13,14 +13,12 @@
 #include "surface.h"
 
 #if 0
-CLASS_INHERIT_BEGIN(Image, MIL_Image)
+BEGIN_CLASS_INHERIT(Image, MIL_Image)
     NO_METHOD_EXPAND(Image)
-
-    /*METHOD_DECLARE_BEGIN(Image)
-        MIL_Status (*loadFile)(_SELF, const char* file);
-    METHOD_DECLARE_END*/
-
-CLASS_INHERIT_END
+END_CLASS_INHERIT
 #endif
+
+MIL_Image*
+CreateImageFromSurface(Surface* surface);
 #endif   /* ----- #ifndef IMAGE_INC  ----- */
 

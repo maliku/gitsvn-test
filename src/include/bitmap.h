@@ -12,11 +12,11 @@
 #include "image.h"
 
 #if 0
-CLASS_INHERIT_BEGIN(Bitmap, MIL_Image)
+BEGIN_CLASS_INHERIT(Bitmap, MIL_Image)
     NO_METHOD_EXPAND(Bitmap)
     
 
-CLASS_INHERIT_END
+END_CLASS_INHERIT
 #endif
 #endif   /* ----- #ifndef BITMAP_INC  ----- */
 

@@ -28,6 +28,9 @@ const MIL_VideoInfo *MIL_GetVideoInfo(void)
 	return(info);
 }
 
+/** 
+ * @synopsis  A constructor of Surface.
+ */
 CONSTRUCTOR(Surface)
 {
     _m(flags) = 0;
@@ -41,36 +44,12 @@ CONSTRUCTOR(Surface)
     _m(format_version) = 0;
     _m(refcount) = 0;
     memset(&_m(clip_rect), 0, sizeof(_m(clip_rect)));
-    METHOD_VERIFY_ONCE_BEGIN
-        VirtualMethodVerify(self, lock);
-        VirtualMethodVerify(self, unlock);
-        VirtualMethodVerify(self, setColorKey);
-        VirtualMethodVerify(self, setAlpha);
-        VirtualMethodVerify(self, setClipRect);
-        VirtualMethodVerify(self, getClipRect);
-        VirtualMethodVerify(self, blit);
-        VirtualMethodVerify(self, fillRect);
-        VirtualMethodVerify(self, saveBMP);
-        VirtualMethodVerify(self, stretchBlit);
-        VirtualMethodVerify(self, displayFormat);
-        VirtualMethodVerify(self, displayFormatAlpha);
-        VirtualMethodVerify(self, convert);
-        VirtualMethodVerify(self, reallocFormat);
-        VirtualMethodVerify(self, formatChanged);
-        VirtualMethodVerify(self, getWidth);
-        VirtualMethodVerify(self, getHeight);
-        VirtualMethodVerify(self, getPitch);
-        VirtualMethodVerify(self, getFlags);
-        VirtualMethodVerify(self, getBitsPerPixel);
-        VirtualMethodVerify(self, calculatePitch);
-        VirtualMethodVerify(self, mapSurface);
-        VirtualMethodVerify(self, RLE);
-        VirtualMethodVerify(self, UnRLE);
-    METHOD_VERIFY_ONCE_END
-
     return self;
 }
 
+/** 
+ * @synopsis  A destructor of Surface.
+ */
 DESTRUCTOR(Surface)
 {
     Surface* surface = (Surface*)self;
@@ -278,7 +257,16 @@ int  Surface_X_setAlpha(_SELF, Uint32 flag, Uint8 value)
 	return(0);
 }
 
-MIL_Bool Surface_X_setClipRect(_SELF, const MIL_Rect *rect)
+/** 
+ * @fn MIL_Bool Surface::setClipRect(void* self, const MIL_Rect* rect)
+ * @synopsis  Set clipping rectangle area.
+ * 
+ * @param self like this pointer
+ * @param rect clipping rect area.
+ * 
+ * @returns If success returns MIL_TRUE, else returns MIL_FALSE.  
+ */
+MIL_Bool METHOD_NAMED(Surface,setClipRect)(_SELF, const MIL_Rect *rect)
 {
 	MIL_Rect full_rect;
     Surface* surface = (Surface*)self;
@@ -379,7 +367,7 @@ int  Surface_X_blit(_SELF, const MIL_Rect *srcrect, Surface *dst, const MIL_Poin
 			w -= dx;
 
 		dy = clip->y - dstrect.y;
-        printf("clip->y = %d, dstrect->y = %d.\n", clip->y, dstrect.y);
+//        printf("clip->y = %d, dstrect->y = %d.\n", clip->y, dstrect.y);
 		if(dy > 0) {
 			h -= dy;
 			dstrect.y += dy;
@@ -396,8 +384,8 @@ int  Surface_X_blit(_SELF, const MIL_Rect *srcrect, Surface *dst, const MIL_Poin
 		sr.y = srcy;
 		sr.w = dstrect.w = w;
 		sr.h = dstrect.h = h;
-        printf("src.x = %d, y = %d, w = %d, h = %d.\n", sr.x, sr.y, sr.w, sr.h);
-        printf("dst.x = %d, y = %d, w = %d, h = %d.\n", dstrect.x, dstrect.y, dstrect.w, dstrect.h);
+//        printf("src.x = %d, y = %d, w = %d, h = %d.\n", sr.x, sr.y, sr.w, sr.h);
+//        printf("dst.x = %d, y = %d, w = %d, h = %d.\n", dstrect.x, dstrect.y, dstrect.w, dstrect.h);
 		return MIL_LowerBlit(src, &sr, dst, &dstrect);
 	}
 //	dstrect.w = dstrect.h = 0;
@@ -418,7 +406,7 @@ static int MIL_FillRect4(Surface *dst, MIL_Rect *dstrect, Uint32 color)
 	return -1;
 }
 
-int  Surface_X_fillRect(_SELF, MIL_Rect *dstrect, Uint32 color)
+int  METHOD_NAMED(Surface, fillRect)(_SELF, MIL_Rect *dstrect, Uint32 color)
 {
 	VideoDevice *video = ACT_VIDEO_DEVICE;
 	VideoDevice *this  = ACT_VIDEO_DEVICE;
@@ -952,6 +940,11 @@ Uint8 Surface_X_getBytesPerPixel(_CSELF)
     return ((const Surface*)self)->format->BytesPerPixel;
 }
 
+const PixelFormat* METHOD_NAMED(Surface, getPixelFormat)(_SELF)
+{
+    return ((const Surface*)self)->format;
+}
+
 int Surface_X_RLE(_SELF)
 {
 	int retcode;
@@ -1020,7 +1013,7 @@ void Surface_X_UnRLE(_SELF, int recode)
                 }
 
                 /* fill it with the background colour */
-                MIL_FillRect(surface, NULL, surface->format->colorkey);
+                _c(surface)->fillRect(surface, NULL, surface->format->colorkey);
 
                 /* now render the encoded surface */
                 full.x = full.y = 0;
@@ -1046,7 +1039,7 @@ void Surface_X_UnRLE(_SELF, int recode)
     }
 }
 
-METHOD_MAP_BEGIN(Surface, NonBase)
+BEGIN_METHOD_MAP(Surface, NonBase)
     CONSTRUCTOR_MAP(Surface)
     DESTRUCTOR_MAP(Surface)
     METHOD_MAP(Surface, lock)
@@ -1070,6 +1063,7 @@ METHOD_MAP_BEGIN(Surface, NonBase)
     METHOD_MAP(Surface, getPitch)
     METHOD_MAP(Surface, getFlags)
     METHOD_MAP(Surface, getBitsPerPixel)
+    METHOD_MAP(Surface, getPixelFormat)
     METHOD_MAP(Surface, calculatePitch)
     METHOD_MAP(Surface, mapSurface)
     METHOD_MAP(Surface, RLE)
@@ -1077,7 +1071,7 @@ METHOD_MAP_BEGIN(Surface, NonBase)
 
 METHOD_MAP(Surface, getBytesPerPixel)
 
-METHOD_MAP_END 
+END_METHOD_MAP 
 
 
 
@@ -1202,6 +1196,7 @@ Surface * CreateRGBSurface (Uint32 flags,
 /* 
  * This function performs a fast fill of the given rectangle with 'color'
  */
+#if 0
 int MIL_FillRect(Surface *dst, MIL_Rect *dstrect, Uint32 color)
 {
 	VideoDevice *video = ACT_VIDEO_DEVICE;
@@ -1210,7 +1205,6 @@ int MIL_FillRect(Surface *dst, MIL_Rect *dstrect, Uint32 color)
 	Uint8 *row;
 
     /* TODO: Will to support palette? */
-#if 0
 	/* This function doesn't work on surfaces < 8 bpp */
 	if ( dst->format->BitsPerPixel < 8 ) {
 		switch(dst->format->BitsPerPixel) {
@@ -1226,7 +1220,6 @@ int MIL_FillRect(Surface *dst, MIL_Rect *dstrect, Uint32 color)
 			break;
 		}
 	}
-#endif
 
 	/* If 'dstrect' == NULL, then fill the whole surface */
 	if ( dstrect ) {
@@ -1384,4 +1377,5 @@ int MIL_FillRect(Surface *dst, MIL_Rect *dstrect, Uint32 color)
 	/* We're done! */
 	return(0);
 }
+#endif
 

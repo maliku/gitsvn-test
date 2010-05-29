@@ -54,6 +54,10 @@ typedef enum  {
     MIL_ROTATE_270_FLIP_XY      = MIL_ROTATE_90_FLIP_NONE 
 } MIL_RotateFlipType;
 
+/** 
+ * @struct MIL_DIBitmap
+ * @brief A MIL_DIBitmap object stores attributes of a bitmap.
+ */
 STRUCT MIL_DIBitmapData{
     Uint32 w;
     Uint32 h;
@@ -62,30 +66,37 @@ STRUCT MIL_DIBitmapData{
 //    MIL_PixelFormat* format;
 }MIL_DIBitmapData;
 
+#define METHOD_TABLE(type) MIL_##type##_METHOD_TABLE
+/** 
+ * @class MIL_GdiObject
+ * @brief MIL_GdiObject serves as a base class for all other GDI classes, 
+ * so you never need to create an instance of MIL_GdiObject.
+ */
 CLASS(MIL_GdiObject)
 {
-    METHOD_DECLARE_BEGIN(MIL_GdiObject)
+    BEGIN_METHOD_DECLARE(MIL_GdiObject)
 #define MIL_GDIOBJECT_METHOD_TABLE \
         MIL_Status (*getLastStatus)(_Self(MIL_GdiObject));\
-        void (*addHoldRef)(_Self(MIL_GdiObject), int type);\
-        void (*decHoldRef)(_Self(MIL_GdiObject), int type);
+        MIL_GdiObject* (*ref)(_SELF, int type);\
+        void (*unRef)(_SELF, int type);\
+        int (*getRef)(_SELF, int type);
         MIL_GDIOBJECT_METHOD_TABLE 
-    METHOD_DECLARE_END
+    END_METHOD_DECLARE
 
-    PRIVATE_BEGIN(MIL_GdiObject)
+    BEGIN_PRIVATE(MIL_GdiObject)
         int counters[3];
         MIL_Status status;
-    PRIVATE_END
+    END_PRIVATE
 };
 
 /* forward declare of internal class. */
 struct __Surface;
-/** 
- * @name MIL_Image
+/**
+ * @class MIL_Image
  * @brief A readonly container of kinds of image format.The Image object must be device-independent.
  */
-CLASS_INHERIT_BEGIN(MIL_Image, MIL_GdiObject)
-    METHOD_EXPAND_DECLARE_BEGIN(MIL_Image)
+BEGIN_CLASS_INHERIT(MIL_Image, MIL_GdiObject)
+    BEGIN_METHOD_EXPAND_DECLARE(MIL_Image)
 #define MIL_IMAGE_METHOD_TABLE \
         MIL_GDIOBJECT_METHOD_TABLE \
         MIL_Image*  (*clone)(_Self(MIL_Image)); \
@@ -95,28 +106,27 @@ CLASS_INHERIT_BEGIN(MIL_Image, MIL_GdiObject)
         MIL_Status  (*getPalette)(_Self(MIL_Image), MIL_Palette* palette); \
         MIL_Status  (*setPalette)(_Self(MIL_Image), const MIL_Palette* palette); \
         int         (*getPaletteSize)(_Self(MIL_Image)); \
-        MIL_Status  (*getPixelFormat)(_Self(MIL_Image), MIL_PixelFormat* fmt); \
+        const MIL_PixelFormat* (*getPixelFormat)(_Self(MIL_Image)); \
         const char* (*getRawFormat)(_Self(MIL_Image)); \
         MIL_Status  (*rotateFlip)(_Self(MIL_Image), MIL_RotateFlipType); \
         MIL_Status  (*save)(_Self(MIL_Status), const char* file); \
         MIL_Status  (*loadFile)(_Self(MIL_Image), const char* file);
         MIL_IMAGE_METHOD_TABLE
-    METHOD_EXPAND_DECLARE_END
+    END_METHOD_EXPAND_DECLARE
 
-    PRIVATE_BEGIN(MIL_Image)
-
+    BEGIN_PRIVATE(MIL_Image)
     const char* raw_format;
-    struct __Surface* data;
+    void* data;
+    END_PRIVATE
 
-    PRIVATE_END
-CLASS_INHERIT_END
+END_CLASS_INHERIT
 
 /** 
- * @name MIL_DIBitmap
+ * @class MIL_DIBitmap
  * @brief A modifiable container for MIL_Image, you can change it's pixel data.
  */
-CLASS_INHERIT_BEGIN(MIL_DIBitmap, MIL_Image)
-    METHOD_EXPAND_DECLARE_BEGIN(MIL_DIBitmap)
+BEGIN_CLASS_INHERIT(MIL_DIBitmap, MIL_Image)
+    BEGIN_METHOD_EXPAND_DECLARE(MIL_DIBitmap)
 #define MIL_BITMAP_METHOD_TABLE \
         MIL_IMAGE_METHOD_TABLE \
         MIL_Status  (*getPixel)(_Self(MIL_DIBitmap), int x, int y, MIL_Color* color); \
@@ -124,12 +134,12 @@ CLASS_INHERIT_BEGIN(MIL_DIBitmap, MIL_Image)
         MIL_Status  (*setPixel)(_Self(MIL_DIBitmap), int x, int y, const MIL_Color* color); \
         MIL_Status  (*unlockBits)(_Self(MIL_DIBitmap), MIL_DIBitmapData* locked_data);
         MIL_BITMAP_METHOD_TABLE
-    METHOD_EXPAND_DECLARE_END
+    END_METHOD_EXPAND_DECLARE
 
-    PRIVATE_BEGIN(MIL_DIBitmap)
+    BEGIN_PRIVATE(MIL_DIBitmap)
         MIL_DIBitmapData* data;
-    PRIVATE_END
-CLASS_INHERIT_END
+    END_PRIVATE
+END_CLASS_INHERIT
 
 typedef enum  {
     MIL_DASH_SOLID        = 0,
@@ -187,37 +197,37 @@ typedef enum  {
     MIL_MATRIX_APPEND    = 1 
 } MIL_MatrixOrder;
 
-CLASS_INHERIT_BEGIN(MIL_Brush, MIL_GdiObject)
-    METHOD_EXPAND_DECLARE_BEGIN(MIL_Brush)
+BEGIN_CLASS_INHERIT(MIL_Brush, MIL_GdiObject)
+    BEGIN_METHOD_EXPAND_DECLARE(MIL_Brush)
 #define MIL_BRUSH_METHOD_TABLE \
         MIL_GDIOBJECT_METHOD_TABLE  \
         MIL_BrushType (*getType)(_Self(MIL_Brush));
         MIL_BRUSH_METHOD_TABLE
-    METHOD_EXPAND_DECLARE_END
-CLASS_INHERIT_END
+    END_METHOD_EXPAND_DECLARE
+END_CLASS_INHERIT
 
-CLASS_INHERIT_BEGIN(MIL_Region, MIL_GdiObject)
-    METHOD_EXPAND_DECLARE_BEGIN(MIL_Region)
+BEGIN_CLASS_INHERIT(MIL_Region, MIL_GdiObject)
+    BEGIN_METHOD_EXPAND_DECLARE(MIL_Region)
 #define MIL_REGION_METHOD_TABLE \
         MIL_GDIOBJECT_METHOD_TABLE  \
         MIL_Status (*excludeRect)(_Self(MIL_Region), MIL_Rect*);\
         MIL_Status (*excludeRegion)(_Self(MIL_Region), MIL_Region*);
         MIL_REGION_METHOD_TABLE
-    METHOD_EXPAND_DECLARE_END
-CLASS_INHERIT_END
+    END_METHOD_EXPAND_DECLARE
+END_CLASS_INHERIT
 
-CLASS_INHERIT_BEGIN(MIL_SolidBrush, MIL_Brush)
-    METHOD_EXPAND_DECLARE_BEGIN(MIL_SolidBrush)
+BEGIN_CLASS_INHERIT(MIL_SolidBrush, MIL_Brush)
+    BEGIN_METHOD_EXPAND_DECLARE(MIL_SolidBrush)
 #define MIL_SOLIDBRUSH_METHOD_TABLE \
         MIL_BRUSH_METHOD_TABLE \
         MIL_Status (*getColor)(_Self(MIL_SolidBrush), MIL_Color*);\
         MIL_Status (*setColor)(_Self(MIL_SolidBrush), const MIL_Color*);
         MIL_SOLIDBRUSH_METHOD_TABLE
-    METHOD_EXPAND_DECLARE_END
-CLASS_INHERIT_END
+    END_METHOD_EXPAND_DECLARE
+END_CLASS_INHERIT
 
-CLASS_INHERIT_BEGIN(MIL_HatchBrush, MIL_Brush)
-    METHOD_EXPAND_DECLARE_BEGIN(MIL_HatchBrush)
+BEGIN_CLASS_INHERIT(MIL_HatchBrush, MIL_Brush)
+    BEGIN_METHOD_EXPAND_DECLARE(MIL_HatchBrush)
 #define MIL_HATCHBRUSH_METHOD_TABLE \
         MIL_BRUSH_METHOD_TABLE \
         MIL_Status (*getBackgroundColor)(_Self(MIL_HatchBrush), MIL_Color*);\
@@ -227,22 +237,22 @@ CLASS_INHERIT_BEGIN(MIL_HatchBrush, MIL_Brush)
         MIL_HatchStyle (*getHatchStyle)(_Self(MIL_HatchBrush));\
         MIL_HatchStyle (*setHatchStyle)(_Self(MIL_HatchBrush), MIL_HatchBrush);
         MIL_HATCHBRUSH_METHOD_TABLE
-    METHOD_EXPAND_DECLARE_END
-CLASS_INHERIT_END
+    END_METHOD_EXPAND_DECLARE
+END_CLASS_INHERIT
 
-CLASS_INHERIT_BEGIN(MIL_TextureBrush, MIL_Brush)
-    METHOD_EXPAND_DECLARE_BEGIN(MIL_TextureBrush)
+BEGIN_CLASS_INHERIT(MIL_TextureBrush, MIL_Brush)
+    BEGIN_METHOD_EXPAND_DECLARE(MIL_TextureBrush)
 #define MIL_TEXTUREBRUSH_METHOD_TABLE \
         MIL_BRUSH_METHOD_TABLE \
         MIL_Image* (*getImage)(_CSelf(MIL_TextureBrush));\
         MIL_WrapMode (*getWrapMode)(_CSelf(MIL_TextureBrush));\
         MIL_Status (*setWrapMode)(_Self(MIL_TextureBrush), MIL_WrapMode);
         MIL_TEXTUREBRUSH_METHOD_TABLE
-    METHOD_EXPAND_DECLARE_END
-CLASS_INHERIT_END
+    END_METHOD_EXPAND_DECLARE
+END_CLASS_INHERIT
 
-CLASS_INHERIT_BEGIN(MIL_Pen, MIL_GdiObject)
-    METHOD_EXPAND_DECLARE_BEGIN(MIL_Pen)
+BEGIN_CLASS_INHERIT(MIL_Pen, MIL_GdiObject)
+    BEGIN_METHOD_EXPAND_DECLARE(MIL_Pen)
 #define MIL_PEN_METHOD_TABLE \
         MIL_GDIOBJECT_METHOD_TABLE  \
         MIL_Brush* (*getBrush)(_Self(MIL_Pen));\
@@ -260,11 +270,11 @@ CLASS_INHERIT_BEGIN(MIL_Pen, MIL_GdiObject)
         MIL_Status (*setLineJoin)(_Self(MIL_Pen), MIL_LineJoin);\
         MIL_Status (*setWidth)(_Self(MIL_Pen), Uint32);
         MIL_PEN_METHOD_TABLE
-    METHOD_EXPAND_DECLARE_END
-CLASS_INHERIT_END
+    END_METHOD_EXPAND_DECLARE
+END_CLASS_INHERIT
 
-CLASS_INHERIT_BEGIN(MIL_GraphicsContext, MIL_GdiObject)
-    METHOD_EXPAND_DECLARE_BEGIN(MIL_GraphicsContext)
+BEGIN_CLASS_INHERIT(MIL_GraphicsContext, MIL_GdiObject)
+    BEGIN_METHOD_EXPAND_DECLARE(MIL_GraphicsContext)
 #define MIL_GC_METHOD_TABLE \
         MIL_GDIOBJECT_METHOD_TABLE  \
         MIL_Status (*clear)(_Self(MIL_GraphicsContext), MIL_Color*); \
@@ -277,20 +287,29 @@ CLASS_INHERIT_BEGIN(MIL_GraphicsContext, MIL_GdiObject)
         void       (*store)(_Self(MIL_GraphicsContext)); \
         void       (*restore)(_Self(MIL_GraphicsContext));
         MIL_GC_METHOD_TABLE
-    METHOD_EXPAND_DECLARE_END
-CLASS_INHERIT_END
+    END_METHOD_EXPAND_DECLARE
+END_CLASS_INHERIT
 /* Alias of MIL_GraphicsContext */
 typedef MIL_GraphicsContext MIL_Graphics;
 
-/** 
+extern DECLSPEC MIL_Graphics*
+MIL_CreateMemGC(Uint32 width, Uint32 height, Uint32 depth, Uint32 Rmask,
+        Uint32 Gmask, Uint32 Bmask, Uint32 Amask, Uint32 flags);
+
+/*! 
  * @synopsis Load image from a file.
- * 
  * @param file The path of file.
- * 
  * @returns Pointer of image object if success, NULL otherwise. 
  */
-MIL_Image* LoadImageFromFile(const char* file);
-MIL_DIBitmap* LoadBitmapFromFile(const char* file);
+extern DECLSPEC MIL_Image* LoadImageFromFile(const char* file);
+
+/*! 
+ * @synopsis Load image from a file.
+ * @param file The path of file.
+ * @returns Pointer of Bitmap object if success, NULL otherwise. 
+ */
+extern DECLSPEC MIL_DIBitmap* 
+LoadBitmapFromFile(const char* file);
 
 /*
  * A function to calculate the intersection of two rectangles.

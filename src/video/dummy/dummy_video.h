@@ -12,8 +12,8 @@
 
 #include "video_device.h"
 
-CLASS_INHERIT_BEGIN(DummyVideoDevice, VideoDevice)
+BEGIN_CLASS_INHERIT(DummyVideoDevice, VideoDevice)
     NO_METHOD_EXPAND(DummyVideoDevice)
 
-CLASS_INHERIT_END
+END_CLASS_INHERIT
 #endif   /* ----- #ifndef DUMMYVIDEO_INC  ----- */

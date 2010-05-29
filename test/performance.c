@@ -27,11 +27,11 @@ void METHOD_NAMED(MyBase, normal_method)(_Self(MyBase))
     printf("Now count = %d.\n", self->m_count++);
 }
 
-METHOD_MAP_BEGIN(MyBase, NonBase)
+BEGIN_METHOD_MAP(MyBase, NonBase)
     CONSTRUCTOR_MAP(MyBase)
     NON_DESTRUCTOR
     METHOD_MAP(MyBase, virtual_method)
-METHOD_MAP_END
+END_METHOD_MAP
 
 
 //    METHOD_MAP(MyBase, normal_method)
@@ -42,11 +42,11 @@ void METHOD_NAMED(MySub, virtual_method)(_Self(MyBase))
     printf("Now count = %d.\n", self->m_count++);
 }
 
-METHOD_MAP_BEGIN(MySub, MyBase)
+BEGIN_METHOD_MAP(MySub, MyBase)
     NON_CONSTRUCTOR
     NON_DESTRUCTOR
     METHOD_MAP(MySub, virtual_method)
-METHOD_MAP_END
+END_METHOD_MAP
 
 #define TEST_COUNT 50000
 int main()

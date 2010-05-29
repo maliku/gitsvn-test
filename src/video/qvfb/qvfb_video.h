@@ -45,12 +45,12 @@ typedef struct {
     QVFbHeader* hdr;
 } QVFbHardwareDependent;
 
-CLASS_INHERIT_BEGIN(QVFbVideoDevice, VideoDevice)
+BEGIN_CLASS_INHERIT(QVFbVideoDevice, VideoDevice)
     NO_METHOD_EXPAND(QVFbVideoDevice)
     
     /* Private display data */
     QVFbHardwareDependent* hw_data;
 
-CLASS_INHERIT_END
+END_CLASS_INHERIT
 
 #endif   /* ----- #ifndef QVFb_VIDEO_INC  ----- */

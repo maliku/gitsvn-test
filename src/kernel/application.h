@@ -12,10 +12,10 @@
 
 #include "MIL_application.h"
 
-CLASS_INHERIT_BEGIN(Application, MIL_Application)
+BEGIN_CLASS_INHERIT(Application, MIL_Application)
     NO_METHOD_EXPAND(Application)
     
-CLASS_INHERIT_END
+END_CLASS_INHERIT
 
 #endif   /* ----- #ifndef APPLICATION_INC  ----- */
 

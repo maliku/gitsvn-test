@@ -13,10 +13,10 @@
 #include "MIL_config.h"
 #include "MIL_mutex.h"
 
-CLASS_INHERIT_BEGIN(DummyMutex, MIL_mutex)
+BEGIN_CLASS_INHERIT(DummyMutex, MIL_mutex)
     NO_METHOD_EXPAND(DummyMutex)
     
-CLASS_INHERIT_END
+END_CLASS_INHERIT
 
 
 #endif   /* ----- #ifndef DUMMYMUTEX_INC  ----- */

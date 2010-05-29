@@ -9,22 +9,24 @@
 #ifndef  GFX_CONTEXT_INC
 #define  GFX_CONTEXT_INC
 
-#include "MIL_gdi.h"
+#include "gdi.h"
 #include "surface.h"
 
-CLASS_INHERIT_BEGIN(MemoryGC, MIL_GraphicsContext)
-    METHOD_EXPAND_DECLARE_BEGIN(MemoryGC)
+BEGIN_CLASS_INHERIT(MemoryGC, MIL_GraphicsContext)
+    BEGIN_METHOD_EXPAND_DECLARE(MemoryGC)
 #define MIL_MEMGC_METHOD_TABLE \
         MIL_GC_METHOD_TABLE
         MIL_MEMGC_METHOD_TABLE
-    METHOD_EXPAND_DECLARE_END
+    END_METHOD_EXPAND_DECLARE
 
-    PRIVATE_BEGIN(MemoryGC)
-    Surface* surface;
+    BEGIN_PRIVATE(MemoryGC)
+    MIL_Image* image;
     MIL_Pen* pen;
     MIL_Brush* brush;
-    PRIVATE_END
-CLASS_INHERIT_END
+    END_PRIVATE
+END_CLASS_INHERIT
 
+MIL_Graphics*
+CreateMemGCFromImage(MIL_Image* img);
 #endif   /* ----- #ifndef GFX_CONTEXT_INC  ----- */
 

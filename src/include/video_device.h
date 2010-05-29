@@ -15,7 +15,7 @@
 #include "surface.h"
 
 CLASS(VideoDevice) {
-    METHOD_DECLARE_BEGIN(VideoDevice) 
+    BEGIN_METHOD_DECLARE(VideoDevice) 
 	/* * * */
 	/* Initialization/Query functions */
 
@@ -137,11 +137,11 @@ CLASS(VideoDevice) {
 	/* Swap the current buffers in double buffer mode. */
 	void (*GL_SwapBuffers)(_Self(VideoDevice));
 
-    METHOD_DECLARE_END 
+    END_METHOD_DECLARE 
 
-    /*METHOD_DECLARE_BEGIN(VideoDevice)
+    /*BEGIN_METHOD_DECLARE(VideoDevice)
         char* (*getName)(_Self(VideoDevice), char* buff, Uint32 len);
-    METHOD_DECLARE_END*/
+    END_METHOD_DECLARE*/
 
     const char *name;
 	/* Information about the video hardware */

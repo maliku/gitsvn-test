@@ -53,15 +53,15 @@ void type##Predestructor(_SELF);\
 struct __##type
 
 /* Declare a interface, it can't include any data member. */
-#define INTERFACE_BEGIN(type) \
+#define BEGIN_INTERFACE(type) \
 CLASS(type) \
 {\
-    METHOD_DECLARE_BEGIN(type)
+    BEGIN_METHOD_DECLARE(type)
 
-#define INTERFACE_END \
-    METHOD_DECLARE_END };
+#define END_INTERFACE \
+    END_METHOD_DECLARE };
 
-#define METHOD_EXPAND_DECLARE_BEGIN(type) \
+#define BEGIN_METHOD_EXPAND_DECLARE(type) \
 struct __##type##Vtable; \
 typedef struct __##type##Vtable type##Vtable;\
 extern type##Vtable g_##type##Vtable;\
@@ -76,7 +76,7 @@ struct _##type {\
         void (*Destructor)(void*);
 
 /* Macro for virtual member function declare end. */
-#define	METHOD_EXPAND_DECLARE_END }*__vptr; } __super;
+#define	END_METHOD_EXPAND_DECLARE }*__vptr; } __super;
 
 #define NO_METHOD_EXPAND(type) \
 typedef __VtableTypeOf##type##Base type##Vtable;\
@@ -87,7 +87,7 @@ struct _##type {\
         type##Vtable *__vptr; \
     }__super;
 
-#define	CLASS_INHERIT_BEGIN(type, basetype) \
+#define	BEGIN_CLASS_INHERIT(type, basetype) \
 struct _##type;\
 typedef struct _##type type;\
 typedef basetype __BaseOf##type; \
@@ -95,7 +95,7 @@ typedef basetype##Vtable __VtableTypeOf##type##Base;\
 extern void* type##Preconstructor(_SELF);\
 void type##Predestructor(_SELF);\
 
-#define	CLASS_INHERIT_END };
+#define	END_CLASS_INHERIT };
 
 #define	_Self(type)	type* self		/* 'this' pointer for COO framework */
 #define	_CSelf(type)	const type* const self		/* 'this' pointer for COO framework */
@@ -118,10 +118,6 @@ void type##Predestructor(_SELF);\
         static int is_verified = MIL_FALSE; \
         if (!is_verified) {
 
-#define METHOD_VERIFY_ONCE_END \
-        is_verified = MIL_TRUE;} \
-    }
-
 #define	_m(member)	(self->member)
 #define	_tm(type, member)	(((type*)self)->member)
 #define	_M(method)	(_c(self)->method)
@@ -141,17 +137,17 @@ void type##Predestructor(_SELF);\
 #define _vc8(pobj, method, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) _vf(pobj, method)((pobj), arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)
 #define _vc9(pobj, method, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) _vf(pobj, method)((pobj), arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)
 
-#define PRIVATE_BEGIN(type) \
+#define BEGIN_PRIVATE(type) \
     char __ [sizeof(struct _##type##_private {
 
-#define PRIVATE_END })];
+#define END_PRIVATE })];
 
 #define _ptm(type, name) (*(struct _##type##_private*)(&((type*)self)->__)).name
 #define _private(type) ((struct _##type##_private*)(&((type*)self)->__))
 #define _public(type)  ((type*)self)
 
 /* Macro for virtual member function declare begin. */
-#define METHOD_DECLARE_BEGIN(type) \
+#define BEGIN_METHOD_DECLARE(type) \
     union { \
         void * __class; \
     struct __##type##Vtable {\
@@ -162,27 +158,13 @@ void type##Predestructor(_SELF);\
         void (*Destructor)(void*);
 
 /* Macro for virtual member function declare end. */
-#define	METHOD_DECLARE_END }*__vptr; } __super;
-
-/* Macro for virtual member function declare begin. */
-#define TMP_METHOD_DECLARE_BEGIN(type) \
-    union { \
-        void * __class; \
-    struct __##type##Vtable {\
-        RTTI __rtti;\
-        void* (*OrderConstruct)(void*);\
-        void (*Predestructor)(void*);\
-        void* (*Constructor)(void*); \
-        void (*Destructor)(void*);
-
-/* Macro for virtual member function declare end. */
-#define	TMP_METHOD_DECLARE_END }*__vptr; } __super;
+#define	END_METHOD_DECLARE }*__vptr; } __super;
 
 #define METHOD_DECLARE_PLACEHOLDER(type) \
-METHOD_DECLARE_BEGIN(type) \
-METHOD_DECLARE_END 
+BEGIN_METHOD_DECLARE(type) \
+END_METHOD_DECLARE 
 
-#define METHOD_MAP_BEGIN(type, basetype) \
+#define BEGIN_METHOD_MAP(type, basetype) \
 PRECONSTRUCTORS(type, basetype)\
 PREDESTRUCTORS(type, basetype)\
 type##Vtable g_##type##Vtable = {\
@@ -196,11 +178,11 @@ type##Vtable g_##type##Vtable = {\
 #define	METHOD_MAP(type, func) type##_X_##func,
 #endif
 
-#define METHOD_MAP_END };
+#define END_METHOD_MAP };
 
 #define METHOD_MAP_PLACEHOLDER(type, basetype) \
-METHOD_MAP_BEGIN(type, basetype) \
-METHOD_MAP_END 
+BEGIN_METHOD_MAP(type, basetype) \
+END_METHOD_MAP 
 
 #define MAKE_PURE_VIRTUAL_CLASS(type) METHOD_MAP_PLACEHOLDER(type, NonBase)
 
