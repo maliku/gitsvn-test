@@ -26,6 +26,7 @@ METHOD_NAMED(MIL_GdiObject, ref)(_SELF, int type)
 {
     if (type > 0 && type < MAX_REF_TYPE) {
         ++(_private(MIL_GdiObject)->counters[type]);
+        return self;
     }
 }
 

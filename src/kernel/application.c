@@ -12,6 +12,7 @@
 #include "signals.h"
 #include "application.h"
 #include "bitmap.h"
+#include "image.h"
 
 MAKE_PURE_VIRTUAL_CLASS(MIL_Application)
 
@@ -68,8 +69,7 @@ CONSTRUCTOR(Application)
             MIL_RWops* ops = MIL_RWFromFile("res/lena16.bmp", "rb");
             Surface* bmp = MIL_LoadBMP_RW(ops, MIL_AUTO_FREE);
             MIL_DIBitmap* img = LoadBitmapFromFile("res/mil.bmp");
-//            MIL_Graphics* gc = CreateMemGCFromSurface(screen);
-            MIL_Color color = {2, 0, 0};
+            MIL_Color color = {2, 0, 100};
             int i, j;
             char *pixels = (char*)screen->pixels;
             _vc1(screen, setClipRect, &rclip);
@@ -81,18 +81,22 @@ CONSTRUCTOR(Application)
             }
             _vc2(screen, fillRect, &rc, 0xffffffff);
             _c(vd)->updateRects(vd, 1, &rc);
-//            _c(gc)->clear(gc, &color);
             getchar();
             if (NULL != bmp) {
                 Surface* convert = _vc2(bmp, convert, screen->format, screen->flags);
+                MIL_Image* screen_img = CreateImageFromSurface(screen);
+                if (NULL != screen_img) {
+                    MIL_Graphics* gc = MIL_CreateMemGCFromImage(screen_img);
 //                _vc2(convert, setColorKey, MIL_SRCCOLORKEY, 0);
 //                _vc2(convert, setAlpha, MIL_SRCALPHA, 5);
-                for (j = 0; j < 400; ++j) {
-                    rcdst.x = j;
-                    rcpos.x = j;
+                    for (j = 0; j < 400; ++j) {
+                        rcdst.x = j;
+                        rcpos.x = j;
 //                    _c(convert)->stretchBlit(convert, &rcbmp, screen, &rcdst);
-                    _vc3(convert, blit, &rcbmp, screen, &rcpos);
-                    _c(vd)->updateRects(vd, 1, &rc);
+                        _vc3(convert, blit, &rcbmp, screen, &rcpos);
+                        _c(gc)->clear(gc, &color);
+                        _c(vd)->updateRects(vd, 1, &rc);
+                    }
                 }
                 Delete(bmp);
                 Delete(convert);

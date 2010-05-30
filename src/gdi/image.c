@@ -109,7 +109,6 @@ MIL_Status METHOD_NAMED(MIL_Image, loadFile)(_Self(MIL_Image), const char* file)
             if (NULL != surface) {
                 _private(MIL_Image)->data = surface;
                 _private(MIL_Image)->raw_format = "bmp";
-                printf("format=%p, pixels=%p.\n", surface->format, surface->pixels);
                 if ( surface->map != NULL ) {
                     MIL_FreeBlitMap(surface->map);
                     surface->map = NULL;

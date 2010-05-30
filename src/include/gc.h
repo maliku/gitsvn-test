@@ -26,7 +26,5 @@ BEGIN_CLASS_INHERIT(MemoryGC, MIL_GraphicsContext)
     END_PRIVATE
 END_CLASS_INHERIT
 
-MIL_Graphics*
-CreateMemGCFromImage(MIL_Image* img);
 #endif   /* ----- #ifndef GFX_CONTEXT_INC  ----- */
 

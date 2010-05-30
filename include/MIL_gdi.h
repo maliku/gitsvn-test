@@ -296,6 +296,8 @@ extern DECLSPEC MIL_Graphics*
 MIL_CreateMemGC(Uint32 width, Uint32 height, Uint32 depth, Uint32 Rmask,
         Uint32 Gmask, Uint32 Bmask, Uint32 Amask, Uint32 flags);
 
+MIL_Graphics*
+MIL_CreateMemGCFromImage(MIL_Image* img);
 /*! 
  * @synopsis Load image from a file.
  * @param file The path of file.

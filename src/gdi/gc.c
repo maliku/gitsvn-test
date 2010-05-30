@@ -133,7 +133,7 @@ MIL_CreateMemGC(Uint32 width, Uint32 height, Uint32 depth, Uint32 Rmask,
     MIL_Image* img = (MIL_Image*)CreateImageFromSurface(surface);
     MIL_Graphics* mgc = NULL;
     if (NULL != img) {
-        mgc = CreateMemGCFromImage(img);
+        mgc = MIL_CreateMemGCFromImage(img);
         if (NULL == mgc) {
             Delete(img); /* It will delete surface too. */
         }
@@ -145,7 +145,7 @@ MIL_CreateMemGC(Uint32 width, Uint32 height, Uint32 depth, Uint32 Rmask,
 }
 
 MIL_Graphics*
-CreateMemGCFromImage(MIL_Image* img)
+MIL_CreateMemGCFromImage(MIL_Image* img)
 {
     if (NULL != img) {
         MemoryGC* mgc = (MemoryGC*)New(MemoryGC);
