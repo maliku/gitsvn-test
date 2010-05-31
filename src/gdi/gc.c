@@ -47,7 +47,10 @@ MIL_Status METHOD_NAMED(MemoryGC, clear)(_Self(MIL_GraphicsContext), MIL_Color* 
             _c(_private(MemoryGC)->image)->getPixelFormat(
                     _private(MemoryGC)->image); 
         Surface* surface = _friend(MIL_Image, _private(MemoryGC)->image)->data;
+        _c(surface)->getClipRect(surface, &rc_bak);
+        _c(surface)->setClipRect(surface, NULL);
         _c(surface)->fillRect(surface, NULL, _c(format)->mapColor(format, color));
+        _c(surface)->setClipRect(surface, &rc_bak);
         return MIL_OK;
     }
     return MIL_INVALID_PARAMETER;
