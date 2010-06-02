@@ -29,8 +29,13 @@ MIL_Status  MIL_DIBitmap_X_lockBits(_Self(MIL_DIBitmap), const MIL_Rect* rc, MIL
     return MIL_NOT_IMPLEMENTED;
 }
 
-MIL_Status  MIL_DIBitmap_X_setPixel(_Self(MIL_DIBitmap), int x, int y, const MIL_Color* color)
+MIL_Status  MIL_DIBitmap_X_setPixel(_Self(MIL_DIBitmap), 
+        int x, int y, const MIL_Color* color)
 {
+    Surface* surface = _private(MIL_Image)->data;
+    // TODO: lock
+    
+    // TODO: unlock
     return MIL_NOT_IMPLEMENTED;
 }
 
@@ -63,9 +68,6 @@ BEGIN_METHOD_MAP(MIL_DIBitmap, MIL_Image)
     METHOD_MAP(MIL_DIBitmap, setPixel)
     METHOD_MAP(MIL_DIBitmap, unlockBits)
 END_METHOD_MAP
-
-
-
 
 MIL_DIBitmap* LoadBitmapFromFile(const char* file)
 {

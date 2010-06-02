@@ -250,12 +250,12 @@ void* SignalSimple_X_travel(_SELF, SlotNode* head, SimpleSlotHandle node_handle,
 
 void* METHOD_NAMED(SignalSimple,emit)(_SELF, ...)
 {
-    va_list arg_ptr;
+    va_list var_args;
     struct list_head* i = NULL;
     void* arg = NULL;
-    va_start(arg_ptr, self);
-    arg = va_arg(arg_ptr, void*);
-    va_end(arg_ptr);
+    va_start(var_args, self);
+    arg = va_arg(var_args, void*);
+    va_end(var_args);
 
     SignalSimple_X_travel(self, &_tm(Signal, group).slot_head, CallSlot, arg);
     /* The default slots list has lowest priority. */

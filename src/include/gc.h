@@ -23,6 +23,7 @@ BEGIN_CLASS_INHERIT(MemoryGC, MIL_GraphicsContext)
     MIL_Image* image;
     MIL_Pen* pen;
     MIL_Brush* brush;
+    MIL_PixelsOps* pixels_ops;
     END_PRIVATE
 END_CLASS_INHERIT
 

@@ -80,6 +80,8 @@ typedef struct MIL_Color {
 	Uint8 unused;
 } MIL_Color;
 
+typedef Uint32 mt_color;
+
 typedef struct MIL_Palette {
 	int       ncolors;
 	MIL_Color *colors;

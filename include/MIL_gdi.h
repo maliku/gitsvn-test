@@ -121,6 +121,38 @@ BEGIN_CLASS_INHERIT(MIL_Image, MIL_GdiObject)
 
 END_CLASS_INHERIT
 
+BEGIN_CLASS_INHERIT(MIL_PixelsOps, MIL_GdiObject)
+    BEGIN_METHOD_EXPAND_DECLARE(MIL_PixelsOps)
+#define MIL_PIXELSOPS_METHOD_TABLE \
+        MIL_GDIOBJECT_METHOD_TABLE \
+        void (*setPixel)(_Self(MIL_PixelsOps));\
+        void (*setHline)(_Self(MIL_PixelsOps), Uint32 w);\
+        void (*putHline)(_Self(MIL_PixelsOps), Uint8*, Uint32 w, int);\
+        int  (*setStep)(_Self(MIL_PixelsOps), int);\
+        mt_color  (*setColorKey)(_Self(MIL_PixelsOps), mt_color);\
+        mt_color  (*setColor)(_Self(MIL_PixelsOps), mt_color);\
+        void* (*setUserCtxt)(_Self(MIL_PixelsOps), void*);
+    END_METHOD_EXPAND_DECLARE
+
+    BEGIN_PRIVATE(MIL_PixelsOps)
+    /** the step of current pixel operations. */
+    int step;
+
+    /** the pointer to the destination */
+    Uint8* cur_dst;
+
+    /** the pixel value shoulb be skipped (the color key) */
+    mt_color skip_pixel;
+
+    /** the current pixel value for setpixel and setpixels operation */
+    mt_color cur_pixel;
+
+    /** The user context passed to SetUserCompositionOps */
+    void* user_ctxt;
+    END_PRIVATE
+END_CLASS_INHERIT
+
+
 /** 
  * @class MIL_DIBitmap
  * @brief A modifiable container for MIL_Image, you can change it's pixel data.
