@@ -38,17 +38,17 @@
 #define MIL_BIG_ENDIAN	4321
 /*@}*/
 
-#ifndef MIL_BYTEORDER	/* Not defined in MIL_config.h? */
+#ifndef MIL_Uint8ORDER	/* Not defined in MIL_config.h? */
 #if defined(__hppa__) || \
     defined(__m68k__) || defined(mc68000) || defined(_M_M68K) || \
     (defined(__MIPS__) && defined(__MISPEB__)) || \
     defined(__ppc__) || defined(__POWERPC__) || defined(_M_PPC) || \
     defined(__sparc__)
-#define MIL_BYTEORDER	MIL_BIG_ENDIAN
+#define MIL_Uint8ORDER	MIL_BIG_ENDIAN
 #else
-#define MIL_BYTEORDER	MIL_LIL_ENDIAN
+#define MIL_Uint8ORDER	MIL_LIL_ENDIAN
 #endif
-#endif /* !MIL_BYTEORDER */
+#endif /* !MIL_Uint8ORDER */
 
 
 #include "begin_code.h"
@@ -183,13 +183,46 @@ static __INLINE__ Uint64 MIL_Swap64(Uint64 x)
  *  Byteswap item from the specified endianness to the native endianness
  */
 /*@{*/
-#if MIL_BYTEORDER == MIL_LIL_ENDIAN
+#if MIL_Uint8ORDER == MIL_LIL_ENDIAN
 #define MIL_SwapLE16(X)	(X)
 #define MIL_SwapLE32(X)	(X)
 #define MIL_SwapLE64(X)	(X)
 #define MIL_SwapBE16(X)	MIL_Swap16(X)
 #define MIL_SwapBE32(X)	MIL_Swap32(X)
 #define MIL_SwapBE64(X)	MIL_Swap64(X)
+
+#define EQUAL_24BIT(ptr, val)  \
+    ((*(Uint8*)(ptr)      == ((Uint8)(val))) \
+     &&(*((Uint8*)(ptr)+1) == ((Uint8)((val)>>8))) \
+     &&(*((Uint8*)(ptr)+2) == ((Uint8)((val)>>16))))
+
+#define SETVAL_24BIT(ptr, val) do { \
+    *(Uint8*)(ptr)     = (Uint8)(val); \
+    *((Uint8*)(ptr)+1) = (Uint8)((val)>>8); \
+    *((Uint8*)(ptr)+2) = (Uint8)((val)>>16); \
+}while(0)
+
+#define ORVAL_24BIT(ptr, val)  do { \
+    *(Uint8*)(ptr)     |= (Uint8)(val); \
+    *((Uint8*)(ptr)+1) |= (Uint8)((val)>>8); \
+    *((Uint8*)(ptr)+2) |= (Uint8)((val)>>16);  \
+}while(0)
+
+#define ANDVAL_24BIT(ptr, val) do { \
+    *(Uint8*)(ptr)     &= (Uint8)(val); \
+    *((Uint8*)(ptr)+1) &= (Uint8)((val)>>8); \
+    *((Uint8*)(ptr)+2) &= (Uint8)((val)>>16);  \
+}while(0)
+
+#define XORVAL_24BIT(ptr, val) do { \
+    *(Uint8*)(ptr)     ^= (Uint8)(val); \
+    *((Uint8*)(ptr)+1) ^= (Uint8)((val)>>8); \
+    *((Uint8*)(ptr)+2) ^= (Uint8)((val)>>16); \
+}while(0)
+
+#define READPTR_24BIT(val, ptr) ((val) = (*(Uint8*)ptr) \
+        + ((*((Uint8*)(ptr)+1))<<8) + ((*((Uint8*)(ptr)+2))<<16))
+
 #else
 #define MIL_SwapLE16(X)	MIL_Swap16(X)
 #define MIL_SwapLE32(X)	MIL_Swap32(X)
@@ -197,6 +230,39 @@ static __INLINE__ Uint64 MIL_Swap64(Uint64 x)
 #define MIL_SwapBE16(X)	(X)
 #define MIL_SwapBE32(X)	(X)
 #define MIL_SwapBE64(X)	(X)
+
+#define EQUAL_24BIT(ptr, val)  \
+    ((*(Uint8*)(ptr)      == ((Uint8)((val)>>16))) \
+     &&(*((Uint8*)(ptr)+1) == ((Uint8)((val)>>8))) \
+     &&(*((Uint8*)(ptr)+2) == ((Uint8)((val)))))
+
+#define SETVAL_24BIT(ptr, val) do { \
+    *(Uint8*)(ptr)     = (Uint8)((val)>>16); \
+    *((Uint8*)(ptr)+1) = (Uint8)((val)>>8); \
+    *((Uint8*)(ptr)+2) = (Uint8)((val));  \
+}while(0)
+
+#define ORVAL_24BIT(ptr, val)  do { \
+    *(Uint8*)(ptr)     |= (Uint8)((val)>>16); \
+    *((Uint8*)(ptr)+1) |= (Uint8)((val)>>8); \
+    *((Uint8*)(ptr)+2) |= (Uint8)((val));  \
+}while(0)
+
+#define ANDVAL_24BIT(ptr, val)do { \
+    *(Uint8*)(ptr)     &= (Uint8)((val)>>16); \
+    *((Uint8*)(ptr)+1) &= (Uint8)((val)>>8); \
+    *((Uint8*)(ptr)+2) &= (Uint8)((val));  \
+}while(0)
+
+#define XORVAL_24BIT(ptr, val) do { \
+    *(Uint8*)(ptr)     ^= (Uint8)((val)>>16); \
+    *((Uint8*)(ptr)+1) ^= (Uint8)((val)>>8); \
+    *((Uint8*)(ptr)+2) ^= (Uint8)((val)); \
+}while(0)
+
+#define READPTR_24BIT(val, ptr) ((val) = (((*(Uint8*)ptr)<<16) \
+            + ((*((Uint8*)(ptr)+1))<<8) + (*((Uint8*)(ptr)+2))))
+
 #endif
 /*@}*/
 

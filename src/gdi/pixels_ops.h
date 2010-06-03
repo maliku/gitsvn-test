@@ -11,9 +11,20 @@
 
 #include "MIL_gdi.h"
 
-BEGIN_CLASS_INHERIT(PixelsSet8, MIL_PixelsOps)
-    NO_METHOD_EXPAND(PixelsSet8)
+BEGIN_CLASS_INHERIT(PixelsSet1, MIL_PixelsOps)
+    NO_METHOD_EXPAND(PixelsSet1)
 END_CLASS_INHERIT
 
+BEGIN_CLASS_INHERIT(PixelsSet2, MIL_PixelsOps)
+    NO_METHOD_EXPAND(PixelsSet2)
+END_CLASS_INHERIT
+
+BEGIN_CLASS_INHERIT(PixelsSet3, MIL_PixelsOps)
+    NO_METHOD_EXPAND(PixelsSet3)
+END_CLASS_INHERIT
+
+BEGIN_CLASS_INHERIT(PixelsSet4, MIL_PixelsOps)
+    NO_METHOD_EXPAND(PixelsSet4)
+END_CLASS_INHERIT
 #endif   /* ----- #ifndef PIXELS_OPS_INC  ----- */
 

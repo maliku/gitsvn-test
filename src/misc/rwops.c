@@ -155,7 +155,7 @@ int METHOD_NAMED(MemFileOperator, close)(_Self(MIL_RWops))
 /* Aggh.  You can't (apparently) open a file in an application and
    read from it in a DLL.
 */
-static int in_sdl = 0;
+static int in_mil = 0;
 #endif
 
 #ifdef macintosh
@@ -222,9 +222,9 @@ MIL_RWops *MIL_RWFromFile(const char *file, const char *mode)
 		//MIL_SetError("Couldn't open %s", file);
 	} else {
 #ifdef WIN32
-		in_sdl = 1;
+		in_mil = 1;
 		rwops = MIL_RWFromFP(fp, 1);
-		in_sdl = 0;
+		in_mil = 0;
 #else
 		rwops = MIL_RWFromFP(fp, 1);
 #endif
@@ -237,7 +237,7 @@ MIL_RWops *MIL_RWFromFP(FILE *fp, int autoclose)
 	MIL_RWops *rwops = NULL;
 
 #ifdef WIN32
-	if ( ! in_sdl ) {
+	if ( ! in_mil ) {
 		//MIL_SetError("You can't pass a FILE pointer to a DLL (?)");
 		/*return(NULL);*/
 	}

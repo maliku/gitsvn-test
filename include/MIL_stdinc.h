@@ -277,6 +277,153 @@ extern DECLSPEC void MILCALL MIL_qsort(void *base, size_t nmemb, size_t size,
 #define MIL_tolower(X)  (((X) >= 'A') && ((X) <= 'Z') ? ('a'+((X)-'A')) : (X))
 #endif
 
+#if defined(__GNUC__) && defined(i386)
+#define ASM_memset2(s, c, count)  \
+do {                            \
+    int eax, edi, ecx;          \
+    __asm__ __volatile__ (      \
+            "cld\n\t"           \
+            "rep\n\t"           \
+            "stosw"             \
+            : "=&D" (edi), "=&a" (eax), "=&c" (ecx) \
+            : "0"(s), "1"(c), "2"(count)            \
+            : "memory");        \
+} while (0)
+
+#define ASM_memset4(s, c, count)    \
+do {                                \
+    int eax, edi, ecx;              \
+    __asm__ __volatile__ (          \
+            "cld\n\t"               \
+            "rep\n\t"               \
+            "stosl"                 \
+            : "=&D" (edi), "=&a" (eax), "=&c" (ecx) \
+            : "0"(s), "1"(c), "2"(count)    \
+            : "memory");            \
+} while (0)
+
+#define ASM_memxorset(s, c, n)      \
+do {                                \
+    int ecx, edx, esi, edi;         \
+    __asm__ __volatile__ (          \
+            "cld\n\t"               \
+            "1:\n\t"                \
+            "lodsb\n\t"             \
+            "xorb %%dl, %%al\n\t"   \
+            "stosb\n\t"             \
+            "loop 1b\n\t"           \
+            : "=&D" (edi), "=&S" (esi), "=&c" (ecx), "=&d" (edx)    \
+            : "0" (s), "1" (s), "2" (n), "3" (c)    \
+            : "al");            \
+} while (0)
+
+#define ASM_memxorset2(s, c, n)     \
+do {                                \
+    int ecx, edx, esi, edi;         \
+    __asm__ __volatile__ (          \
+            "cld\n\t"               \
+            "1:\n\t"                \
+            "lodsw\n\t"             \
+            "xorw %%dx, %%ax\n\t"   \
+            "stosw\n\t"             \
+            "loop 1b\n\t"           \
+            : "=&D" (edi), "=&S" (esi), "=&c" (ecx), "=&d" (edx)    \
+            : "0" (s), "1" (s), "2" (n), "3" (c)    \
+            : "ax");            \
+} while (0)
+
+#define ASM_memxorset4(s, c, n)     \
+do {                                \
+    int ecx, edx, esi, edi;         \
+    __asm__ __volatile__ (          \
+            "cld\n\t"               \
+            "1:\n\t"                \
+            "lodsl\n\t"             \
+            "xorl %%edx, %%eax\n\t" \
+            "stosl\n\t"             \
+            "loop 1b\n\t"           \
+            : "=&D" (edi), "=&S" (esi), "=&c" (ecx), "=&d" (edx)    \
+            : "0" (s), "1" (s), "2" (n), "3" (c)    \
+            : "eax");            \
+} while (0)
+
+#define ASM_memandset4(s, c, n)     \
+do {                                \
+    int ecx, edx, esi, edi;         \
+    __asm__ __volatile__ (          \
+            "cld\n\t"               \
+            "1:\n\t"                \
+            "lodsl\n\t"             \
+            "andl %%edx, %%eax\n\t" \
+            "stosl\n\t"             \
+            "loop 1b\n\t"           \
+            : "=&D" (edi), "=&S" (esi), "=&c" (ecx), "=&d" (edx)    \
+            : "0" (s), "1" (s), "2" (n), "3" (c)    \
+            : "eax");            \
+} while (0)
+
+#define ASM_memorset4(s, c, n)      \
+do {                                \
+    int ecx, edx, esi, edi;         \
+    __asm__ __volatile__ (          \
+            "cld\n\t"               \
+            "1:\n\t"                \
+            "lodsl\n\t"             \
+            "orl %%edx, %%eax\n\t"  \
+            "stosl\n\t"             \
+            "loop 1b\n\t"           \
+            : "=&D" (edi), "=&S" (esi), "=&c" (ecx), "=&d" (edx)    \
+            : "0" (s), "1" (s), "2" (n), "3" (c)    \
+            : "eax");            \
+} while (0)
+
+#define ASM_memandcpy4(dst, src, n) \
+do {                                \
+    int edi, esi, ecx;              \
+    __asm__ __volatile__ (          \
+            "cld\n\t"               \
+            "1:\n\t"                \
+            "lodsl\n\t"             \
+            "andl %%eax, (%%edi)\n\t"   \
+            "addl $4, %%edi\n\t"    \
+            "loop 1b\n\t"           \
+            : "=&D" (edi), "=&S" (esi), "=&c" (ecx) \
+            : "0" (dst), "1" (src), "2" (n) \
+            : "eax");            \
+} while (0)
+
+#define ASM_memorcpy4(dst, src, n)  \
+do {                                \
+    int edi, esi, ecx;              \
+    __asm__ __volatile__ (          \
+            "cld\n\t"               \
+            "1:\n\t"                \
+            "lodsl\n\t"             \
+            "orl %%eax, (%%edi)\n\t"    \
+            "addl $4, %%edi\n\t"    \
+            "loop 1b\n\t"           \
+            : "=&D" (edi), "=&S" (esi), "=&c" (ecx) \
+            : "0" (dst), "1" (src), "2" (n) \
+            : "eax");            \
+} while (0)
+
+#define ASM_memxorcpy4(dst, src, n) \
+do {                                \
+    int edi, esi, ecx;              \
+    __asm__ __volatile__ (          \
+            "cld\n\t"               \
+            "1:\n\t"                \
+            "lodsl\n\t"             \
+            "xorl %%eax, (%%edi)\n\t"   \
+            "addl $4, %%edi\n\t"    \
+            "loop 1b\n\t"           \
+            : "=&D" (edi), "=&S" (esi), "=&c" (ecx) \
+            : "0" (dst), "1" (src), "2" (n) \
+            : "eax");            \
+} while (0)
+#endif /* defined(__GNUC__) && defined(i386) */
+
+
 #ifdef HAVE_MEMSET
 #define MIL_memset      memset
 #else

@@ -121,17 +121,21 @@ BEGIN_CLASS_INHERIT(MIL_Image, MIL_GdiObject)
 
 END_CLASS_INHERIT
 
+typedef void (*MIL_DestroyCtxtCB)(void*);
 BEGIN_CLASS_INHERIT(MIL_PixelsOps, MIL_GdiObject)
     BEGIN_METHOD_EXPAND_DECLARE(MIL_PixelsOps)
 #define MIL_PIXELSOPS_METHOD_TABLE \
         MIL_GDIOBJECT_METHOD_TABLE \
-        void (*setPixel)(_Self(MIL_PixelsOps));\
-        void (*setHline)(_Self(MIL_PixelsOps), Uint32 w);\
-        void (*putHline)(_Self(MIL_PixelsOps), Uint8*, Uint32 w, int);\
-        int  (*setStep)(_Self(MIL_PixelsOps), int);\
-        mt_color  (*setColorKey)(_Self(MIL_PixelsOps), mt_color);\
-        mt_color  (*setColor)(_Self(MIL_PixelsOps), mt_color);\
-        void* (*setUserCtxt)(_Self(MIL_PixelsOps), void*);
+        void  (*setPixel)(_Self(MIL_PixelsOps));\
+        void  (*setHline)(_Self(MIL_PixelsOps), Uint32 w);\
+        void  (*putHline)(_Self(MIL_PixelsOps), Uint8*, Uint32 w);\
+        void  (*putHlineSkip)(_Self(MIL_PixelsOps), Uint8*, Uint32 w);\
+        void  (*setStep)(_Self(MIL_PixelsOps), int);\
+        void  (*setColorKey)(_Self(MIL_PixelsOps), mt_color);\
+        void  (*setColor)(_Self(MIL_PixelsOps), mt_color);\
+        void* (*setUserCtxt)(_Self(MIL_PixelsOps), void*);\
+        void  (*setCtxtFreeFunction)(_Self(MIL_PixelsOps), MIL_DestroyCtxtCB);
+    MIL_PIXELSOPS_METHOD_TABLE
     END_METHOD_EXPAND_DECLARE
 
     BEGIN_PRIVATE(MIL_PixelsOps)
@@ -149,6 +153,9 @@ BEGIN_CLASS_INHERIT(MIL_PixelsOps, MIL_GdiObject)
 
     /** The user context passed to SetUserCompositionOps */
     void* user_ctxt;
+
+    /** The function for delete user_ctxt */
+    MIL_DestroyCtxtCB ctxt_free;
     END_PRIVATE
 END_CLASS_INHERIT
 
