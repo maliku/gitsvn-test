@@ -236,6 +236,30 @@ Uint32  PixelFormat_X_getColorKey(_CSELF)
     return _tm(PixelFormat, colorkey);
 }
 
+MIL_Bool METHOD_NAMED(PixelFormat, equals)(_CSelf(MIL_PixelFormat), const MIL_PixelFormat* rhs)
+{
+    return MIL_FALSE;
+}
+
+Uint32 METHOD_NAMED(PixelFormat, getPaletteSize)(_CSelf(MIL_PixelFormat))
+{
+    return NULL != _tm(PixelFormat, palette) ? _tm(PixelFormat, palette)->ncolors : 0;
+}
+
+MIL_Status METHOD_NAMED(PixelFormat, getPalette)(_CSelf(MIL_PixelFormat), MIL_Palette* pal)
+{
+    if (NULL != pal) {
+        if (NULL != _tm(PixelFormat, palette)) {
+            int n = _tm(PixelFormat, palette)->ncolors > pal->ncolors ? 
+                pal->ncolors : _tm(PixelFormat, palette)->ncolors; 
+            memcpy(pal->colors, _tm(PixelFormat, palette)->colors, sizeof(MIL_Color) * n);
+            return MIL_OK;
+        }
+        return MIL_GENERIC_ERROR;
+    }
+    return MIL_INVALID_PARAMETER;
+}
+
 BEGIN_METHOD_MAP(PixelFormat, MIL_PixelFormat)
     CONSTRUCTOR_MAP(PixelFormat)
     DESTRUCTOR_MAP(PixelFormat)
@@ -250,6 +274,9 @@ BEGIN_METHOD_MAP(PixelFormat, MIL_PixelFormat)
     METHOD_MAP(PixelFormat, getBitsPerPixel)
     METHOD_MAP(PixelFormat, getAlpha)
     METHOD_MAP(PixelFormat, getColorKey)
+    METHOD_MAP(PixelFormat, equals)
+    METHOD_MAP(PixelFormat, getPaletteSize)
+    METHOD_MAP(PixelFormat, getPalette)
 END_METHOD_MAP
 
 /*

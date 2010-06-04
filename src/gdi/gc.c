@@ -9,6 +9,7 @@
 #include "misc.h"
 #include "surface.h"
 #include "gc.h"
+#include "pixels_ops.h"
 
 METHOD_MAP_PLACEHOLDER(MIL_GraphicsContext, MIL_GdiObject)
 
@@ -17,14 +18,27 @@ CONSTRUCTOR(MemoryGC)
     _private(MemoryGC)->image = NULL;
     _private(MemoryGC)->pen = NULL;
     _private(MemoryGC)->brush = NULL;
+    _private(MemoryGC)->pixels_ops = NULL;
     return self;
 }
 
 DESTRUCTOR(MemoryGC)
 {
-    MIL_GdiObject* img = (MIL_GdiObject*)(_private(MemoryGC)->image);
-    if (img) {
-        _c(img)->unRef(img, HOLD_REF);
+    MIL_GdiObject* img_obj = (MIL_GdiObject*)(_private(MemoryGC)->image);
+    MIL_GdiObject* pen_obj = (MIL_GdiObject*)(_private(MemoryGC)->pen);
+    MIL_GdiObject* brush_obj = (MIL_GdiObject*)(_private(MemoryGC)->brush);
+    MIL_GdiObject* ops_obj = (MIL_GdiObject*)(_private(MemoryGC)->pixels_ops);
+    if (img_obj) {
+        _c(img_obj)->unRef(img_obj, MIL_HOLD_REF);
+    }
+    if (pen_obj) {
+        _c(pen_obj)->unRef(pen_obj, MIL_HOLD_REF);
+    }
+    if (brush_obj) {
+        _c(brush_obj)->unRef(brush_obj, MIL_HOLD_REF);
+    }
+    if (ops_obj) {
+        _c(ops_obj)->unRef(ops_obj, MIL_HOLD_REF);
     }
 }
 
@@ -46,7 +60,7 @@ MIL_Status METHOD_NAMED(MemoryGC, clear)(_Self(MIL_GraphicsContext), MIL_Color* 
         const MIL_PixelFormat* format =
             _c(_private(MemoryGC)->image)->getPixelFormat(
                     _private(MemoryGC)->image); 
-        Surface* surface = _friend(MIL_Image, _private(MemoryGC)->image)->data;
+        Surface* surface = _friend(MIL_Image, _private(MemoryGC)->image)->cache;
         _c(surface)->getClipRect(surface, &rc_bak);
         _c(surface)->setClipRect(surface, NULL);
         _c(surface)->fillRect(surface, NULL, _c(format)->mapColor(format, color));
@@ -69,13 +83,13 @@ MIL_Status METHOD_NAMED(MemoryGC, clear)(_Self(MIL_GraphicsContext), MIL_Color* 
 MIL_Status METHOD_NAMED(MemoryGC, drawImageByPos)
     (_Self(MIL_GraphicsContext), MIL_Image* img, int x, int y)
 {
-    Surface* src = (_friend(MIL_Image, img)->data);
+    Surface* src = (_friend(MIL_Image, img)->cache);
 }
 
 MIL_Status METHOD_NAMED(MemoryGC, drawImageByRect)
     (_Self(MIL_GraphicsContext), MIL_Image* img, MIL_Rect* rc)
 {
-
+    Surface* src = (_friend(MIL_Image, img)->cache);
 }
 
 MIL_Status METHOD_NAMED(MemoryGC, drawString)
@@ -112,6 +126,43 @@ void METHOD_NAMED(MemoryGC, restore)(_Self(MIL_GraphicsContext))
 
 }
 
+MIL_Status METHOD_NAMED(MemoryGC, selectPen)(_Self(MIL_GraphicsContext), MIL_Pen* pen)
+{
+    if (NULL != pen) {
+        _c((MIL_GdiObject*)pen)->ref((MIL_GdiObject*)pen, MIL_HOLD_REF);
+        _private(MemoryGC)->pen = pen;
+    }
+    return MIL_INVALID_PARAMETER;
+}
+
+MIL_Status METHOD_NAMED(MemoryGC, selectBrush)(_Self(MIL_GraphicsContext), MIL_Brush* brush)
+{
+    if (NULL != brush) {
+        _c((MIL_GdiObject*)brush)->ref((MIL_GdiObject*)brush, MIL_HOLD_REF);
+        _private(MemoryGC)->brush = brush;
+    }
+    return MIL_INVALID_PARAMETER;
+}
+
+MIL_Status METHOD_NAMED(MemoryGC, selectPixelsOperations)(_Self(MIL_GraphicsContext), MIL_PixelsOps* ops)
+{
+    if (NULL != ops) {
+        _c((MIL_GdiObject*)ops)->ref((MIL_GdiObject*)ops, MIL_HOLD_REF);
+        _private(MemoryGC)->pixels_ops = ops;
+    }
+    return MIL_INVALID_PARAMETER;
+}
+
+MIL_Status METHOD_NAMED(MemoryGC, drawPixel)(_Self(MIL_GraphicsContext), int x, int y)
+{
+    MIL_PixelsOps* ops = _private(MemoryGC)->pixels_ops;
+    _friend(MIL_PixelsOps, ops)->cur_dst = 
+        (Uint8*)_friend(MIL_Image, _private(MemoryGC)->image)->data->scan0 +
+                (y * _friend(MIL_Image, _private(MemoryGC)->image)->data->pitch + x * 4/* FIXME */);
+    _c(ops)->setPixel(ops);
+    return MIL_OK;
+}
+
 BEGIN_METHOD_MAP(MemoryGC, MIL_GraphicsContext)
     CONSTRUCTOR_MAP(MemoryGC)
     DESTRUCTOR_MAP(MemoryGC)
@@ -124,6 +175,10 @@ BEGIN_METHOD_MAP(MemoryGC, MIL_GraphicsContext)
     METHOD_MAP(MemoryGC, isClipEmpty)
     METHOD_MAP(MemoryGC, store)
     METHOD_MAP(MemoryGC, restore)
+    METHOD_MAP(MemoryGC, selectPen)
+    METHOD_MAP(MemoryGC, selectBrush)
+    METHOD_MAP(MemoryGC, selectPixelsOperations)
+    METHOD_MAP(MemoryGC, drawPixel)
 END_METHOD_MAP
 
 
@@ -153,10 +208,13 @@ MIL_CreateMemGCFromImage(MIL_Image* img)
     if (NULL != img) {
         MemoryGC* mgc = (MemoryGC*)New(MemoryGC);
         if (NULL != mgc) {
-            if (_c((MIL_GdiObject*)img)->getRef(img, HOLD_REF) <= 0) {
+            if (_c((MIL_GdiObject*)img)->getRef(img, MIL_HOLD_REF) <= 0) {
                 _friend(MemoryGC, mgc)->image = 
-                    (MIL_Image*)_c((MIL_GdiObject*)img)->ref(img, HOLD_REF);
-                return (MIL_Graphics*)mgc;
+                    (MIL_Image*)_c((MIL_GdiObject*)img)->ref(img, MIL_HOLD_REF);
+                // TODO: create pixelsops by depth.
+                _friend(MemoryGC, mgc)->pixels_ops = (MIL_PixelsOps*)New(PixelsSet4);
+                _friend(MIL_PixelsOps, _friend(MemoryGC, mgc)->pixels_ops)->cur_dst = _friend(MIL_Image, _friend(MemoryGC, mgc)->image)->data->scan0;
+                    return (MIL_Graphics*)mgc;
             }
         }
     }

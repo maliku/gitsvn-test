@@ -13,12 +13,12 @@ CONSTRUCTOR(MIL_Image)
 {
     _private(MIL_Image)->data = NULL;
     _private(MIL_Image)->raw_format = NULL;
+    _private(MIL_Image)->cache = NULL;
     return self;
 }
 
 DESTRUCTOR(MIL_Image)
 {
-    Delete(_private(MIL_Image)->data);
 }
 
 MIL_Image*  MIL_Image_X_clone(_Self(MIL_Image))
@@ -29,51 +29,58 @@ MIL_Image*  MIL_Image_X_clone(_Self(MIL_Image))
 MIL_Status  MIL_Image_X_getBounds(_Self(MIL_Image), MIL_Rect* rc)
 {
     if (NULL != rc) {
-        Surface* surface = _private(MIL_Image)->data;
         rc->x = rc->y = 0;
-        rc->w = _c(surface)->getWidth(surface);
-        rc->h = _c(surface)->getHeight(surface);
+        rc->w = _private(MIL_Image)->data->w;
+        rc->h = _private(MIL_Image)->data->h;
     }
     return MIL_NOT_IMPLEMENTED;
 }
 
 Uint32      MIL_Image_X_getWidth(_Self(MIL_Image))
 {
-    Surface* surface = _private(MIL_Image)->data;
-    return _c(surface)->getWidth(surface);
+    return _private(MIL_Image)->data->w;
 }
 
 Uint32      MIL_Image_X_getHeight(_Self(MIL_Image))
 {
-    Surface* surface = _private(MIL_Image)->data;
-    return _c(surface)->getHeight(surface);
+    return _private(MIL_Image)->data->h;
 }
 
 MIL_Status  MIL_Image_X_getPalette(_Self(MIL_Image), MIL_Palette* palette)
 {
-    return MIL_NOT_IMPLEMENTED;
+    if (NULL != palette) {
+        // TODO: should be check _private(MIL_Image)->data->format.
+        return MIL_GENERIC_ERROR;
+    }
+    return MIL_INVALID_PARAMETER;
 }
 
 MIL_Status  MIL_Image_X_setPalette(_Self(MIL_Image), const MIL_Palette* palette)
 {
-    return MIL_NOT_IMPLEMENTED;
+    if (NULL != palette) {
+        return MIL_GENERIC_ERROR;
+    }
+    return MIL_INVALID_PARAMETER;
 }
 
-int         MIL_Image_X_getPaletteSize(_Self(MIL_Image))
+int MIL_Image_X_getPaletteSize(_Self(MIL_Image))
 {
-    return MIL_NOT_IMPLEMENTED;
+    MIL_PixelFormat* fmt = _private(MIL_Image)->data->format;
+    if (NULL != fmt) {
+        return _c(fmt)->getPaletteSize(fmt);
+    }
+    return 0;
 }
 
 const MIL_PixelFormat* METHOD_NAMED(MIL_Image, getPixelFormat)
     (_Self(MIL_Image))
 {
-    Surface* surface = _private(MIL_Image)->data;
-    return (const MIL_PixelFormat*)surface->format;
+    return _private(MIL_Image)->data->format;
 }
 
 const char* MIL_Image_X_getRawFormat(_Self(MIL_Image))
 {
-    return NULL;
+    return _private(MIL_Image)->raw_format;
 }
 
 MIL_Status  MIL_Image_X_rotateFlip(_Self(MIL_Image), MIL_RotateFlipType type)
@@ -97,22 +104,26 @@ MIL_Status  MIL_Image_X_save(_Self(MIL_Status), const char* file)
 MIL_Status METHOD_NAMED(MIL_Image, loadFile)(_Self(MIL_Image), const char* file)
 {
     if (NULL != file) {
-        MIL_RWops* ops;
-        if (NULL != _private(MIL_Image)->data) {
-            Delete(_private(MIL_Image)->data);
+        MIL_RWops* ops = NULL;
+        // TODO: add metafile support.
+        if (NULL == _private(MIL_Image)->cache) {
+            if (NULL != _private(MIL_Image)->data) {
+                MIL_free(_private(MIL_Image)->data);
+                _private(MIL_Image)->data = NULL;
+            }
+        }
+        else {
             _private(MIL_Image)->data = NULL;
+            Delete((Surface*)_private(MIL_Image)->cache);
         }
 
         ops = MIL_RWFromFile(file, "rb");
         if (NULL != ops) {
             Surface* surface = MIL_LoadBMP_RW(ops, MIL_AUTO_FREE);
             if (NULL != surface) {
-                _private(MIL_Image)->data = surface;
+                _private(MIL_Image)->data = (MIL_DIBitmapData*)(&surface->format);
                 _private(MIL_Image)->raw_format = "bmp";
-                if ( surface->map != NULL ) {
-                    MIL_FreeBlitMap(surface->map);
-                    surface->map = NULL;
-                }
+                _private(MIL_Image)->cache = surface;
                 return MIL_OK;
             }
             else {
@@ -145,6 +156,24 @@ BEGIN_METHOD_MAP(MIL_Image, MIL_GdiObject)
     METHOD_MAP(MIL_Image, loadFile)
 END_METHOD_MAP
 
+/* Tmpfunc: Watch the lifecycle of surface. */
+MIL_Image*
+CreateImageFromSurface(Surface* surface)
+{
+    if (NULL != surface) {
+        MIL_Image* img = (MIL_Image*)New(MIL_Image);
+        if (NULL != img) {
+            _friend(MIL_Image, img)->data = (MIL_DIBitmapData*)(&surface->format);
+            _friend(MIL_Image, img)->raw_format = "surface";
+            _friend(MIL_Image, img)->cache = surface;
+
+            return img;
+        }
+    }
+    return NULL;
+}
+
+
 MIL_Image* LoadImageFromFile(const char* file)
 {
     if (NULL != file) {
@@ -159,19 +188,6 @@ MIL_Image* LoadImageFromFile(const char* file)
         }
     }
 
-    return NULL;
-}
-
-MIL_Image*
-CreateImageFromSurface(Surface* surface)
-{
-    if (NULL != surface) {
-        MIL_Image* img = (MIL_Image*)New(MIL_Image);
-        if (NULL != img) {
-            _friend(MIL_Image, img)->data = surface;
-            return img;
-        }
-    }
     return NULL;
 }
 

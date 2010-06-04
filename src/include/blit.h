@@ -69,7 +69,7 @@ struct _MIL_BlitMap {
 
 	/* the version count matches the destination; mismatch indicates
 	   an invalid mapping */
-        unsigned int format_version;
+    unsigned int format_version;
 };
 
 /* Functions found in MIL_blit.c */

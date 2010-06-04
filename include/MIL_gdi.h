@@ -58,13 +58,13 @@ typedef enum  {
  * @struct MIL_DIBitmap
  * @brief A MIL_DIBitmap object stores attributes of a bitmap.
  */
-STRUCT MIL_DIBitmapData{
+STRUCT {
+    MIL_PixelFormat* format;
     Uint32 w;
     Uint32 h;
-    Sint32  stride;
+    Sint32 pitch;
     void*  scan0;
-//    MIL_PixelFormat* format;
-}MIL_DIBitmapData;
+} MIL_DIBitmapData;
 
 #define METHOD_TABLE(type) MIL_##type##_METHOD_TABLE
 /** 
@@ -89,8 +89,6 @@ CLASS(MIL_GdiObject)
     END_PRIVATE
 };
 
-/* forward declare of internal class. */
-struct __Surface;
 /**
  * @class MIL_Image
  * @brief A readonly container of kinds of image format.The Image object must be device-independent.
@@ -115,8 +113,9 @@ BEGIN_CLASS_INHERIT(MIL_Image, MIL_GdiObject)
     END_METHOD_EXPAND_DECLARE
 
     BEGIN_PRIVATE(MIL_Image)
+    MIL_DIBitmapData* data;
     const char* raw_format;
-    void* data;
+    void* cache;
     END_PRIVATE
 
 END_CLASS_INHERIT
@@ -236,6 +235,14 @@ typedef enum  {
     MIL_MATRIX_APPEND    = 1 
 } MIL_MatrixOrder;
 
+enum {
+    MIL_LIFE_REF = 0,
+    MIL_HOLD_REF = 1,
+    MIL_SAVE_REF = 2,
+    MIL_MAX_REF_TYPE = 3
+} MIL_RefCounterType;
+
+
 BEGIN_CLASS_INHERIT(MIL_Brush, MIL_GdiObject)
     BEGIN_METHOD_EXPAND_DECLARE(MIL_Brush)
 #define MIL_BRUSH_METHOD_TABLE \
@@ -324,7 +331,11 @@ BEGIN_CLASS_INHERIT(MIL_GraphicsContext, MIL_GdiObject)
         MIL_Status (*excludeClip)(_Self(MIL_GraphicsContext), MIL_Rect*); \
         MIL_Bool   (*isClipEmpty)(_Self(MIL_GraphicsContext)); \
         void       (*store)(_Self(MIL_GraphicsContext)); \
-        void       (*restore)(_Self(MIL_GraphicsContext));
+        void       (*restore)(_Self(MIL_GraphicsContext));\
+        MIL_Status (*selectPen)(_Self(MIL_GraphicsContext), MIL_Pen*);\
+        MIL_Status (*selectBrush)(_Self(MIL_GraphicsContext), MIL_Brush*);\
+        MIL_Status (*selectPixelsOperations)(_Self(MIL_GraphicsContext), MIL_PixelsOps*);\
+        MIL_Status (*drawPixel)(_Self(MIL_GraphicsContext), int, int);
         MIL_GC_METHOD_TABLE
     END_METHOD_EXPAND_DECLARE
 END_CLASS_INHERIT

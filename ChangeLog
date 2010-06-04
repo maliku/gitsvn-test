@@ -1,3 +1,4 @@
+[2010-06-04]: Start implement geometry output method.
 [2010-06-02]: Implement PixelsSetX classes.
 [2010-05-29]: Implement some methods of MemoryGC and so on. Add Doxygen
 config.

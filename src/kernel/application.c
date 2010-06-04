@@ -76,7 +76,7 @@ CONSTRUCTOR(Application)
             Delete(img);
             for (i = 0; i < 480; ++i)
             {
-                memset(pixels, i % 255, _vc0(screen, getBytesPerPixel) * 640);
+                memset(pixels, 255 - i % 255, _vc0(screen, getBytesPerPixel) * 640);
                 pixels += _vc0((Surface*)screen, getPitch);
             }
             _vc2(screen, fillRect, &rc, 0xffffffff);
@@ -94,7 +94,7 @@ CONSTRUCTOR(Application)
                         rcpos.x = j;
 //                    _c(convert)->stretchBlit(convert, &rcbmp, screen, &rcdst);
                         _vc3(convert, blit, &rcbmp, screen, &rcpos);
-                        _c(gc)->clear(gc, &color);
+                        _c(gc)->drawPixel(gc, 10, 10);
                         _c(vd)->updateRects(vd, 1, &rc);
                     }
                 }

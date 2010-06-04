@@ -105,6 +105,8 @@ BEGIN_INTERFACE(MIL_PixelFormat)
     Uint8  (*getAlpha)(_CSELF);
     Uint32 (*getColorKey)(_CSELF);
     MIL_Bool (*equals)(_CSelf(MIL_PixelFormat), const MIL_PixelFormat*);
+    Uint32 (*getPaletteSize)(_CSelf(MIL_PixelFormat));
+    MIL_Status (*getPalette)(_CSelf(MIL_PixelFormat), MIL_Palette*);
 END_INTERFACE
 
 struct Surface;

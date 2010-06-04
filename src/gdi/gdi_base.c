@@ -24,7 +24,7 @@ MIL_Status METHOD_NAMED(MIL_GdiObject, getLastStatus)
 MIL_GdiObject*
 METHOD_NAMED(MIL_GdiObject, ref)(_SELF, int type)
 {
-    if (type > 0 && type < MAX_REF_TYPE) {
+    if (type > 0 && type < MIL_MAX_REF_TYPE) {
         ++(_private(MIL_GdiObject)->counters[type]);
         return self;
     }
@@ -33,11 +33,11 @@ METHOD_NAMED(MIL_GdiObject, ref)(_SELF, int type)
 void 
 METHOD_NAMED(MIL_GdiObject, unRef)(_SELF, int type)
 {
-    if (type > 0 && type < MAX_REF_TYPE) {
+    if (type > 0 && type < MIL_MAX_REF_TYPE) {
         --(_private(MIL_GdiObject)->counters[type]);
-        if (_private(MIL_GdiObject)->counters[LIFE_REF] <= 0 &&
-                _private(MIL_GdiObject)->counters[HOLD_REF] <= 0 &&
-                _private(MIL_GdiObject)->counters[SAVE_REF] <= 0) {
+        if (_private(MIL_GdiObject)->counters[MIL_LIFE_REF] <= 0 &&
+                _private(MIL_GdiObject)->counters[MIL_HOLD_REF] <= 0 &&
+                _private(MIL_GdiObject)->counters[MIL_SAVE_REF] <= 0) {
             printf("Ref counter of %s make zero, deleted.\n", GetTypeName(self));
             Delete(self);
         }
@@ -46,7 +46,7 @@ METHOD_NAMED(MIL_GdiObject, unRef)(_SELF, int type)
 
 int METHOD_NAMED(MIL_GdiObject, getRef)(_SELF, int type)
 {
-    if (type > 0 && type < MAX_REF_TYPE) {
+    if (type > 0 && type < MIL_MAX_REF_TYPE) {
         return (_private(MIL_GdiObject)->counters[type]);
     }
     return -1;

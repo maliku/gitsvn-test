@@ -286,7 +286,7 @@ void METHOD_NAMED(PixelsSet3, setPixel)(_Self(MIL_PixelsOps))
 void METHOD_NAMED(PixelsSet3, setHline)(_Self(MIL_PixelsOps), Uint32 w)
 {
     if (_private(MIL_PixelsOps)->step == 1 && _private(MIL_PixelsOps)->cur_pixel == 0) {
-        memset_hline_helper (_private(MIL_PixelsOps), 3, w);
+        memset_hline_helper (self, 3, w);
     }
 #ifdef ASM_memset3
     else if (_private(MIL_PixelsOps)->step == 1) {
