@@ -38,17 +38,17 @@
 #define MIL_BIG_ENDIAN	4321
 /*@}*/
 
-#ifndef MIL_Uint8ORDER	/* Not defined in MIL_config.h? */
+#ifndef MIL_BYTEORDER	/* Not defined in MIL_config.h? */
 #if defined(__hppa__) || \
     defined(__m68k__) || defined(mc68000) || defined(_M_M68K) || \
     (defined(__MIPS__) && defined(__MISPEB__)) || \
     defined(__ppc__) || defined(__POWERPC__) || defined(_M_PPC) || \
     defined(__sparc__)
-#define MIL_Uint8ORDER	MIL_BIG_ENDIAN
+#define MIL_BYTEORDER	MIL_BIG_ENDIAN
 #else
-#define MIL_Uint8ORDER	MIL_LIL_ENDIAN
+#define MIL_BYTEORDER	MIL_LIL_ENDIAN
 #endif
-#endif /* !MIL_Uint8ORDER */
+#endif /* !MIL_BYTEORDER */
 
 
 #include "begin_code.h"
@@ -183,7 +183,7 @@ static __INLINE__ Uint64 MIL_Swap64(Uint64 x)
  *  Byteswap item from the specified endianness to the native endianness
  */
 /*@{*/
-#if MIL_Uint8ORDER == MIL_LIL_ENDIAN
+#if MIL_BYTEORDER == MIL_LIL_ENDIAN
 #define MIL_SwapLE16(X)	(X)
 #define MIL_SwapLE32(X)	(X)
 #define MIL_SwapLE64(X)	(X)

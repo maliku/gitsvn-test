@@ -8,7 +8,7 @@
 
 #include <milui/MIL_gdi.h>
 
-BEGIN_CLASS_INHERIT(MyBitmap, MIL_DIBitmap)
+BEGIN_CLASS_INHERIT(MyBitmap, MIL_Bitmap)
     NO_METHOD_EXPAND(MyBitmap)
     
     int member;
@@ -20,7 +20,7 @@ MIL_Image*  MyBitmap_X_clone(_Self(MIL_Image))
     return NULL;
 }
 
-BEGIN_METHOD_MAP(MyBitmap, MIL_DIBitmap)
+BEGIN_METHOD_MAP(MyBitmap, MIL_Bitmap)
     NON_CONSTRUCTOR
     NON_DESTRUCTOR
     METHOD_MAP(MyBitmap, clone)

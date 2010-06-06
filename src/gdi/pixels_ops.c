@@ -15,7 +15,7 @@ CONSTRUCTOR(MIL_PixelsOps)
     _private(MIL_PixelsOps)->step = 0;
     _private(MIL_PixelsOps)->cur_dst = NULL;
     _private(MIL_PixelsOps)->skip_pixel = 0;
-    _private(MIL_PixelsOps)->cur_dst = 0;
+    _private(MIL_PixelsOps)->cur_pixel = 0;
     _private(MIL_PixelsOps)->user_ctxt = NULL;
     _private(MIL_PixelsOps)->ctxt_free = NULL;
 }
@@ -70,7 +70,6 @@ void* METHOD_NAMED(MIL_PixelsOps, setUserCtxt)(_Self(MIL_PixelsOps), void* ctxt)
 BEGIN_METHOD_MAP(MIL_PixelsOps, MIL_GdiObject)
     CONSTRUCTOR_MAP(MIL_PixelsOps)
     DESTRUCTOR_MAP(MIL_PixelsOps)
-    METHOD_PLACEHOLDER(getLastStatus)
     METHOD_PLACEHOLDER(ref)
     METHOD_PLACEHOLDER(unRef)
     METHOD_PLACEHOLDER(getRef)
@@ -163,7 +162,6 @@ void METHOD_NAMED(PixelsSet1, putHlineSkip)(_Self(MIL_PixelsOps), Uint8* src, Ui
 BEGIN_METHOD_MAP(PixelsSet1, MIL_PixelsOps)
     NON_CONSTRUCTOR
     NON_DESTRUCTOR
-    METHOD_PLACEHOLDER(getLastStatus)
     METHOD_PLACEHOLDER(ref)
     METHOD_PLACEHOLDER(unRef)
     METHOD_PLACEHOLDER(getRef)
@@ -263,7 +261,6 @@ void METHOD_NAMED(PixelsSet2, putHlineSkip)(_Self(MIL_PixelsOps), Uint8* src, Ui
 BEGIN_METHOD_MAP(PixelsSet2, MIL_PixelsOps)
     NON_CONSTRUCTOR
     NON_DESTRUCTOR
-    METHOD_PLACEHOLDER(getLastStatus)
     METHOD_PLACEHOLDER(ref)
     METHOD_PLACEHOLDER(unRef)
     METHOD_PLACEHOLDER(getRef)
@@ -345,7 +342,6 @@ void METHOD_NAMED(PixelsSet3, putHlineSkip)(_Self(MIL_PixelsOps), Uint8* src, Ui
 BEGIN_METHOD_MAP(PixelsSet3, MIL_PixelsOps)
     NON_CONSTRUCTOR
     NON_DESTRUCTOR
-    METHOD_PLACEHOLDER(getLastStatus)
     METHOD_PLACEHOLDER(ref)
     METHOD_PLACEHOLDER(unRef)
     METHOD_PLACEHOLDER(getRef)
@@ -417,7 +413,6 @@ void METHOD_NAMED(PixelsSet4, putHlineSkip)(_Self(MIL_PixelsOps), Uint8* src, Ui
 BEGIN_METHOD_MAP(PixelsSet4, MIL_PixelsOps)
     NON_CONSTRUCTOR
     NON_DESTRUCTOR
-    METHOD_PLACEHOLDER(getLastStatus)
     METHOD_PLACEHOLDER(ref)
     METHOD_PLACEHOLDER(unRef)
     METHOD_PLACEHOLDER(getRef)
@@ -430,4 +425,48 @@ BEGIN_METHOD_MAP(PixelsSet4, MIL_PixelsOps)
     METHOD_PLACEHOLDER(setColor)
     METHOD_PLACEHOLDER(setUserCtxt)
 END_METHOD_MAP
+
+MIL_PixelsOps* g_pixels_operator[MIL_PIXEL_OPERATION_MAX][4];
+
+MIL_PixelsOps* GetPixelsOperator(MIL_PixelsOperation opt, int bpp)
+{
+    if (opt >= 0 && opt < MIL_PIXEL_OPERATION_MAX 
+            && bpp > 0 && bpp <= 4) {
+        int bpp_index = bpp - 1;
+        if (NULL == g_pixels_operator[opt][bpp_index]) {
+            switch (opt) {
+                case MIL_PIXEL_COPY:
+                    switch (bpp_index) {
+                        case 0:
+                            g_pixels_operator[opt][bpp_index] = 
+                                (MIL_PixelsOps*)New(PixelsSet1);
+                            break;
+                        case 1:
+                            g_pixels_operator[opt][bpp_index] = 
+                                (MIL_PixelsOps*)New(PixelsSet2);
+                            break;
+                        case 2:
+                            g_pixels_operator[opt][bpp_index] = 
+                                (MIL_PixelsOps*)New(PixelsSet3);
+                            break;
+                        case 3:
+                            g_pixels_operator[opt][bpp_index] = 
+                                (MIL_PixelsOps*)New(PixelsSet4);
+                            break;
+                    }
+                case MIL_PIXEL_AND:
+                    break;
+                case MIL_PIXEL_XOR:
+                    break;
+                case MIL_PIXEL_OR:
+                    break;
+                default:
+                    assert(0);
+                    break;
+            }
+        }
+        return g_pixels_operator[opt][bpp_index];
+    }
+    return NULL;
+}
 

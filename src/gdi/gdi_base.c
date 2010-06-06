@@ -12,13 +12,16 @@ CONSTRUCTOR(MIL_GdiObject)
 {
     memset(_private(MIL_GdiObject)->counters, 0, 
             sizeof(_private(MIL_GdiObject)->counters));
-    _private(MIL_GdiObject)->status = MIL_OK;
+    _private(MIL_GdiObject)->counters[MIL_LIFE_REF] = 1;
 }
 
-MIL_Status METHOD_NAMED(MIL_GdiObject, getLastStatus)
-    (_Self(MIL_GdiObject))
+DESTRUCTOR(MIL_GdiObject)
 {
-    return _private(MIL_GdiObject)->status;
+    if (_private(MIL_GdiObject)->counters[MIL_LIFE_REF] > 0 ||
+            _private(MIL_GdiObject)->counters[MIL_HOLD_REF] > 0 ||
+            _private(MIL_GdiObject)->counters[MIL_SAVE_REF] > 0) {
+        fprintf(stderr, "Ref counter of %s is not change to 0!\n", GetTypeName(self));
+    }
 }
 
 MIL_GdiObject*
@@ -55,7 +58,6 @@ int METHOD_NAMED(MIL_GdiObject, getRef)(_SELF, int type)
 BEGIN_METHOD_MAP(MIL_GdiObject, NonBase)
     CONSTRUCTOR_MAP(MIL_GdiObject)
     NON_DESTRUCTOR
-    METHOD_MAP(MIL_GdiObject, getLastStatus)
     METHOD_MAP(MIL_GdiObject, ref)
     METHOD_MAP(MIL_GdiObject, unRef)
     METHOD_MAP(MIL_GdiObject, getRef)

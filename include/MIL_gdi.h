@@ -55,8 +55,8 @@ typedef enum  {
 } MIL_RotateFlipType;
 
 /** 
- * @struct MIL_DIBitmap
- * @brief A MIL_DIBitmap object stores attributes of a bitmap.
+ * @struct MIL_Bitmap
+ * @brief A MIL_Bitmap object stores attributes of a bitmap.
  */
 STRUCT {
     MIL_PixelFormat* format;
@@ -64,7 +64,7 @@ STRUCT {
     Uint32 h;
     Sint32 pitch;
     void*  scan0;
-} MIL_DIBitmapData;
+} MIL_BitmapData;
 
 #define METHOD_TABLE(type) MIL_##type##_METHOD_TABLE
 /** 
@@ -76,7 +76,6 @@ CLASS(MIL_GdiObject)
 {
     BEGIN_METHOD_DECLARE(MIL_GdiObject)
 #define MIL_GDIOBJECT_METHOD_TABLE \
-        MIL_Status (*getLastStatus)(_Self(MIL_GdiObject));\
         MIL_GdiObject* (*ref)(_SELF, int type);\
         void (*unRef)(_SELF, int type);\
         int (*getRef)(_SELF, int type);
@@ -85,7 +84,6 @@ CLASS(MIL_GdiObject)
 
     BEGIN_PRIVATE(MIL_GdiObject)
         int counters[3];
-        MIL_Status status;
     END_PRIVATE
 };
 
@@ -113,14 +111,23 @@ BEGIN_CLASS_INHERIT(MIL_Image, MIL_GdiObject)
     END_METHOD_EXPAND_DECLARE
 
     BEGIN_PRIVATE(MIL_Image)
-    MIL_DIBitmapData* data;
+    MIL_BitmapData* data;
     const char* raw_format;
     void* cache;
     END_PRIVATE
 
 END_CLASS_INHERIT
 
+typedef enum {
+    MIL_PIXEL_COPY = 0,
+    MIL_PIXEL_AND = 1,
+    MIL_PIXEL_XOR = 3,
+    MIL_PIXEL_OR = 2,
+    MIL_PIXEL_OPERATION_MAX = 4
+} MIL_PixelsOperation ;
+
 typedef void (*MIL_DestroyCtxtCB)(void*);
+
 BEGIN_CLASS_INHERIT(MIL_PixelsOps, MIL_GdiObject)
     BEGIN_METHOD_EXPAND_DECLARE(MIL_PixelsOps)
 #define MIL_PIXELSOPS_METHOD_TABLE \
@@ -139,13 +146,13 @@ BEGIN_CLASS_INHERIT(MIL_PixelsOps, MIL_GdiObject)
 
     BEGIN_PRIVATE(MIL_PixelsOps)
     /** the step of current pixel operations. */
-    int step;
+    int step; /* Will be disuse. */
 
     /** the pointer to the destination */
     Uint8* cur_dst;
 
     /** the pixel value shoulb be skipped (the color key) */
-    mt_color skip_pixel;
+    mt_color skip_pixel; /* Will be disuse. */
 
     /** the current pixel value for setpixel and setpixels operation */
     mt_color cur_pixel;
@@ -158,24 +165,23 @@ BEGIN_CLASS_INHERIT(MIL_PixelsOps, MIL_GdiObject)
     END_PRIVATE
 END_CLASS_INHERIT
 
-
 /** 
- * @class MIL_DIBitmap
+ * @class MIL_Bitmap
  * @brief A modifiable container for MIL_Image, you can change it's pixel data.
  */
-BEGIN_CLASS_INHERIT(MIL_DIBitmap, MIL_Image)
-    BEGIN_METHOD_EXPAND_DECLARE(MIL_DIBitmap)
+BEGIN_CLASS_INHERIT(MIL_Bitmap, MIL_Image)
+    BEGIN_METHOD_EXPAND_DECLARE(MIL_Bitmap)
 #define MIL_BITMAP_METHOD_TABLE \
         MIL_IMAGE_METHOD_TABLE \
-        MIL_Status  (*getPixel)(_Self(MIL_DIBitmap), int x, int y, MIL_Color* color); \
-        MIL_Status  (*lockBits)(_Self(MIL_DIBitmap), const MIL_Rect* rc, MIL_DIBitmapData* locked_data); \
-        MIL_Status  (*setPixel)(_Self(MIL_DIBitmap), int x, int y, const MIL_Color* color); \
-        MIL_Status  (*unlockBits)(_Self(MIL_DIBitmap), MIL_DIBitmapData* locked_data);
+        MIL_Status  (*getPixel)(_Self(MIL_Bitmap), int x, int y, MIL_Color* color); \
+        MIL_Status  (*lockBits)(_Self(MIL_Bitmap), const MIL_Rect* rc, MIL_BitmapData* locked_data); \
+        MIL_Status  (*setPixel)(_Self(MIL_Bitmap), int x, int y, const MIL_Color* color); \
+        MIL_Status  (*unlockBits)(_Self(MIL_Bitmap), MIL_BitmapData* locked_data);
         MIL_BITMAP_METHOD_TABLE
     END_METHOD_EXPAND_DECLARE
 
-    BEGIN_PRIVATE(MIL_DIBitmap)
-        MIL_DIBitmapData* data;
+    BEGIN_PRIVATE(MIL_Bitmap)
+        MIL_BitmapData* data;
     END_PRIVATE
 END_CLASS_INHERIT
 
@@ -314,7 +320,7 @@ BEGIN_CLASS_INHERIT(MIL_Pen, MIL_GdiObject)
         MIL_Status (*setDashPattern)(_Self(MIL_Pen), float* dash_array, Uint32 count);\
         MIL_Status (*setDashStyle)(_Self(MIL_Pen), MIL_DashStyle);\
         MIL_Status (*setLineJoin)(_Self(MIL_Pen), MIL_LineJoin);\
-        MIL_Status (*setWidth)(_Self(MIL_Pen), Uint32);
+        void (*setWidth)(_Self(MIL_Pen), Uint32);
         MIL_PEN_METHOD_TABLE
     END_METHOD_EXPAND_DECLARE
 END_CLASS_INHERIT
@@ -334,8 +340,11 @@ BEGIN_CLASS_INHERIT(MIL_GraphicsContext, MIL_GdiObject)
         void       (*restore)(_Self(MIL_GraphicsContext));\
         MIL_Status (*selectPen)(_Self(MIL_GraphicsContext), MIL_Pen*);\
         MIL_Status (*selectBrush)(_Self(MIL_GraphicsContext), MIL_Brush*);\
-        MIL_Status (*selectPixelsOperations)(_Self(MIL_GraphicsContext), MIL_PixelsOps*);\
-        MIL_Status (*drawPixel)(_Self(MIL_GraphicsContext), int, int);
+        MIL_Status (*selectPixelsOperator)(_Self(MIL_GraphicsContext), MIL_PixelsOps*);\
+        MIL_Status (*setPixelOperationType)(_Self(MIL_GraphicsContext), MIL_PixelsOperation);\
+        MIL_Status (*setPixel)(_Self(MIL_GraphicsContext), Uint32, Uint32);\
+        mt_color   (*getPixel)(_Self(MIL_GraphicsContext), Uint32, Uint32);\
+        MIL_Status (*drawLine)(_Self(MIL_GraphicsContext), Uint32, Uint32, Uint32, Uint32);
         MIL_GC_METHOD_TABLE
     END_METHOD_EXPAND_DECLARE
 END_CLASS_INHERIT
@@ -360,7 +369,7 @@ extern DECLSPEC MIL_Image* LoadImageFromFile(const char* file);
  * @param file The path of file.
  * @returns Pointer of Bitmap object if success, NULL otherwise. 
  */
-extern DECLSPEC MIL_DIBitmap* 
+extern DECLSPEC MIL_Bitmap* 
 LoadBitmapFromFile(const char* file);
 
 /*

@@ -26,5 +26,7 @@ END_CLASS_INHERIT
 BEGIN_CLASS_INHERIT(PixelsSet4, MIL_PixelsOps)
     NO_METHOD_EXPAND(PixelsSet4)
 END_CLASS_INHERIT
+
+MIL_PixelsOps* GetPixelsOperator(MIL_PixelsOperation opt, int bpp);
 #endif   /* ----- #ifndef PIXELS_OPS_INC  ----- */
 

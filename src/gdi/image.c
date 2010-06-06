@@ -121,7 +121,7 @@ MIL_Status METHOD_NAMED(MIL_Image, loadFile)(_Self(MIL_Image), const char* file)
         if (NULL != ops) {
             Surface* surface = MIL_LoadBMP_RW(ops, MIL_AUTO_FREE);
             if (NULL != surface) {
-                _private(MIL_Image)->data = (MIL_DIBitmapData*)(&surface->format);
+                _private(MIL_Image)->data = (MIL_BitmapData*)(&surface->format);
                 _private(MIL_Image)->raw_format = "bmp";
                 _private(MIL_Image)->cache = surface;
                 return MIL_OK;
@@ -140,8 +140,9 @@ MIL_Status METHOD_NAMED(MIL_Image, loadFile)(_Self(MIL_Image), const char* file)
 BEGIN_METHOD_MAP(MIL_Image, MIL_GdiObject)
     CONSTRUCTOR_MAP(MIL_Image)
     DESTRUCTOR_MAP(MIL_Image)
-    METHOD_PLACEHOLDER(addHoldRef)
-    METHOD_PLACEHOLDER(decHoldRef)
+    METHOD_PLACEHOLDER(ref)
+    METHOD_PLACEHOLDER(unRef)
+    METHOD_PLACEHOLDER(getRef)
     METHOD_MAP(MIL_Image, clone)
     METHOD_MAP(MIL_Image, getBounds)
     METHOD_MAP(MIL_Image, getWidth)
@@ -163,7 +164,7 @@ CreateImageFromSurface(Surface* surface)
     if (NULL != surface) {
         MIL_Image* img = (MIL_Image*)New(MIL_Image);
         if (NULL != img) {
-            _friend(MIL_Image, img)->data = (MIL_DIBitmapData*)(&surface->format);
+            _friend(MIL_Image, img)->data = (MIL_BitmapData*)(&surface->format);
             _friend(MIL_Image, img)->raw_format = "surface";
             _friend(MIL_Image, img)->cache = surface;
 

@@ -244,7 +244,12 @@ __INLINE__ type * type##ArrayConstructor(_Self(type), int num) { \
 #define CONSTRUCTOR_MAP(type) (void*(*)(void*))type##Constructor,
 #define DESTRUCTOR_MAP(type) (void(*)(void*))type##Destructor,
 
+#if defined(__GNUC__) && __GNUC__ >= 4
+#define METHOD_PLACEHOLDER(method) .method = NULL,
+#else
 #define METHOD_PLACEHOLDER(method) NULL,
+#endif
+
 #define NON_CONSTRUCTOR METHOD_PLACEHOLDER(Constructor)
 #define NON_DESTRUCTOR METHOD_PLACEHOLDER(Destructor)
 #define PLACEHOLDER(anything) 0

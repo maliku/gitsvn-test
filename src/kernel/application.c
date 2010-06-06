@@ -13,6 +13,7 @@
 #include "application.h"
 #include "bitmap.h"
 #include "image.h"
+#include "paint.h"
 
 MAKE_PURE_VIRTUAL_CLASS(MIL_Application)
 
@@ -58,7 +59,7 @@ CONSTRUCTOR(Application)
     Delete(sig);
 
     if (NULL != vd) {
-        _c(vd)->setVideoMode(vd, (Surface*)screen, 640, 480, 32, 0);
+        _c(vd)->setVideoMode(vd, (Surface*)screen, 640, 480, 16, 0);
         if (NULL != screen->pixels) {
             MIL_Rect rc = {0, 0, 640, 480};
             MIL_Rect rcbmp = {0, 0, 300, 300};
@@ -68,8 +69,8 @@ CONSTRUCTOR(Application)
 
             MIL_RWops* ops = MIL_RWFromFile("res/lena16.bmp", "rb");
             Surface* bmp = MIL_LoadBMP_RW(ops, MIL_AUTO_FREE);
-            MIL_DIBitmap* img = LoadBitmapFromFile("res/mil.bmp");
-            MIL_Color color = {2, 0, 100};
+            MIL_Bitmap* img = LoadBitmapFromFile("res/mil.bmp");
+            MIL_Color color = {255, 0, 0};
             int i, j;
             char *pixels = (char*)screen->pixels;
             _vc1(screen, setClipRect, &rclip);
@@ -87,6 +88,9 @@ CONSTRUCTOR(Application)
                 MIL_Image* screen_img = CreateImageFromSurface(screen);
                 if (NULL != screen_img) {
                     MIL_Graphics* gc = MIL_CreateMemGCFromImage(screen_img);
+                    MIL_Pen* pen = (MIL_Pen*)New(SolidPen);
+                    _c(pen)->setColor(pen, &color);
+                    _c(gc)->selectPen(gc, pen);
 //                _vc2(convert, setColorKey, MIL_SRCCOLORKEY, 0);
 //                _vc2(convert, setAlpha, MIL_SRCALPHA, 5);
                     for (j = 0; j < 400; ++j) {
@@ -94,7 +98,8 @@ CONSTRUCTOR(Application)
                         rcpos.x = j;
 //                    _c(convert)->stretchBlit(convert, &rcbmp, screen, &rcdst);
                         _vc3(convert, blit, &rcbmp, screen, &rcpos);
-                        _c(gc)->drawPixel(gc, 10, 10);
+                        _c(gc)->setPixel(gc, 10, 10);
+                        _c(gc)->drawLine(gc, 1, 1, 639, 479);
                         _c(vd)->updateRects(vd, 1, &rc);
                     }
                 }

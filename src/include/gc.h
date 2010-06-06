@@ -19,12 +19,10 @@ BEGIN_CLASS_INHERIT(MemoryGC, MIL_GraphicsContext)
         MIL_MEMGC_METHOD_TABLE
     END_METHOD_EXPAND_DECLARE
 
-    BEGIN_PRIVATE(MemoryGC)
     MIL_Image* image;
     MIL_Pen* pen;
     MIL_Brush* brush;
     MIL_PixelsOps* pixels_ops;
-    END_PRIVATE
 END_CLASS_INHERIT
 
 #endif   /* ----- #ifndef GFX_CONTEXT_INC  ----- */
