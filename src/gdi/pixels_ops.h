@@ -11,22 +11,21 @@
 
 #include "MIL_gdi.h"
 
-BEGIN_CLASS_INHERIT(PixelsSet1, MIL_PixelsOps)
-    NO_METHOD_EXPAND(PixelsSet1)
-END_CLASS_INHERIT
-
-BEGIN_CLASS_INHERIT(PixelsSet2, MIL_PixelsOps)
-    NO_METHOD_EXPAND(PixelsSet2)
-END_CLASS_INHERIT
-
-BEGIN_CLASS_INHERIT(PixelsSet3, MIL_PixelsOps)
-    NO_METHOD_EXPAND(PixelsSet3)
-END_CLASS_INHERIT
-
-BEGIN_CLASS_INHERIT(PixelsSet4, MIL_PixelsOps)
-    NO_METHOD_EXPAND(PixelsSet4)
-END_CLASS_INHERIT
-
-MIL_PixelsOps* GetPixelsOperator(MIL_PixelsOperation opt, int bpp);
+void SetPixelSet8(MIL_PixelsContext *ctxt);
+void SetHlineSet8(MIL_PixelsContext *ctxt, Uint32 w);
+void PutHlineSet8(MIL_PixelsContext *ctxt, Uint8* src, Uint32 w);
+void PutHlineSkipSet8(MIL_PixelsContext *ctxt, Uint8* src, Uint32 w);
+void SetPixelSet16(MIL_PixelsContext *ctxt);
+void SetHlineSet16(MIL_PixelsContext *ctxt, Uint32 w);
+void PutHlineSet16(MIL_PixelsContext *ctxt, Uint8* src, Uint32 w);
+void PutHlineSkipSet16(MIL_PixelsContext *ctxt, Uint8* src, Uint32 w);
+void SetPixelSet24(MIL_PixelsContext *ctxt);
+void SetHlineSet24(MIL_PixelsContext *ctxt, Uint32 w);
+void PutHlineSet24(MIL_PixelsContext *ctxt, Uint8* src, Uint32 w);
+void PutHlineSkipSet24(MIL_PixelsContext *ctxt, Uint8* src, Uint32 w);
+void SetPixelSet32(MIL_PixelsContext *ctxt);
+void SetHlineSet32(MIL_PixelsContext *ctxt, Uint32 w);
+void PutHlineSet32(MIL_PixelsContext *ctxt, Uint8* src, Uint32 w);
+void PutHlineSkipSet32(MIL_PixelsContext *ctxt, Uint8* src, Uint32 w);
 #endif   /* ----- #ifndef PIXELS_OPS_INC  ----- */
 

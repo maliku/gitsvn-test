@@ -20,7 +20,6 @@ CONSTRUCTOR(MemoryGC)
     _m(image) = NULL;
     _m(pen) = NULL;
     _m(brush) = NULL;
-    _m(pixels_ops) = NULL;
     return self;
 }
 
@@ -29,7 +28,6 @@ DESTRUCTOR(MemoryGC)
     MIL_GdiObject* img_obj = (MIL_GdiObject*)(_m(image));
     MIL_GdiObject* pen_obj = (MIL_GdiObject*)(_m(pen));
     MIL_GdiObject* brush_obj = (MIL_GdiObject*)(_m(brush));
-    MIL_GdiObject* ops_obj = (MIL_GdiObject*)(_m(pixels_ops));
     if (img_obj) {
         _c(img_obj)->unRef(img_obj, MIL_HOLD_REF);
     }
@@ -38,9 +36,6 @@ DESTRUCTOR(MemoryGC)
     }
     if (brush_obj) {
         _c(brush_obj)->unRef(brush_obj, MIL_HOLD_REF);
-    }
-    if (ops_obj) {
-        _c(ops_obj)->unRef(ops_obj, MIL_HOLD_REF);
     }
 }
 
@@ -152,16 +147,9 @@ MIL_Status METHOD_NAMED(MemoryGC, selectBrush)(_Self(MIL_GraphicsContext), MIL_B
 }
 
 MIL_Status METHOD_NAMED(MemoryGC, selectPixelsOperator)
-    (_Self(MIL_GraphicsContext), MIL_PixelsOps* ops)
+    (_Self(MIL_GraphicsContext))
 {
-    if (NULL != ops) {
-        if (NULL != _tm(MemoryGC, pixels_ops)) {
-            _c(_tm(MemoryGC, pixels_ops))->unRef(_tm(MemoryGC, pixels_ops), MIL_HOLD_REF);
-        }
-        _c((MIL_GdiObject*)ops)->ref((MIL_GdiObject*)ops, MIL_HOLD_REF);
-        _tm(MemoryGC, pixels_ops) = ops;
-    }
-    return MIL_INVALID_PARAMETER;
+    return MIL_NOT_IMPLEMENTED;
 }
 
 MIL_Status METHOD_NAMED(MemoryGC, setPixelOperationType)
@@ -169,9 +157,6 @@ MIL_Status METHOD_NAMED(MemoryGC, setPixelOperationType)
 {
     /* TODO: compare operaion wheather eqaul*/
     if (opt >= 0 && opt < MIL_PIXEL_OPERATION_MAX) {
-        if (NULL != _tm(MemoryGC, pixels_ops)) {
-            _c(_tm(MemoryGC, pixels_ops))->unRef(_tm(MemoryGC, pixels_ops), MIL_HOLD_REF);
-        }
     }
     return MIL_INVALID_PARAMETER;
 }
@@ -179,17 +164,17 @@ MIL_Status METHOD_NAMED(MemoryGC, setPixelOperationType)
 MIL_Status METHOD_NAMED(MemoryGC, setPixel)(_Self(MIL_GraphicsContext), Uint32 x, Uint32 y)
 {
     MIL_Color c;
-    MIL_PixelsOps* ops = _tm(MemoryGC, pixels_ops);
     const MIL_PixelFormat* fmt = 
         _c(_tm(MemoryGC, image))->getPixelFormat(_tm(MemoryGC, image));
-    _friend(MIL_PixelsOps, ops)->cur_dst = 
+    // TODO: clipping.
+    _tm(MemoryGC, pix_ctxt).cur_dst = 
         (Uint8*)_friend(MIL_Image, _tm(MemoryGC, image))->data->scan0 +
                 (y * _friend(MIL_Image, _tm(MemoryGC, image))->data->pitch + 
                  x * _c(fmt)->getBytesPerPixel(fmt));
     _c(_tm(MemoryGC, pen))->getColor(_tm(MemoryGC, pen), &c);
-    _friend(MIL_PixelsOps, ops)->cur_pixel = 
+    _tm(MemoryGC, pix_ctxt).color = 
         _c(fmt)->mapColor(fmt, &c);
-    _c(ops)->setPixel(ops);
+    SetPixelSet16(&_tm(MemoryGC, pix_ctxt));
     return MIL_OK;
 }
 
@@ -227,6 +212,7 @@ mt_color  METHOD_NAMED(MemoryGC, getPixel)(_Self(MIL_GraphicsContext), Uint32 x,
 MIL_Status METHOD_NAMED(MemoryGC, drawLine)
     (_Self(MIL_GraphicsContext), Uint32 x1, Uint32 y1, Uint32 x2, Uint32 y2)
 {
+    LineGenerator(self, x1, y1, x2, y2, METHOD_NAMED(MemoryGC, setPixel));
 }
 
 
@@ -280,9 +266,8 @@ MIL_CreateMemGCFromImage(MIL_Image* img)
             if (_c((MIL_GdiObject*)img)->getRef(img, MIL_HOLD_REF) <= 0) {
                 mgc->image = 
                     (MIL_Image*)_c((MIL_GdiObject*)img)->ref(img, MIL_HOLD_REF);
-                _c(mgc)->selectPixelsOperator((MIL_GraphicsContext*)mgc, 
-                        GetPixelsOperator(MIL_PIXEL_COPY, _c(fmt)->getBytesPerPixel(fmt)));
-                _friend(MIL_PixelsOps, mgc->pixels_ops)->cur_dst = _friend(MIL_Image, mgc->image)->data->scan0;
+//                _c(mgc)->selectPixelsOperator((MIL_GraphicsContext*)mgc, 
+//                        GetPixelsOperator(MIL_PIXEL_COPY, _c(fmt)->getBytesPerPixel(fmt)));
                 return (MIL_Graphics*)mgc;
             }
         }

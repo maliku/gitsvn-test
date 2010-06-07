@@ -22,7 +22,7 @@ BEGIN_CLASS_INHERIT(MemoryGC, MIL_GraphicsContext)
     MIL_Image* image;
     MIL_Pen* pen;
     MIL_Brush* brush;
-    MIL_PixelsOps* pixels_ops;
+    MIL_PixelsContext pix_ctxt;
 END_CLASS_INHERIT
 
 #endif   /* ----- #ifndef GFX_CONTEXT_INC  ----- */

@@ -10,200 +10,111 @@
 #include "misc.h"
 #include "pixels_ops.h"
 
-CONSTRUCTOR(MIL_PixelsOps)
-{
-    _private(MIL_PixelsOps)->step = 0;
-    _private(MIL_PixelsOps)->cur_dst = NULL;
-    _private(MIL_PixelsOps)->skip_pixel = 0;
-    _private(MIL_PixelsOps)->cur_pixel = 0;
-    _private(MIL_PixelsOps)->user_ctxt = NULL;
-    _private(MIL_PixelsOps)->ctxt_free = NULL;
-}
-
-DESTRUCTOR(MIL_PixelsOps)
-{
-    if (NULL != _private(MIL_PixelsOps)->user_ctxt && NULL != _private(MIL_PixelsOps)->ctxt_free) {
-        _private(MIL_PixelsOps)->ctxt_free(_private(MIL_PixelsOps)->user_ctxt);
-    }
-}
-
-void METHOD_NAMED(MIL_PixelsOps, setPixel)(_Self(MIL_PixelsOps))
-{
-    return;
-}
-
-void METHOD_NAMED(MIL_PixelsOps, setHline)(_Self(MIL_PixelsOps), Uint32 w)
-{
-    return;
-}
-
-void METHOD_NAMED(MIL_PixelsOps, putHline)(_Self(MIL_PixelsOps), Uint8* src, Uint32 w)
-{
-    return;
-}
-
-void METHOD_NAMED(MIL_PixelsOps, putHlineSkip)(_Self(MIL_PixelsOps), Uint8* src, Uint32 w)
-{
-    return;
-}
-
-void  METHOD_NAMED(MIL_PixelsOps, setStep)(_Self(MIL_PixelsOps), int step)
-{
-    _private(MIL_PixelsOps)->step = step;
-}
-
-void  METHOD_NAMED(MIL_PixelsOps, setColorKey)(_Self(MIL_PixelsOps), mt_color c)
-{
-    _private(MIL_PixelsOps)->skip_pixel = c;
-}
-
-void  METHOD_NAMED(MIL_PixelsOps, setColor)(_Self(MIL_PixelsOps), mt_color c)
-{
-    _private(MIL_PixelsOps)->cur_pixel = c;
-}
-
-void* METHOD_NAMED(MIL_PixelsOps, setUserCtxt)(_Self(MIL_PixelsOps), void* ctxt)
-{
-    _private(MIL_PixelsOps)->user_ctxt = ctxt;
-}
-
-BEGIN_METHOD_MAP(MIL_PixelsOps, MIL_GdiObject)
-    CONSTRUCTOR_MAP(MIL_PixelsOps)
-    DESTRUCTOR_MAP(MIL_PixelsOps)
-    METHOD_PLACEHOLDER(ref)
-    METHOD_PLACEHOLDER(unRef)
-    METHOD_PLACEHOLDER(getRef)
-    METHOD_MAP(MIL_PixelsOps, setPixel)
-    METHOD_MAP(MIL_PixelsOps, setHline)
-    METHOD_MAP(MIL_PixelsOps, putHline)
-    METHOD_MAP(MIL_PixelsOps, putHlineSkip)
-    METHOD_MAP(MIL_PixelsOps, setStep)
-    METHOD_MAP(MIL_PixelsOps, setColorKey)
-    METHOD_MAP(MIL_PixelsOps, setColor)
-    METHOD_MAP(MIL_PixelsOps, setUserCtxt)
-END_METHOD_MAP
-
-static __INLINE__ void memset_hline_helper (MIL_PixelsOps* ops, int bytes_per_pixel, int w)
+static __INLINE__ void memset_hline_helper (MIL_PixelsContext* ops, int bytes_per_pixel, int w)
 {
     int n = w * bytes_per_pixel;
-    if (!_friend(MIL_PixelsOps, ops)->cur_pixel && !(n & 3) 
-            && !((long)_friend(MIL_PixelsOps, ops)->cur_dst & 3) 
+    if (!ops && !(n & 3) 
+            && !((long)ops->cur_dst & 3) 
             && (n > 3)) {
         n = n >> 2;
-        MIL_memset4 (_friend(MIL_PixelsOps, ops)->cur_dst, 0, n);
+        MIL_memset4 (ops->cur_dst, 0, n);
     }
     else {
-        memset (_friend(MIL_PixelsOps, ops)->cur_dst, _friend(MIL_PixelsOps, ops)->cur_pixel, n);
+        memset (ops->cur_dst, ops->color, n);
     }
 }
 
 static __INLINE__ void memcpy_hline_helper 
-(MIL_PixelsOps* ops, const Uint8* src, int bytes_per_pixel, int w)
+(MIL_PixelsContext* ops, const Uint8* src, int bytes_per_pixel, int w)
 {
     int n = w * bytes_per_pixel;
 
-    if (!((long)_friend(MIL_PixelsOps, ops)->cur_dst&3) && !(n&3) && !((long)src&3) && (n > 3)) {
-        MIL_memcpy4(_friend(MIL_PixelsOps, ops)->cur_dst, src, n >> 2);
+    if (!((long)ops->cur_dst&3) && !(n&3) && !((long)src&3) && (n > 3)) {
+        MIL_memcpy4(ops->cur_dst, src, n >> 2);
     }
     else
-        memcpy(_friend(MIL_PixelsOps, ops)->cur_dst, src, n);
+        memcpy(ops->cur_dst, src, n);
 }
 
 /* =================================== 1 Bytes per pixel ==================== */
 
-void METHOD_NAMED(PixelsSet1, setPixel)(_Self(MIL_PixelsOps))
+void SetPixelSet8(MIL_PixelsContext *ctxt)
 {
-    *_private(MIL_PixelsOps)->cur_dst = (Uint8)_private(MIL_PixelsOps)->cur_pixel;
+    *ctxt->cur_dst = (Uint8)ctxt->color;
 }
 
-void METHOD_NAMED(PixelsSet1, setHline)(_Self(MIL_PixelsOps), Uint32 w)
+void SetHlineSet8(MIL_PixelsContext *ctxt, Uint32 w)
 {
-    if (_private(MIL_PixelsOps)->step == 1) {
-        memset_hline_helper(self, 1, w);
+    if (ctxt->step == 1) {
+        memset_hline_helper(ctxt, 1, w);
     }
     else {
-        Uint8* row = _private(MIL_PixelsOps)->cur_dst;
+        Uint8* row = ctxt->cur_dst;
         while (w > 0) {
-            *row = (Uint8) _private(MIL_PixelsOps)->cur_pixel;
-            row += _private(MIL_PixelsOps)->step;
-            w -= _private(MIL_PixelsOps)->step;
+            *row = (Uint8) ctxt->color;
+            row += ctxt->step;
+            w -= ctxt->step;
         }
     }
 }
 
-void METHOD_NAMED(PixelsSet1, putHline)(_Self(MIL_PixelsOps), Uint8* src, Uint32 w)
+void PutHlineSet8(MIL_PixelsContext *ctxt, Uint8* src, Uint32 w)
 {
-    if (_private(MIL_PixelsOps)->step == 1) {
-        memcpy_hline_helper (self, src, 1, w);
+    if (ctxt->step == 1) {
+        memcpy_hline_helper (ctxt, src, 1, w);
     }
     else {
-        Uint8* row = _private(MIL_PixelsOps)->cur_dst;
+        Uint8* row = ctxt->cur_dst;
         while (w > 0) {
             *row = *src;
-            row += _private(MIL_PixelsOps)->step;
-            src += _private(MIL_PixelsOps)->step;
-            w -= _private(MIL_PixelsOps)->step;
+            row += ctxt->step;
+            src += ctxt->step;
+            w -= ctxt->step;
         }
     }
 }
 
-void METHOD_NAMED(PixelsSet1, putHlineSkip)(_Self(MIL_PixelsOps), Uint8* src, Uint32 w)
+void PutHlineSkipSet8(MIL_PixelsContext *ctxt, Uint8* src, Uint32 w)
 {
-    Uint8* row = _private(MIL_PixelsOps)->cur_dst;
+    Uint8* row = ctxt->cur_dst;
     while (w > 0) {
-        if (*src != _private(MIL_PixelsOps)->skip_pixel)
+        if (*src != ctxt->color_key)
             *row = *src;
-        row += _private(MIL_PixelsOps)->step;
-        src += _private(MIL_PixelsOps)->step;
-        w -= _private(MIL_PixelsOps)->step;
+        row += ctxt->step;
+        src += ctxt->step;
+        w -= ctxt->step;
     }
 }
-
-BEGIN_METHOD_MAP(PixelsSet1, MIL_PixelsOps)
-    NON_CONSTRUCTOR
-    NON_DESTRUCTOR
-    METHOD_PLACEHOLDER(ref)
-    METHOD_PLACEHOLDER(unRef)
-    METHOD_PLACEHOLDER(getRef)
-    METHOD_MAP(PixelsSet1, setPixel)
-    METHOD_MAP(PixelsSet1, setHline)
-    METHOD_MAP(PixelsSet1, putHline)
-    METHOD_MAP(PixelsSet1, putHlineSkip)
-    METHOD_PLACEHOLDER(setStep)
-    METHOD_PLACEHOLDER(setColorKey)
-    METHOD_PLACEHOLDER(setColor)
-    METHOD_PLACEHOLDER(setUserCtxt)
-END_METHOD_MAP
 
 /* =================================== 2 Bytes per pixel ==================== */
 
-void METHOD_NAMED(PixelsSet2, setPixel)(_Self(MIL_PixelsOps))
+void SetPixelSet16(MIL_PixelsContext *ctxt)
 {
-    *(Uint16 *) _private(MIL_PixelsOps)->cur_dst = (Uint16) _private(MIL_PixelsOps)->cur_pixel;
+    *(Uint16 *) ctxt->cur_dst = (Uint16) ctxt->color;
 }
 
-void METHOD_NAMED(PixelsSet2, setHline)(_Self(MIL_PixelsOps), Uint32 w)
+void SetHlineSet16(MIL_PixelsContext *ctxt, Uint32 w)
 {
-    int step = _private(MIL_PixelsOps)->step;
-    if (_private(MIL_PixelsOps)->cur_pixel != 0 || _private(MIL_PixelsOps)->step != 1) {
-        Uint16 * dest16 = (Uint16 *)_private(MIL_PixelsOps)->cur_dst;
+    int step = ctxt->step;
+    if (ctxt->color != 0 || ctxt->step != 1) {
+        Uint16 * dest16 = (Uint16 *)ctxt->cur_dst;
         if (w < 5 || step != 1)
         {
             do {
-                *dest16 = (Uint16)_private(MIL_PixelsOps)->cur_pixel;
+                *dest16 = (Uint16)ctxt->color;
                 dest16 += step;
                 w -= step;
             } while (w > 0);
         }
         else
         {
-            Uint32 mixture = (((Uint16)_private(MIL_PixelsOps)->cur_pixel << 16) 
-                    | (Uint16)_private(MIL_PixelsOps)->cur_pixel);
+            Uint32 mixture = (((Uint16)ctxt->color << 16) 
+                    | (Uint16)ctxt->color);
             Uint32 * dest32;
             int count;
-            if ((Uint32)_private(MIL_PixelsOps)->cur_dst & 3) // Ensure 4-bytes alignment.
+            if ((Uint32)ctxt->cur_dst & 3) // Ensure 4-bytes alignment.
             {
-                *dest16++ = (Uint16)_private(MIL_PixelsOps)->cur_pixel;
+                *dest16++ = (Uint16)ctxt->color;
                 --w;
             }
             count = (w >> 1);
@@ -213,103 +124,87 @@ void METHOD_NAMED(PixelsSet2, setHline)(_Self(MIL_PixelsOps), Uint32 w)
             } while (--count > 0); // Please make sure 3 pixels to processed at least!
             if (0 != (w & 1)) // Dealing with the extra pixel.
             {
-                *(Uint16 *)dest32 = _private(MIL_PixelsOps)->cur_pixel;
+                *(Uint16 *)dest32 = ctxt->color;
             }
         }
     }
 #ifdef ASM_memset2
-    else if (_private(MIL_PixelsOps)->step == 1 && !((long)_private(MIL_PixelsOps)->cur_dst & 2)) {
-        ASM_memset2 (_private(MIL_PixelsOps)->cur_dst, _private(MIL_PixelsOps)->cur_pixel, w);
+    else if (ctxt->step == 1 && !((long)ctxt->cur_dst & 2)) {
+        ASM_memset2 (ctxt->cur_dst, ctxt->color, w);
     }
 #endif
     else {
-        memset_hline_helper (self, 2, w);
+        memset_hline_helper (ctxt, 2, w);
     }
 }
 
-void METHOD_NAMED(PixelsSet2, putHline)(_Self(MIL_PixelsOps), Uint8* src, Uint32 w)
+void PutHlineSet16(MIL_PixelsContext *ctxt, Uint8* src, Uint32 w)
 {
-    if (_private(MIL_PixelsOps)->step == 1) {
-        memcpy_hline_helper (self, src, 2, w);
+    if (ctxt->step == 1) {
+        memcpy_hline_helper (ctxt, src, 2, w);
     }
     else {
-        Uint16* dstrow = (Uint16*)_private(MIL_PixelsOps)->cur_dst;
+        Uint16* dstrow = (Uint16*)ctxt->cur_dst;
         Uint16* srcrow = (Uint16*)src;
         while (w > 0) {
             *dstrow = *srcrow;
-            dstrow += _private(MIL_PixelsOps)->step;
-            srcrow += _private(MIL_PixelsOps)->step;
-            w -= _private(MIL_PixelsOps)->step;
+            dstrow += ctxt->step;
+            srcrow += ctxt->step;
+            w -= ctxt->step;
         }
     }
 }
 
-void METHOD_NAMED(PixelsSet2, putHlineSkip)(_Self(MIL_PixelsOps), Uint8* src, Uint32 w)
+void PutHlineSkipSet16(MIL_PixelsContext *ctxt, Uint8* src, Uint32 w)
 {
-    Uint16* dstrow = (Uint16*)_private(MIL_PixelsOps)->cur_dst;
+    Uint16* dstrow = (Uint16*)ctxt->cur_dst;
     Uint16* srcrow = (Uint16*)src;
 
     while (w > 0) {
-        if (*srcrow != _private(MIL_PixelsOps)->skip_pixel)
+        if (*srcrow != ctxt->color_key)
             *dstrow = *srcrow;
-        dstrow += _private(MIL_PixelsOps)->step;
-        srcrow += _private(MIL_PixelsOps)->step;
-        w -= _private(MIL_PixelsOps)->step;
+        dstrow += ctxt->step;
+        srcrow += ctxt->step;
+        w -= ctxt->step;
     }
 }
-
-BEGIN_METHOD_MAP(PixelsSet2, MIL_PixelsOps)
-    NON_CONSTRUCTOR
-    NON_DESTRUCTOR
-    METHOD_PLACEHOLDER(ref)
-    METHOD_PLACEHOLDER(unRef)
-    METHOD_PLACEHOLDER(getRef)
-    METHOD_MAP(PixelsSet2, setPixel)
-    METHOD_MAP(PixelsSet2, setHline)
-    METHOD_MAP(PixelsSet2, putHline)
-    METHOD_MAP(PixelsSet2, putHlineSkip)
-    METHOD_PLACEHOLDER(setStep)
-    METHOD_PLACEHOLDER(setColorKey)
-    METHOD_PLACEHOLDER(setColor)
-    METHOD_PLACEHOLDER(setUserCtxt)
-END_METHOD_MAP
 
 /* =================================== 3 Bytes per pixel ==================== */
-void METHOD_NAMED(PixelsSet3, setPixel)(_Self(MIL_PixelsOps))
+void SetPixelSet24(MIL_PixelsContext *ctxt)
 {
-    SETVAL_24BIT(_private(MIL_PixelsOps)->cur_dst, _private(MIL_PixelsOps)->cur_pixel);
+    SETVAL_24BIT(ctxt->cur_dst, ctxt->color);
 }
 
-void METHOD_NAMED(PixelsSet3, setHline)(_Self(MIL_PixelsOps), Uint32 w)
+void SetHlineSet24(MIL_PixelsContext *ctxt, Uint32 w)
 {
-    if (_private(MIL_PixelsOps)->step == 1 && _private(MIL_PixelsOps)->cur_pixel == 0) {
-        memset_hline_helper (self, 3, w);
+    if (ctxt->step == 1 && ctxt->color == 0) {
+        memset_hline_helper (ctxt, 3, w);
     }
 #ifdef ASM_memset3
-    else if (_private(MIL_PixelsOps)->step == 1) {
-        ASM_memset3 (_private(MIL_PixelsOps)->cur_dst, _private(MIL_PixelsOps)->cur_pixel, w);
+    else if (ctxt->step == 1) {
+        ASM_memset3 (ctxt->cur_dst, ctxt->color, w);
     }
 #endif
     else {
-        Uint8* row = _private(MIL_PixelsOps)->cur_dst;
-        int step = (_private(MIL_PixelsOps)->step << 1) + _private(MIL_PixelsOps)->step;
+        Uint8* row = ctxt->cur_dst;
+        int step = (ctxt->step << 1) + ctxt->step;
 
         while (w > 0) {
-            SETVAL_24BIT (row, _private(MIL_PixelsOps)->cur_pixel);
+            SETVAL_24BIT (row, ctxt->color);
             row += step;
-            w -= _private(MIL_PixelsOps)->step;
+            w -= ctxt->step;
         }
     }
 }
 
-void METHOD_NAMED(PixelsSet3, putHline)(_Self(MIL_PixelsOps), Uint8* src, Uint32 w)
+void PutHlineSet24(MIL_PixelsContext *ctxt, Uint8* src, Uint32 w)
 {
-    if (_private(MIL_PixelsOps)->step == 1) {
-        memcpy_hline_helper (self, src, 3, w);
+    if (ctxt->step == 1) {
+        memcpy_hline_helper (ctxt, src, 3, w);
     }
     else {
-        Uint8* row = (Uint8*)_private(MIL_PixelsOps)->cur_dst;
-        int step = (_private(MIL_PixelsOps)->step << 1) + _private(MIL_PixelsOps)->step;
+        Uint8* row = (Uint8*)ctxt->cur_dst;
+        int step = (ctxt->step << 1) + ctxt->step;
 
         while (w > 0) {
             *row = *src;
@@ -317,156 +212,80 @@ void METHOD_NAMED(PixelsSet3, putHline)(_Self(MIL_PixelsOps), Uint8* src, Uint32
             *(row + 2) = *(src + 2);
             row += step;
             src += step;
-            w -= _private(MIL_PixelsOps)->step;
+            w -= ctxt->step;
         }
     }
 }
 
-void METHOD_NAMED(PixelsSet3, putHlineSkip)(_Self(MIL_PixelsOps), Uint8* src, Uint32 w)
+void PutHlineSkipSet24(MIL_PixelsContext *ctxt, Uint8* src, Uint32 w)
 {
-    Uint8* row = (Uint8*)_private(MIL_PixelsOps)->cur_dst;
-    int step = (_private(MIL_PixelsOps)->step << 1) + _private(MIL_PixelsOps)->step;
+    Uint8* row = (Uint8*)ctxt->cur_dst;
+    int step = (ctxt->step << 1) + ctxt->step;
 
     while (w > 0) {
-        if (!EQUAL_24BIT (row, _private(MIL_PixelsOps)->skip_pixel)) {
+        if (!EQUAL_24BIT (row, ctxt->color_key)) {
             *row = *src;
             *(row + 1) = *(src + 1);
             *(row + 2) = *(src + 2);
         }
         row += step;
         src += step;
-        w -= _private(MIL_PixelsOps)->step;
+        w -= ctxt->step;
     }
 }
-
-BEGIN_METHOD_MAP(PixelsSet3, MIL_PixelsOps)
-    NON_CONSTRUCTOR
-    NON_DESTRUCTOR
-    METHOD_PLACEHOLDER(ref)
-    METHOD_PLACEHOLDER(unRef)
-    METHOD_PLACEHOLDER(getRef)
-    METHOD_MAP(PixelsSet3, setPixel)
-    METHOD_MAP(PixelsSet3, setHline)
-    METHOD_MAP(PixelsSet3, putHline)
-    METHOD_MAP(PixelsSet3, putHlineSkip)
-    METHOD_PLACEHOLDER(setStep)
-    METHOD_PLACEHOLDER(setColorKey)
-    METHOD_PLACEHOLDER(setColor)
-    METHOD_PLACEHOLDER(setUserCtxt)
-END_METHOD_MAP
 
 /* =================================== 4 Bytes per pixel ==================== */
 
-void METHOD_NAMED(PixelsSet4, setPixel)(_Self(MIL_PixelsOps))
+void SetPixelSet32(MIL_PixelsContext *ctxt)
 {
-    *(Uint32 *) _private(MIL_PixelsOps)->cur_dst = (Uint32) _private(MIL_PixelsOps)->cur_pixel;
+    *(Uint32 *) ctxt->cur_dst = (Uint32) ctxt->color;
 }
 
-void METHOD_NAMED(PixelsSet4, setHline)(_Self(MIL_PixelsOps), Uint32 w)
+void SetHlineSet32(MIL_PixelsContext *ctxt, Uint32 w)
 {
-    Uint32* row = (Uint32*)_private(MIL_PixelsOps)->cur_dst;
+    Uint32* row = (Uint32*)ctxt->cur_dst;
     
-    if (_private(MIL_PixelsOps)->step == 1) {
-        MIL_memset4 (row, _private(MIL_PixelsOps)->cur_pixel, w);
+    if (ctxt->step == 1) {
+        MIL_memset4 (row, ctxt->color, w);
     }
     else {
         while (w > 0) {
-            *row = _private(MIL_PixelsOps)->cur_pixel;
-            row += _private(MIL_PixelsOps)->step;
-            w -= _private(MIL_PixelsOps)->step;
+            *row = ctxt->color;
+            row += ctxt->step;
+            w -= ctxt->step;
         }
     }
 }
 
-void METHOD_NAMED(PixelsSet4, putHline)(_Self(MIL_PixelsOps), Uint8* src, Uint32 w)
+void PutHlineSet32(MIL_PixelsContext *ctxt, Uint8* src, Uint32 w)
 {
-    Uint32* dstrow = (Uint32*)_private(MIL_PixelsOps)->cur_dst;
+    Uint32* dstrow = (Uint32*)ctxt->cur_dst;
     Uint32* srcrow = (Uint32*)src;
 
-    if (_private(MIL_PixelsOps)->step == 1) {
-        memcpy_hline_helper (self, src, 4, w);
+    if (ctxt->step == 1) {
+        memcpy_hline_helper (ctxt, src, 4, w);
     }
     else {
         while (w > 0) {
             *dstrow = *srcrow;
-            dstrow += _private(MIL_PixelsOps)->step;
-            srcrow += _private(MIL_PixelsOps)->step;
-            w -= _private(MIL_PixelsOps)->step;
+            dstrow += ctxt->step;
+            srcrow += ctxt->step;
+            w -= ctxt->step;
         }
     }
 }
 
-void METHOD_NAMED(PixelsSet4, putHlineSkip)(_Self(MIL_PixelsOps), Uint8* src, Uint32 w)
+void PutHlineSkipSet32(MIL_PixelsContext *ctxt, Uint8* src, Uint32 w)
 {
-    Uint32* dstrow = (Uint32*)_private(MIL_PixelsOps)->cur_dst;
+    Uint32* dstrow = (Uint32*)ctxt->cur_dst;
     Uint32* srcrow = (Uint32*)src;
 
     while (w > 0) {
-        if (*srcrow != _private(MIL_PixelsOps)->skip_pixel)
+        if (*srcrow != ctxt->color_key)
             *dstrow = *srcrow;
-        dstrow += _private(MIL_PixelsOps)->step;
-        srcrow += _private(MIL_PixelsOps)->step;
-        w -= _private(MIL_PixelsOps)->step;
+        dstrow += ctxt->step;
+        srcrow += ctxt->step;
+        w -= ctxt->step;
     }
-}
-
-BEGIN_METHOD_MAP(PixelsSet4, MIL_PixelsOps)
-    NON_CONSTRUCTOR
-    NON_DESTRUCTOR
-    METHOD_PLACEHOLDER(ref)
-    METHOD_PLACEHOLDER(unRef)
-    METHOD_PLACEHOLDER(getRef)
-    METHOD_MAP(PixelsSet4, setPixel)
-    METHOD_MAP(PixelsSet4, setHline)
-    METHOD_MAP(PixelsSet4, putHline)
-    METHOD_MAP(PixelsSet4, putHlineSkip)
-    METHOD_PLACEHOLDER(setStep)
-    METHOD_PLACEHOLDER(setColorKey)
-    METHOD_PLACEHOLDER(setColor)
-    METHOD_PLACEHOLDER(setUserCtxt)
-END_METHOD_MAP
-
-MIL_PixelsOps* g_pixels_operator[MIL_PIXEL_OPERATION_MAX][4];
-
-MIL_PixelsOps* GetPixelsOperator(MIL_PixelsOperation opt, int bpp)
-{
-    if (opt >= 0 && opt < MIL_PIXEL_OPERATION_MAX 
-            && bpp > 0 && bpp <= 4) {
-        int bpp_index = bpp - 1;
-        if (NULL == g_pixels_operator[opt][bpp_index]) {
-            switch (opt) {
-                case MIL_PIXEL_COPY:
-                    switch (bpp_index) {
-                        case 0:
-                            g_pixels_operator[opt][bpp_index] = 
-                                (MIL_PixelsOps*)New(PixelsSet1);
-                            break;
-                        case 1:
-                            g_pixels_operator[opt][bpp_index] = 
-                                (MIL_PixelsOps*)New(PixelsSet2);
-                            break;
-                        case 2:
-                            g_pixels_operator[opt][bpp_index] = 
-                                (MIL_PixelsOps*)New(PixelsSet3);
-                            break;
-                        case 3:
-                            g_pixels_operator[opt][bpp_index] = 
-                                (MIL_PixelsOps*)New(PixelsSet4);
-                            break;
-                    }
-                case MIL_PIXEL_AND:
-                    break;
-                case MIL_PIXEL_XOR:
-                    break;
-                case MIL_PIXEL_OR:
-                    break;
-                default:
-                    assert(0);
-                    break;
-            }
-        }
-        return g_pixels_operator[opt][bpp_index];
-    }
-    return NULL;
 }
 

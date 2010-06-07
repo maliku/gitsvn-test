@@ -128,42 +128,25 @@ typedef enum {
 
 typedef void (*MIL_DestroyCtxtCB)(void*);
 
-BEGIN_CLASS_INHERIT(MIL_PixelsOps, MIL_GdiObject)
-    BEGIN_METHOD_EXPAND_DECLARE(MIL_PixelsOps)
-#define MIL_PIXELSOPS_METHOD_TABLE \
-        MIL_GDIOBJECT_METHOD_TABLE \
-        void  (*setPixel)(_Self(MIL_PixelsOps));\
-        void  (*setHline)(_Self(MIL_PixelsOps), Uint32 w);\
-        void  (*putHline)(_Self(MIL_PixelsOps), Uint8*, Uint32 w);\
-        void  (*putHlineSkip)(_Self(MIL_PixelsOps), Uint8*, Uint32 w);\
-        void  (*setStep)(_Self(MIL_PixelsOps), int);\
-        void  (*setColorKey)(_Self(MIL_PixelsOps), mt_color);\
-        void  (*setColor)(_Self(MIL_PixelsOps), mt_color);\
-        void* (*setUserCtxt)(_Self(MIL_PixelsOps), void*);\
-        void  (*setCtxtFreeFunction)(_Self(MIL_PixelsOps), MIL_DestroyCtxtCB);
-    MIL_PIXELSOPS_METHOD_TABLE
-    END_METHOD_EXPAND_DECLARE
-
-    BEGIN_PRIVATE(MIL_PixelsOps)
-    /** the step of current pixel operations. */
-    int step; /* Will be disuse. */
-
+STRUCT {
     /** the pointer to the destination */
     Uint8* cur_dst;
 
-    /** the pixel value shoulb be skipped (the color key) */
-    mt_color skip_pixel; /* Will be disuse. */
-
     /** the current pixel value for setpixel and setpixels operation */
-    mt_color cur_pixel;
+    mt_color color;
+
+    /** the step of current pixel operations. */
+    int step; /* May be disuse. */
+
+    /** the pixel value shoulb be skipped */
+    mt_color color_key; /* May be disuse. */
 
     /** The user context passed to SetUserCompositionOps */
     void* user_ctxt;
 
     /** The function for delete user_ctxt */
     MIL_DestroyCtxtCB ctxt_free;
-    END_PRIVATE
-END_CLASS_INHERIT
+} MIL_PixelsContext;
 
 /** 
  * @class MIL_Bitmap
@@ -340,7 +323,7 @@ BEGIN_CLASS_INHERIT(MIL_GraphicsContext, MIL_GdiObject)
         void       (*restore)(_Self(MIL_GraphicsContext));\
         MIL_Status (*selectPen)(_Self(MIL_GraphicsContext), MIL_Pen*);\
         MIL_Status (*selectBrush)(_Self(MIL_GraphicsContext), MIL_Brush*);\
-        MIL_Status (*selectPixelsOperator)(_Self(MIL_GraphicsContext), MIL_PixelsOps*);\
+        MIL_Status (*selectPixelsOperator)(_Self(MIL_GraphicsContext));\
         MIL_Status (*setPixelOperationType)(_Self(MIL_GraphicsContext), MIL_PixelsOperation);\
         MIL_Status (*setPixel)(_Self(MIL_GraphicsContext), Uint32, Uint32);\
         mt_color   (*getPixel)(_Self(MIL_GraphicsContext), Uint32, Uint32);\
