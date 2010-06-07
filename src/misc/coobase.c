@@ -11,13 +11,13 @@
 
 CONSTRUCTOR(CooBase)
 {
-    printf("CooBaseConstructor:%p\n", self);
+    printf("[MILUI]CooBaseConstructor:%p\n", self);
     return self;
 }
 
 DESTRUCTOR(CooBase)
 {
-    printf("CooBaseDestructor:%p\n", self);
+    printf("[MILUI]CooBaseDestructor:%p\n", self);
 }
 
 BEGIN_METHOD_MAP(CooBase, NonBase)

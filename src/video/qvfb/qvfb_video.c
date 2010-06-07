@@ -171,6 +171,7 @@ MIL_Overlay* QVFbVideoDevice_X_createYUVOverlay(_Self(VideoDevice), int width, i
 {
     return NULL;
 }
+
 int QVFbVideoDevice_X_setColors(_Self(VideoDevice), int firstcolor, 
         int ncolors, MIL_Color *colors)
 {
@@ -192,6 +193,7 @@ __INLINE__ MIL_Bool is_rect_empty(RECT* prc)
     if( prc->top == prc->bottom ) return MIL_TRUE;
     return MIL_FALSE;
 }
+
 __INLINE__ void normalize_rect(RECT* pRect)
 {
     int iTemp;
@@ -210,6 +212,7 @@ __INLINE__ void normalize_rect(RECT* pRect)
          pRect->bottom = iTemp;
     }
 }
+
 __INLINE__ void get_bound_rect(RECT* pdrc,  const RECT* psrc1, const RECT* psrc2)
 {
     RECT src1, src2;

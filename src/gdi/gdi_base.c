@@ -13,6 +13,7 @@ CONSTRUCTOR(MIL_GdiObject)
     memset(_private(MIL_GdiObject)->counters, 0, 
             sizeof(_private(MIL_GdiObject)->counters));
     _private(MIL_GdiObject)->counters[MIL_LIFE_REF] = 1;
+    return self;
 }
 
 DESTRUCTOR(MIL_GdiObject)
@@ -57,7 +58,7 @@ int METHOD_NAMED(MIL_GdiObject, getRef)(_SELF, int type)
 
 BEGIN_METHOD_MAP(MIL_GdiObject, NonBase)
     CONSTRUCTOR_MAP(MIL_GdiObject)
-    NON_DESTRUCTOR
+    DESTRUCTOR_MAP(MIL_GdiObject)
     METHOD_MAP(MIL_GdiObject, ref)
     METHOD_MAP(MIL_GdiObject, unRef)
     METHOD_MAP(MIL_GdiObject, getRef)

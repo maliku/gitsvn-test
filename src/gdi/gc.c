@@ -11,6 +11,7 @@
 #include "surface.h"
 #include "gc.h"
 #include "pixels_ops.h"
+#include "shape.h"
 
 METHOD_MAP_PLACEHOLDER(MIL_GraphicsContext, MIL_GdiObject)
 
@@ -226,54 +227,8 @@ mt_color  METHOD_NAMED(MemoryGC, getPixel)(_Self(MIL_GraphicsContext), Uint32 x,
 MIL_Status METHOD_NAMED(MemoryGC, drawLine)
     (_Self(MIL_GraphicsContext), Uint32 x1, Uint32 y1, Uint32 x2, Uint32 y2)
 {
-    int  dt_x = x2 - x1, dt_y = y2 - y1, step_x, step_y, change;
-
-    if (dt_x < 0)
-    {
-        dt_x = -dt_x; /* Draw a line from right to left .*/
-        step_x = -1;
-    }
-    else {step_x = 1;}  /* Draw a line from left to right.*/
-
-    if (dt_y < 0)
-    {
-        dt_y = -dt_y;    /* Draw a line from bottom to top.*/
-        step_y = -1;
-    }
-    else {step_y = 1;}
-    /* Draw a line fromtop to bottom .*/
-    if (dt_x > dt_y)    /* x-value changed faster than y-value */
-    {
-        change = dt_x >> 1;
-        while (x1 != x2)
-        {
-            _c(self)->setPixel(self, x1, y1);
-            x1 += step_x;
-            change += dt_y;
-            if(change > dt_x)
-            {
-                y1 += step_y;
-                change -= dt_x;
-            }
-        }
-    }
-    else                 /* y-value changed faster than x-value */
-    {
-        change = dt_y >> 1;
-        while(y1 != y2)
-        {
-            _c(self)->setPixel(self, x1, y1);
-            y1 += step_y;
-            change += dt_x;
-            if(change > dt_y)
-            {
-                x1 += step_x;
-                change -= dt_y;
-            }
-        }
-    }
-    _c(self)->setPixel(self, x2, y2);
 }
+
 
 BEGIN_METHOD_MAP(MemoryGC, MIL_GraphicsContext)
     CONSTRUCTOR_MAP(MemoryGC)

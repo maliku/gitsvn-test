@@ -1,4 +1,5 @@
-[2010-06-04]: Add draw line method of graphics contect.
+[2010-06-07]: Begin to complete shape generator implementation.
+[2010-06-06]: Add draw line method of graphics contecx.
 [2010-06-04]: Start implement geometry output method.
 [2010-06-02]: Implement PixelsSetX classes.
 [2010-05-29]: Implement some methods of MemoryGC and so on. Add Doxygen
