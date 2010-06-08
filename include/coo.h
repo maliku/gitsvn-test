@@ -190,7 +190,6 @@ END_METHOD_MAP
 
 #define PRECONSTRUCTORS(type, base) \
 void* type##OrderConstruct(_SELF) { \
-        type* addr = (type*)self;\
         if (g_##base##Vtable.OrderConstruct) {\
             g_##base##Vtable.OrderConstruct(self); \
             if (!g_##type##Vtable.__rtti.__vm_checked) { /* move out may be mute once if */\

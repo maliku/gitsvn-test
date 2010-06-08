@@ -211,7 +211,8 @@ void VideoDevice_X_GL_SwapBuffers(_Self(VideoDevice))
 }
 
 BEGIN_METHOD_MAP(VideoDevice, NonBase)
-
+    
+    NON_CONSTRUCTOR
     NON_DESTRUCTOR
     METHOD_MAP(VideoDevice, videoInit)
     METHOD_MAP(VideoDevice, listModes)

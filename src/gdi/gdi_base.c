@@ -13,6 +13,7 @@ CONSTRUCTOR(MIL_GdiObject)
     memset(_private(MIL_GdiObject)->counters, 0, 
             sizeof(_private(MIL_GdiObject)->counters));
     _private(MIL_GdiObject)->counters[MIL_LIFE_REF] = 1;
+//    _c(self)->ref(self, MIL_LIFE_REF);
     return self;
 }
 
