@@ -40,17 +40,24 @@ STRUCT __CommonVtable {
 } CommonVtable;
 extern CommonVtable g_NonBaseVtable;
 
+#define CLASS_FORWARD_DECLARE(type) \
+struct __##type;\
+typedef struct __##type type;
+
 /* Macro for class declare. */
-#define	CLASS(type)	\
+#define	CLASS_NEED_FORWARD_DECLARE(type)	\
     struct __##type##Vtable;\
 typedef struct __##type##Vtable type##Vtable;\
 extern struct __##type##Vtable g_##type##Vtable;\
-struct __##type;\
-typedef struct __##type type;\
 typedef type __BaseOf##type; \
 extern void* type##Preconstructor(_SELF);\
 void type##Predestructor(_SELF);\
 struct __##type
+
+/* Macro for class declare. */
+#define	CLASS(type)	\
+CLASS_FORWARD_DECLARE(type)\
+CLASS_NEED_FORWARD_DECLARE(type)
 
 /* Declare a interface, it can't include any data member. */
 #define BEGIN_INTERFACE(type) \
@@ -65,7 +72,7 @@ CLASS(type) \
 struct __##type##Vtable; \
 typedef struct __##type##Vtable type##Vtable;\
 extern type##Vtable g_##type##Vtable;\
-struct _##type {\
+struct __##type {\
     union { \
 	    __BaseOf##type __class; \
     struct __##type##Vtable {\
@@ -81,19 +88,21 @@ struct _##type {\
 #define NO_METHOD_EXPAND(type) \
 typedef __VtableTypeOf##type##Base type##Vtable;\
 extern type##Vtable g_##type##Vtable;\
-struct _##type {\
+struct __##type {\
     union { \
 	    __BaseOf##type __class; \
         type##Vtable *__vptr; \
     }__super;
 
-#define	BEGIN_CLASS_INHERIT(type, basetype) \
-struct _##type;\
-typedef struct _##type type;\
+#define	BEGIN_CLASS_INHERIT_NEED_FORWARD_DECALRE(type, basetype) \
 typedef basetype __BaseOf##type; \
 typedef basetype##Vtable __VtableTypeOf##type##Base;\
 extern void* type##Preconstructor(_SELF);\
-void type##Predestructor(_SELF);\
+void type##Predestructor(_SELF);
+
+#define	BEGIN_CLASS_INHERIT(type, basetype) \
+CLASS_FORWARD_DECLARE(type)\
+BEGIN_CLASS_INHERIT_NEED_FORWARD_DECALRE(type, basetype)
 
 #define	END_CLASS_INHERIT };
 

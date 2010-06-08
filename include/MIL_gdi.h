@@ -10,7 +10,7 @@
 #define  MIL_GDI_INC
 
 #include "coo.h"
-#include "MIL_video.h"
+#include "MIL_paint.h"
 
 #include "begin_code.h"
 /* Set up for C function definitions, even when using C++ */
@@ -66,7 +66,6 @@ STRUCT {
     void*  scan0;
 } MIL_BitmapData;
 
-#define METHOD_TABLE(type) MIL_##type##_METHOD_TABLE
 /** 
  * @class MIL_GdiObject
  * @brief MIL_GdiObject serves as a base class for all other GDI classes, 
