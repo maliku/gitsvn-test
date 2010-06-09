@@ -61,7 +61,7 @@ CLASS(MPaintEngine)
         MIL_Bool (*end)(_Self(MPaintEngine));\
         MIL_Bool (*hasCapability)(_CSelf(MPaintEngine), int);\
         MIL_Bool (*isActive)(_CSelf(MPaintEngine));\
-        MPaintDevice* (*CpaintDevice)(_Self(MPaintEngine));\
+        MPaintDevice* (*paintDevice)(_CSelf(MPaintEngine));\
         MPainter* (*painter)(_CSelf(MPaintEngine));\
         MIL_PaintEngineType (*type)(_CSelf(MPaintEngine));
         /* TODO: updateState */

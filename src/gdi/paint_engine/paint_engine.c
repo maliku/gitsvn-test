@@ -7,10 +7,12 @@
  */
 
 #include "MIL_paint.h"
+#include "misc.h"
 
 CONSTRUCTOR(MPaintEngine)
 {
     _private(MPaintEngine)->act_device = NULL;
+    return self;
 }
 
 DESTRUCTOR(MPaintEngine)
@@ -20,7 +22,7 @@ DESTRUCTOR(MPaintEngine)
 
 MIL_Bool METHOD_NAMED(MPaintEngine, begin)(_Self(MPaintEngine), MPaintDevice* pdev)
 {
-    _private(MPaintDevice)->act_device = pdev;
+    _private(MPaintEngine)->act_device = pdev;
 }
 
 void METHOD_NAMED(MPaintEngine, drawEllipse)(_Self(MPaintEngine), const MIL_Rect* rc)
@@ -91,9 +93,9 @@ MIL_Bool METHOD_NAMED(MPaintEngine, isActive)(_CSelf(MPaintEngine))
 
 }
 
-MPaintDevice* METHOD_NAMED(MPaintEngine, CpaintDevice)(_Self(MPaintEngine))
+MPaintDevice* METHOD_NAMED(MPaintEngine, paintDevice)(_CSelf(MPaintEngine))
 {
-
+    return _private(MPaintEngine)->act_device;
 }
 
 MPainter* METHOD_NAMED(MPaintEngine, painter)(_CSelf(MPaintEngine))
@@ -123,7 +125,7 @@ BEGIN_METHOD_MAP(MPaintEngine, NonBase)
     METHOD_MAP(MPaintEngine, end)
     METHOD_MAP(MPaintEngine, hasCapability)
     METHOD_MAP(MPaintEngine, isActive)
-    METHOD_MAP(MPaintEngine, CpaintDevice)
+    METHOD_MAP(MPaintEngine, paintDevice)
     METHOD_MAP(MPaintEngine, painter)
     METHOD_MAP(MPaintEngine, type)
 
