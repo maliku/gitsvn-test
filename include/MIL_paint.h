@@ -35,8 +35,6 @@ typedef int MFontInfo;
 typedef int MFontMetrics;
 typedef int MPicture;
 typedef int MImage;
-typedef int MRect;
-typedef int MPoint;
 typedef int MIL_PolygonMode;
 typedef char* MText;
 typedef int MLine;
@@ -54,10 +52,10 @@ CLASS(MPaintEngine)
         void (*drawImage)(_Self(MPaintEngine), const MImage*, const MIL_Rect* /* TODO: conversion flags */);\
         void (*drawLines)(_Self(MPaintEngine), const MLine*, int count);\
         void (*drawPath)(_Self(MPaintEngine), const MPainterPath*);\
-        void (*drawPixmap)(_Self(MPaintEngine), const MRect* r, const MPixmap* pm, const MRect* sr);\
-        void (*drawPoints)(_Self(MPaintEngine), const MPoint*, int count);\
-        void (*drawPolygon)(_Self(MPaintEngine), const MPoint*, int count, MIL_PolygonMode);\
-        void (*drawRects)(_Self(MPaintEngine), const MRect*, int count);\
+        void (*drawPixmap)(_Self(MPaintEngine), const MIL_Rect* r, const MPixmap* pm, const MIL_Rect* sr);\
+        void (*drawPoints)(_Self(MPaintEngine), const MIL_Point*, int count);\
+        void (*drawPolygon)(_Self(MPaintEngine), const MIL_Point*, int count, MIL_PolygonMode);\
+        void (*drawRects)(_Self(MPaintEngine), const MIL_Rect*, int count);\
         void (*drawText)(_Self(MPaintEngine), const MIL_Point*, const MText*);\
         void (*drawTiledPixmap)(_Self(MPaintEngine), const MIL_Rect*, const MPixmap*, const MIL_Point*);\
         MIL_Bool (*end)(_Self(MPaintEngine));\

@@ -350,5 +350,6 @@ src/video/fbcon/Makefile
 src/kernel/Makefile
 src/kernel/timer/Makefile
 src/gdi/Makefile
+src/gdi/paint_engine/Makefile
 )
 
