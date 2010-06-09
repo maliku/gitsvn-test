@@ -73,6 +73,7 @@
 #if defined(HAVE_ICONV) && defined(HAVE_ICONV_H)
 # include <iconv.h>
 #endif
+# include <limits.h>
 
 /** The number of elements in an array */
 #define MIL_arraysize(array)	(sizeof(array)/sizeof(array[0]))

@@ -16,6 +16,7 @@
 struct _MIL_BlitMap;
 typedef struct _MIL_BlitMap MIL_BlitMap;
 
+//BEGIN_CLASS_INHERIT(MRasterSurface, MPaintDevice)
 CLASS(Surface)
 {
     BEGIN_METHOD_DECLARE(Surface)

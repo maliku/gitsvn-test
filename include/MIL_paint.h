@@ -85,7 +85,7 @@ CLASS_NEED_FORWARD_DECLARE(MPaintDevice)
         int (*logicalDpiX)(_CSelf(MPaintDevice));\
         int (*logicalDpiY)(_CSelf(MPaintDevice));\
         MPaintEngine* (*paintEngine)(_CSelf(MPaintDevice));\
-        MIL_Bool (*active)(_CSelf(MPaintDevice));\
+        MIL_Bool (*paintingActive)(_CSelf(MPaintDevice));\
         int (*physicalDpiX)(_CSelf(MPaintDevice));\
         int (*physicalDpiY)(_CSelf(MPaintDevice));\
         int (*width)(_CSelf(MPaintDevice));
@@ -210,6 +210,23 @@ CLASS_NEED_FORWARD_DECLARE(MPainter)
         MPen* pen;
     END_PRIVATE
 };
+
+BEGIN_CLASS_INHERIT(MRasterSurface, MPaintDevice)
+    BEGIN_METHOD_EXPAND_DECLARE(MRasterSurface)
+#define MIL_MRasterSurface_METHOD_TABLE \
+        MIL_MPaintDevice_METHOD_TABLE\
+        int (*pitch)(_CSelf(MRasterSurface));\
+        const MIL_PixelFormat* (*format)(_CSelf(MRasterSurface));\
+        void* (*memory)(_CSelf(MRasterSurface));
+        METHOD_TABLE(MRasterSurface)
+    END_METHOD_EXPAND_DECLARE
+
+    BEGIN_PRIVATE(MRasterSurface)
+    void* memory;
+    MIL_PixelFormat* format;
+    END_PRIVATE
+
+END_CLASS_INHERIT
 
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
