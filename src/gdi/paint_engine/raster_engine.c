@@ -97,7 +97,7 @@ MPainter* METHOD_NAMED(MRasterEngine, painter)(_CSelf(MPaintEngine))
 
 MIL_PaintEngineType METHOD_NAMED(MRasterEngine, type)(_CSelf(MPaintEngine))
 {
-
+    return MIL_PE_RASTER;
 }
 
 BEGIN_METHOD_MAP(MRasterEngine, MPaintEngine)

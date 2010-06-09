@@ -21,8 +21,10 @@ extern "C" {
 #define METHOD_TABLE(type) MIL_##type##_METHOD_TABLE
 
 typedef enum {
-    MIL_ENGINE_RASTER = 0,
-    MIL_ENGINE_PICTURE = 1
+    MIL_PE_DUMMY = 0,
+    MIL_PE_RASTER = 1,
+    MIL_PE_PICTURE = 2,
+    MIL_PE_WINDOWS = 3,
 } MIL_PaintEngineType;
 
 typedef int MPainterPath;
@@ -34,7 +36,6 @@ typedef int MRegion;
 typedef int MFontInfo;
 typedef int MFontMetrics;
 typedef int MPicture;
-typedef int MImage;
 typedef int MIL_PolygonMode;
 typedef char* MText;
 typedef int MLine;
@@ -42,6 +43,7 @@ typedef int MWidget;
 
 CLASS_FORWARD_DECLARE(MPaintDevice);
 CLASS_FORWARD_DECLARE(MPainter);
+CLASS_FORWARD_DECLARE(MImage);
 
 CLASS(MPaintEngine)
 {
@@ -221,6 +223,36 @@ BEGIN_CLASS_INHERIT(MRasterSurface, MPaintDevice)
 
     BEGIN_PRIVATE(MRasterSurface)
     void* memory;
+    MIL_PixelFormat* format;
+    END_PRIVATE
+
+END_CLASS_INHERIT
+
+BEGIN_CLASS_INHERIT_NEED_FORWARD_DECALRE(MImage, MPaintDevice)
+    BEGIN_METHOD_EXPAND_DECLARE(MImage)
+#define MIL_MImage_METHOD_TABLE \
+        MIL_MPaintDevice_METHOD_TABLE\
+        const Uint8* (*bits)(_CSelf(MImage));\
+        int  (*byteCount)(_CSelf(MImage), MIL_Size*);\
+        void (*fill)(_Self(MImage), mt_color c);\
+        const MIL_PixelFormat* (*format)(_CSelf(MImage));\
+        MIL_Bool (*hasAlphaChannel)(_CSelf(MImage));\
+        int (*pitch)(_CSelf(MImage));\
+        MIL_Status (*pixel)(_Self(MImage), int, int, MIL_Color*);\
+        int (*pixelIndex)(_Self(MImage), int, int);\
+        int (*rect)(_Self(MImage), MIL_Rect*);\
+        MIL_Status (*save)(_Self(MImage), const char*);\
+        const Uint8* (*scanLine)(_CSelf(MImage), int);\
+        int  (*setPixel)(_CSelf(MImage), int, int);\
+        int  (*size)(_CSelf(MImage), MIL_Size*);\
+        int  (*valid)(_CSelf(MImage), int, int);\
+    METHOD_TABLE(MImage)
+    END_METHOD_EXPAND_DECLARE
+
+    BEGIN_PRIVATE(MImage)
+    int w, h;
+    int pitch;
+    void* pixels;
     MIL_PixelFormat* format;
     END_PRIVATE
 

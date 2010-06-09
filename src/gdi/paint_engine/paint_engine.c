@@ -105,7 +105,7 @@ MPainter* METHOD_NAMED(MPaintEngine, painter)(_CSelf(MPaintEngine))
 
 MIL_PaintEngineType METHOD_NAMED(MPaintEngine, type)(_CSelf(MPaintEngine))
 {
-
+    return MIL_PE_DUMMY;
 }
 
 BEGIN_METHOD_MAP(MPaintEngine, NonBase)

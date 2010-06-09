@@ -16,7 +16,6 @@
 struct _MIL_BlitMap;
 typedef struct _MIL_BlitMap MIL_BlitMap;
 
-//BEGIN_CLASS_INHERIT(MRasterSurface, MPaintDevice)
 CLASS(Surface)
 {
     BEGIN_METHOD_DECLARE(Surface)
@@ -76,6 +75,9 @@ CLASS(Surface)
 	/* Reference count -- used when freeing surface */
 	int refcount;				/* Read-mostly */
 };
+
+//BEGIN_CLASS_INHERIT(MSurface, MRasterSurface)
+//END_CLASS_INHERIT
 
 Surface * CreateRGBSurface (Uint32 flags,
 			int width, int height, int depth,
