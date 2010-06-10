@@ -114,6 +114,7 @@ BEGIN_CLASS_INHERIT_NEED_FORWARD_DECALRE(type, basetype)
 #define	_RHS	_Rhs(void)		/* 'rhs' pointer for COO framework */
 
 /* Macro for call virtual member function of object. */
+    /* TODO: may be we can change the __vptr to constant. */
 #define	_c(pobj)	(((pobj)->__super).__vptr)
 
 #define _vf(p, func)  (_c(p)->func)
@@ -173,7 +174,11 @@ BEGIN_CLASS_INHERIT_NEED_FORWARD_DECALRE(type, basetype)
 BEGIN_METHOD_DECLARE(type) \
 END_METHOD_DECLARE 
 
+#if defined(__GNUC__) && __GNUC__ >= 4
+
+#define VTABLE_BUILD_STATIC 1
 #define BEGIN_METHOD_MAP(type, basetype) \
+static __INLINE__ void type##VtableBuilder(type##Vtable* vtbl){}\
 PRECONSTRUCTORS(type, basetype)\
 PREDESTRUCTORS(type, basetype)\
 type##Vtable g_##type##Vtable = {\
@@ -181,13 +186,39 @@ type##Vtable g_##type##Vtable = {\
     type##OrderConstruct,\
     type##Predestructor,
 
-#if defined(__GNUC__) && __GNUC__ >= 4
 #define	METHOD_MAP(type, func) .func = type##_X_##func,
-#else
-#define	METHOD_MAP(type, func) type##_X_##func,
-#endif
-
 #define END_METHOD_MAP };
+
+#define METHOD_PLACEHOLDER(method) .method = NULL,
+#define CONSTRUCTOR_MAP(type) .Constructor = (void*(*)(void*))type##Constructor,
+#define DESTRUCTOR_MAP(type) .Destructor = (void(*)(void*))type##Destructor,
+
+#else
+
+#define VTABLE_BUILD_DYNAMIC 1
+#define BEGIN_METHOD_MAP(type, basetype)\
+static void type##VtableBuilder(type##Vtable*);\
+PRECONSTRUCTORS(type, basetype)\
+PREDESTRUCTORS(type, basetype)\
+type##Vtable g_##type##Vtable = {\
+    {(RTTI*)(&g_##basetype##Vtable), #type},\
+    type##OrderConstruct,\
+    type##Predestructor};\
+static void type##VtableBuilder(type##Vtable* vtbl)\
+{\
+    static char is_first = 1;\
+    if (0 == is_first) return ;\
+
+#define	METHOD_MAP(type, method) vtbl->method = type##_X_##method;
+
+#define END_METHOD_MAP \
+    is_first = 0;}
+
+#define METHOD_PLACEHOLDER(method) vtbl->method = NULL;
+#define CONSTRUCTOR_MAP(type) vtbl->Constructor = (void*(*)(void*))type##Constructor;
+#define DESTRUCTOR_MAP(type) vtbl->Destructor = (void(*)(void*))type##Destructor;
+
+#endif
 
 #define METHOD_MAP_PLACEHOLDER(type, basetype) \
 BEGIN_METHOD_MAP(type, basetype) \
@@ -199,6 +230,7 @@ END_METHOD_MAP
 
 #define PRECONSTRUCTORS(type, base) \
 void* type##OrderConstruct(_SELF) { \
+    type##VtableBuilder(&g_##type##Vtable);\
         if (g_##base##Vtable.OrderConstruct) {\
             g_##base##Vtable.OrderConstruct(self); \
             if (!g_##type##Vtable.__rtti.__vm_checked) { /* move out may be mute once if */\
@@ -248,15 +280,6 @@ __INLINE__ type * type##ArrayConstructor(_Self(type), int num) { \
 #define COPY_CONSTRUCTOR(type) type* type##Duplicator(_Self(type), _Rhs(type))
 
 #define DESTRUCTOR(type) void type##Destructor(_Self(type))
-
-#define CONSTRUCTOR_MAP(type) (void*(*)(void*))type##Constructor,
-#define DESTRUCTOR_MAP(type) (void(*)(void*))type##Destructor,
-
-#if defined(__GNUC__) && __GNUC__ >= 4
-#define METHOD_PLACEHOLDER(method) .method = NULL,
-#else
-#define METHOD_PLACEHOLDER(method) NULL,
-#endif
 
 #define NON_CONSTRUCTOR METHOD_PLACEHOLDER(Constructor)
 #define NON_DESTRUCTOR METHOD_PLACEHOLDER(Destructor)
