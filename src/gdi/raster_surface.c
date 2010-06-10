@@ -10,6 +10,7 @@
 
 CONSTRUCTOR(MRasterSurface)
 {
+    _private(MRasterSurface)->pitch = 0;
     _private(MRasterSurface)->memory = NULL;
     _private(MRasterSurface)->format = NULL;
 }

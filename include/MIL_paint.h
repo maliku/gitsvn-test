@@ -44,6 +44,7 @@ typedef int MWidget;
 CLASS_FORWARD_DECLARE(MPaintDevice);
 CLASS_FORWARD_DECLARE(MPainter);
 CLASS_FORWARD_DECLARE(MImage);
+CLASS_FORWARD_DECLARE(MIL_Region);
 
 CLASS(MPaintEngine)
 {
@@ -222,22 +223,21 @@ BEGIN_CLASS_INHERIT(MRasterSurface, MPaintDevice)
     END_METHOD_EXPAND_DECLARE
 
     BEGIN_PRIVATE(MRasterSurface)
+    int pitch;
     void* memory;
     MIL_PixelFormat* format;
     END_PRIVATE
 
 END_CLASS_INHERIT
 
-BEGIN_CLASS_INHERIT_NEED_FORWARD_DECALRE(MImage, MPaintDevice)
+BEGIN_CLASS_INHERIT_NEED_FORWARD_DECALRE(MImage, MRasterSurface)
     BEGIN_METHOD_EXPAND_DECLARE(MImage)
 #define MIL_MImage_METHOD_TABLE \
-        MIL_MPaintDevice_METHOD_TABLE\
+        MIL_MRasterSurface_METHOD_TABLE\
         const Uint8* (*bits)(_CSelf(MImage));\
         int  (*byteCount)(_CSelf(MImage), MIL_Size*);\
         void (*fill)(_Self(MImage), mt_color c);\
-        const MIL_PixelFormat* (*format)(_CSelf(MImage));\
         MIL_Bool (*hasAlphaChannel)(_CSelf(MImage));\
-        int (*pitch)(_CSelf(MImage));\
         MIL_Status (*pixel)(_Self(MImage), int, int, MIL_Color*);\
         int (*pixelIndex)(_Self(MImage), int, int);\
         int (*rect)(_Self(MImage), MIL_Rect*);\
@@ -245,18 +245,84 @@ BEGIN_CLASS_INHERIT_NEED_FORWARD_DECALRE(MImage, MPaintDevice)
         const Uint8* (*scanLine)(_CSelf(MImage), int);\
         int  (*setPixel)(_CSelf(MImage), int, int);\
         int  (*size)(_CSelf(MImage), MIL_Size*);\
-        int  (*valid)(_CSelf(MImage), int, int);\
+        int  (*valid)(_CSelf(MImage), int, int);
     METHOD_TABLE(MImage)
     END_METHOD_EXPAND_DECLARE
 
     BEGIN_PRIVATE(MImage)
     int w, h;
     int pitch;
-    void* pixels;
-    MIL_PixelFormat* format;
     END_PRIVATE
 
 END_CLASS_INHERIT
+
+typedef enum {
+    MIL_FBCON_SCREEN = 0,
+    MIL_DIRECTFB_SCREEN = 1,
+    MIL_QVFB_SCREEN = 2,
+    MIL_GL_SCREEN = 3,
+    MIL_VNC_SCREEN = 4
+} MIL_Screen_Clsid;
+
+CLASS(MScreen)
+{
+#define MIL_MScreen_METHOD_TABLE \
+    int  (*colorIndex)(_Self(MScreen), Uint32, Uint32, Uint32);\
+    Uint8* (*baseAddr)(_CSelf(MScreen));\
+    void (*blit)(_Self(MScreen), const MImage*, const MIL_Point*, const MIL_Rect*);\
+    void (*blitRG)(_Self(MScreen), const MImage*, const MIL_Point*, const MIL_Region*);\
+    MIL_Screen_Clsid (*classID)(_CSelf(MScreen));\
+    MIL_Color* (*clut)(_Self(MScreen));\
+    int  (*colorCount)(_CSelf(MScreen));\
+    MIL_Bool (*connect)(_CSelf(MScreen), const char*);\
+    int  (*depth)(_CSelf(MScreen));\
+    int  (*deviceHeight)(_CSelf(MScreen));\
+    int  (*deviceWidth)(_CSelf(MScreen));\
+    void (*disconnect)(_Self(MScreen));\
+    int  (*height)(_Self(MScreen));\
+    MIL_Bool (*initDevice)(_Self(MScreen));\
+    int  (*linestep)(_CSelf(MScreen));\
+    MIL_Size  (*mapFromDevice)(_CSelf(MScreen), const MIL_Size*);\
+    MIL_Size  (*mapToDevice)(_CSelf(MScreen), const MIL_Size*);\
+    MIL_Status  (*offest)(_CSelf(MScreen), MIL_Point*);\
+    MIL_Bool (*onCard)(_Self(MScreen), const char*);\
+    int  (*physicalHeight)(_CSelf(MScreen));\
+    int  (*physicalWidth)(_CSelf(MScreen));\
+    const MIL_PixelFormat*  (*pixelFormat)(_CSelf(MScreen));\
+    int  (*pixmapDepth)(_CSelf(MScreen));\
+    int  (*pixmapLinestepAlignment)(_CSelf(MScreen));\
+    int  (*pixmapOffsetAlignment)(_CSelf(MScreen));\
+    void (*restore)(_Self(MScreen));\
+    void (*save)(_Self(MScreen));\
+    int  (*screenSize)(_CSelf(MScreen));\
+    void (*setDirty)(_Self(MScreen), const MIL_Rect*);\
+    void (*setMode)(_Self(MScreen), int, int, int);\
+    void (*setPixelFormat)(_Self(MScreen), MIL_PixelFormat*);\
+    void (*shutdownDevice)(_Self(MScreen));\
+    void (*solidFill)(_Self(MScreen), const MIL_Color*, const MIL_Rect*);\
+    int  (*subScreenIndexAt)(_CSelf(MScreen), const MIL_Point*);\
+    MIL_Bool (*supportsDepth)(_Self(MScreen), int depth);\
+    int  (*totalSize)(_Self(MScreen));\
+    int  (*width)(_Self(MScreen));
+    METHOD_TABLE(MScreen)
+
+    BEGIN_PRIVATE(MScreen)
+    int	depth;
+    Uint8* data;
+    int	dh;
+    int	dw;
+    MIL_Bool grayscale;
+    int	h;
+    int	lstep;
+    int	mapsize;
+    int	physHeight;
+    int	physWidth;
+    MIL_Color* screenclut;
+    int	screencols;
+    int	size;
+    int	w;
+    END_PRIVATE
+};
 
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
