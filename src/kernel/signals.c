@@ -297,14 +297,7 @@ DESTRUCTOR(SignalSimple)
 BEGIN_METHOD_MAP(SignalSimple, Signal)
     CONSTRUCTOR_MAP(SignalSimple)
     DESTRUCTOR_MAP(SignalSimple)
-    METHOD_PLACEHOLDER(connect)
-    METHOD_PLACEHOLDER(connectGroup)
-    METHOD_PLACEHOLDER(disconnect)
-    METHOD_PLACEHOLDER(disconnectGroup)
-    METHOD_PLACEHOLDER(disconnectAllGroup)
     METHOD_MAP(SignalSimple, emit)
-    METHOD_PLACEHOLDER(num_slots)
-    METHOD_PLACEHOLDER(empty)
 END_METHOD_MAP
 
 

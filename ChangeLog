@@ -1,3 +1,4 @@
+[2010-06-11]: Remove METHOD_PLACEHOLD/NON_CONSTRUCTOR/NON_DESTRUCTOR macro.
 [2010-06-10]: Make all platforms support build the Vtable out of order.
 [2010-06-08]: Change the pixels operations class to function.
 [2010-06-07]: Begin to complete shape generator implementation.

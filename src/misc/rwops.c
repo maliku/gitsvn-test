@@ -297,7 +297,6 @@ MIL_RWops *MIL_RWFromMem(void *mem, int size)
 MAKE_PURE_VIRTUAL_CLASS(MIL_RWops)
 
 BEGIN_METHOD_MAP(RawFileOperator, MIL_RWops)
-    NON_DESTRUCTOR
     METHOD_MAP(RawFileOperator, seek)
     METHOD_MAP(RawFileOperator, read)
     METHOD_MAP(RawFileOperator, write)
@@ -305,7 +304,6 @@ BEGIN_METHOD_MAP(RawFileOperator, MIL_RWops)
 END_METHOD_MAP
 
 BEGIN_METHOD_MAP(MemFileOperator, MIL_RWops)
-    NON_DESTRUCTOR
     METHOD_MAP(MemFileOperator, seek)
     METHOD_MAP(MemFileOperator, read)
     METHOD_MAP(MemFileOperator, write)

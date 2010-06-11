@@ -117,7 +117,6 @@ BEGIN_METHOD_MAP(MRasterEngine, MPaintEngine)
     METHOD_MAP(MRasterEngine, end)
     METHOD_MAP(MRasterEngine, hasCapability)
     METHOD_MAP(MRasterEngine, isActive)
-    METHOD_PLACEHOLDER(paintDevice)
     METHOD_MAP(MRasterEngine, painter)
     METHOD_MAP(MRasterEngine, type)
 

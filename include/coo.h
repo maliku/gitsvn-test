@@ -189,7 +189,6 @@ type##Vtable g_##type##Vtable = {\
 #define	METHOD_MAP(type, func) .func = type##_X_##func,
 #define END_METHOD_MAP };
 
-#define METHOD_PLACEHOLDER(method) .method = NULL,
 #define CONSTRUCTOR_MAP(type) .Constructor = (void*(*)(void*))type##Constructor,
 #define DESTRUCTOR_MAP(type) .Destructor = (void(*)(void*))type##Destructor,
 
@@ -214,7 +213,6 @@ static void type##VtableBuilder(type##Vtable* vtbl)\
 #define END_METHOD_MAP \
     is_first = 0;}
 
-#define METHOD_PLACEHOLDER(method) vtbl->method = NULL;
 #define CONSTRUCTOR_MAP(type) vtbl->Constructor = (void*(*)(void*))type##Constructor;
 #define DESTRUCTOR_MAP(type) vtbl->Destructor = (void(*)(void*))type##Destructor;
 
@@ -281,8 +279,6 @@ __INLINE__ type * type##ArrayConstructor(_Self(type), int num) { \
 
 #define DESTRUCTOR(type) void type##Destructor(_Self(type))
 
-#define NON_CONSTRUCTOR METHOD_PLACEHOLDER(Constructor)
-#define NON_DESTRUCTOR METHOD_PLACEHOLDER(Destructor)
 #define PLACEHOLDER(anything) 0
 
 /* Placement new operator. */

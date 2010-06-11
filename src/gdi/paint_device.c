@@ -88,7 +88,6 @@ int METHOD_NAMED(MPaintDevice, width)(_CSelf(MPaintDevice))
 BEGIN_METHOD_MAP(MPaintDevice, NonBase)
 
     CONSTRUCTOR_MAP(MPaintDevice)
-    NON_DESTRUCTOR
     METHOD_MAP(MPaintDevice, colorCount)
     METHOD_MAP(MPaintDevice, depth)
     METHOD_MAP(MPaintDevice, height)

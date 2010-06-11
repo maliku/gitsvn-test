@@ -29,7 +29,6 @@ void METHOD_NAMED(MyBase, normal_method)(_Self(MyBase))
 
 BEGIN_METHOD_MAP(MyBase, NonBase)
     CONSTRUCTOR_MAP(MyBase)
-    NON_DESTRUCTOR
     METHOD_MAP(MyBase, virtual_method)
 END_METHOD_MAP
 
@@ -43,8 +42,6 @@ void METHOD_NAMED(MySub, virtual_method)(_Self(MyBase))
 }
 
 BEGIN_METHOD_MAP(MySub, MyBase)
-    NON_CONSTRUCTOR
-    NON_DESTRUCTOR
     METHOD_MAP(MySub, virtual_method)
 END_METHOD_MAP
 

@@ -21,8 +21,6 @@ Sint32 DummyMutex_X_unlock(_SELF)
 }
 
 BEGIN_METHOD_MAP(DummyMutex, MIL_mutex)
-    NON_CONSTRUCTOR
-    NON_DESTRUCTOR
     METHOD_MAP(DummyMutex, lock)
     METHOD_MAP(DummyMutex, unlock)
 END_METHOD_MAP

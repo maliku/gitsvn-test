@@ -21,8 +21,6 @@ MIL_Image*  MyBitmap_X_clone(_Self(MIL_Image))
 }
 
 BEGIN_METHOD_MAP(MyBitmap, MIL_Bitmap)
-    NON_CONSTRUCTOR
-    NON_DESTRUCTOR
     METHOD_MAP(MyBitmap, clone)
 END_METHOD_MAP
 

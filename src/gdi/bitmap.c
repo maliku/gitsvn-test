@@ -45,22 +45,7 @@ MIL_Status  MIL_Bitmap_X_unlockBits(_Self(MIL_Bitmap), MIL_BitmapData* locked_da
 BEGIN_METHOD_MAP(MIL_Bitmap, MIL_Image)
     CONSTRUCTOR_MAP(MIL_Bitmap)
     DESTRUCTOR_MAP(MIL_Bitmap)
-    METHOD_PLACEHOLDER(ref)
-    METHOD_PLACEHOLDER(unRef)
-    METHOD_PLACEHOLDER(getRef)
 
-    METHOD_PLACEHOLDER(clone)
-    METHOD_PLACEHOLDER(getBounds)
-    METHOD_PLACEHOLDER(getWidth)
-    METHOD_PLACEHOLDER(getHeight)
-    METHOD_PLACEHOLDER(getPalette)
-    METHOD_PLACEHOLDER(setPalette)
-    METHOD_PLACEHOLDER(getPaletteSize)
-    METHOD_PLACEHOLDER(getPixelFormat)
-    METHOD_PLACEHOLDER(getRawFormat)
-    METHOD_PLACEHOLDER(rotateFlip)
-    METHOD_PLACEHOLDER(save)
-    METHOD_PLACEHOLDER(loadFile)
 
     /* Add new method */
     METHOD_MAP(MIL_Bitmap, getPixel)

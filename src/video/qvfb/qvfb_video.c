@@ -269,8 +269,5 @@ BEGIN_METHOD_MAP(QVFbVideoDevice, VideoDevice)
     METHOD_MAP(QVFbVideoDevice, videoQuit)
 END_METHOD_MAP
 
-
-
-
 #endif
 
