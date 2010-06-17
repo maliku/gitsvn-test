@@ -35,7 +35,7 @@ STRUCT __CommonVtable {
         RTTI __rtti;
         void* (*OrderConstruct)(void*);
         void  (*Predestructor)(void*);
-        void* (*Constructor)(void*);
+        void  (*Constructor)(void*);
         void  (*Destructor)(void*);
 } CommonVtable;
 extern CommonVtable g_NonBaseVtable;
@@ -78,9 +78,9 @@ struct __##type {\
     struct __##type##Vtable {\
         RTTI __rtti;\
         void* (*OrderConstruct)(void*);\
-        void (*Predestructor)(void*);\
-        void* (*Constructor)(void*); \
-        void (*Destructor)(void*);
+        void  (*Predestructor)(void*);\
+        void  (*Constructor)(void*); \
+        void  (*Destructor)(void*);
 
 /* Macro for virtual member function declare end. */
 #define	END_METHOD_EXPAND_DECLARE }*__vptr; } __super;
@@ -163,12 +163,13 @@ BEGIN_CLASS_INHERIT_NEED_FORWARD_DECALRE(type, basetype)
     struct __##type##Vtable {\
         RTTI __rtti;\
         void* (*OrderConstruct)(void*);\
-        void (*Predestructor)(void*);\
-        void* (*Constructor)(void*); \
-        void (*Destructor)(void*);
+        void  (*Predestructor)(void*);\
+        void  (*Constructor)(void*); \
+        void  (*Destructor)(void*);
 
 /* Macro for virtual member function declare end. */
-#define	END_METHOD_DECLARE }*__vptr; } __super;
+#define	END_METHOD_DECLARE }*__vptr;\
+    } __super;
 
 #define METHOD_DECLARE_PLACEHOLDER(type) \
 BEGIN_METHOD_DECLARE(type) \
@@ -189,7 +190,7 @@ type##Vtable g_##type##Vtable = {\
 #define	METHOD_MAP(type, func) .func = type##_X_##func,
 #define END_METHOD_MAP };
 
-#define CONSTRUCTOR_MAP(type) .Constructor = (void*(*)(void*))type##Constructor,
+#define CONSTRUCTOR_MAP(type) .Constructor = (void(*)(void*))type##Constructor,
 #define DESTRUCTOR_MAP(type) .Destructor = (void(*)(void*))type##Destructor,
 
 #else
@@ -213,7 +214,7 @@ static void type##VtableBuilder(type##Vtable* vtbl)\
 #define END_METHOD_MAP \
     is_first = 0;}
 
-#define CONSTRUCTOR_MAP(type) vtbl->Constructor = (void*(*)(void*))type##Constructor;
+#define CONSTRUCTOR_MAP(type) vtbl->Constructor = (void(*)(void*))type##Constructor;
 #define DESTRUCTOR_MAP(type) vtbl->Destructor = (void(*)(void*))type##Destructor;
 
 #endif
@@ -243,11 +244,12 @@ void* type##OrderConstruct(_SELF) { \
                 g_##type##Vtable.__rtti.__vm_checked = (int*)1; \
             } \
         }\
-        return (NULL != g_##type##Vtable.Constructor) ? g_##type##Vtable.Constructor(self) : self; \
+        if (NULL != g_##type##Vtable.Constructor) g_##type##Vtable.Constructor(self); \
     } \
 __INLINE__ void* type##Preconstructor(_SELF) { \
     *(type##Vtable**)self = &g_##type##Vtable;\
-    return type##OrderConstruct(self);\
+    type##OrderConstruct(self);\
+    return self;\
 }\
 __INLINE__ type * type##ArrayConstructor(_Self(type), int num) { \
     type* head = self; \
@@ -274,8 +276,15 @@ __INLINE__ type * type##ArrayConstructor(_Self(type), int num) { \
 	MIL_free(self); \
 }
 
-#define CONSTRUCTOR(type) type* type##Constructor(_Self(type))
-#define COPY_CONSTRUCTOR(type) type* type##Duplicator(_Self(type), _Rhs(type))
+#define CONSTRUCTOR(type) static void type##Constructor(_Self(type))
+#define COPY_CONSTRUCTOR(type) \
+static void type##_X_##Clone(_Self(type), _Rhs(type));\
+static type* type##_X_##ClonePre(_Self(type), _Rhs(type))\
+{\
+    type##_X_##Clone(self, rhs);\
+    return self;\
+}\
+static void type##_X_##Clone(_Self(type), _Rhs(type))
 
 #define DESTRUCTOR(type) void type##Destructor(_Self(type))
 
@@ -286,7 +295,7 @@ __INLINE__ type * type##ArrayConstructor(_Self(type), int num) { \
 /* Normal new operator. */
 #define New(type) type##Preconstructor((type *)MIL_malloc(sizeof(type)))
 /* Copy constructor. */
-#define DupNew(type, rhs) type##Duplicator(New(type), (rhs))
+#define DupNew(type, rhs) type##_X_##ClonePre(New(type), (rhs))
 /* Constructor a array of type. */
 #define News(type, num) type##ArrayConstructor((type *)MIL_malloc(sizeof(type)), (num))
 void OrderDestruct(void*);

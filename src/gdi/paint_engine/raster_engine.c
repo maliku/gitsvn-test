@@ -10,7 +10,6 @@
 
 CONSTRUCTOR(MRasterEngine)
 {
-    return self;
 }
 
 DESTRUCTOR(MRasterEngine)

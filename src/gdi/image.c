@@ -14,7 +14,6 @@ CONSTRUCTOR(MIL_Image)
     _private(MIL_Image)->data = NULL;
     _private(MIL_Image)->raw_format = NULL;
     _private(MIL_Image)->cache = NULL;
-    return self;
 }
 
 DESTRUCTOR(MIL_Image)

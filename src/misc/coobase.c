@@ -12,7 +12,6 @@
 CONSTRUCTOR(CooBase)
 {
     printf("[MILUI]CooBaseConstructor:%p\n", self);
-    return self;
 }
 
 DESTRUCTOR(CooBase)

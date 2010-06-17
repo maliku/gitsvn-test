@@ -17,7 +17,6 @@ CONSTRUCTOR(SolidPen)
     _tm(SolidPen, dash) = MIL_DASH_SOLID; 
     _tm(SolidPen, line_join) = MIL_LINEJOIN_MITER; 
     _tm(SolidPen, width) = 1;
-    return self;
 }
 
 DESTRUCTOR(SolidPen)

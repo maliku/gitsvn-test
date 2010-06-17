@@ -110,7 +110,6 @@ CONSTRUCTOR(Application)
     }
 
     printf("Application %p constructed...\n", self);
-    return self;
 }
 
 DESTRUCTOR(Application)

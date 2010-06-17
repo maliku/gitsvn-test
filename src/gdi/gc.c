@@ -20,7 +20,6 @@ CONSTRUCTOR(MemoryGC)
     _m(image) = NULL;
     _m(pen) = NULL;
     _m(brush) = NULL;
-    return self;
 }
 
 DESTRUCTOR(MemoryGC)

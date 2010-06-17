@@ -12,7 +12,6 @@
 COPY_CONSTRUCTOR(CooLevel1)
 {
     puts("Duplicator of CooLevel1.");
-    return self;
 }
 
 int main()

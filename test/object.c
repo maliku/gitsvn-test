@@ -21,7 +21,6 @@ CONSTRUCTOR(Object)
     printf("Object %p constructed...\n", self);
     _ptm(Object, p_m1) = 110;
     _public(Object)->m0 = 119;
-    return self;
 }
 
 void test(_Self(Object), int i)

@@ -4,7 +4,9 @@
 #include <milui/coobase.h>
 
 BEGIN_CLASS_INHERIT(CooSub, CooBase)
-    NO_METHOD_EXPAND(CooSub)
+    BEGIN_METHOD_EXPAND_DECLARE(CooSub)
+    void (*log)(_Self(CooSub));
+    END_METHOD_DECLARE
 END_CLASS_INHERIT
 
 DESTRUCTOR(CooSub)
@@ -15,12 +17,17 @@ DESTRUCTOR(CooSub)
 CONSTRUCTOR(CooSub)
 {
     printf("CooSubConstructor:%p\n", self);
-    return self;
+}
+
+void METHOD_NAMED(CooSub, log)(_Self(CooSub))
+{
+    puts("I'm CooSub::log.");
 }
 
 BEGIN_METHOD_MAP(CooSub, CooBase)
     CONSTRUCTOR_MAP(CooSub)
     DESTRUCTOR_MAP(CooSub)
+    METHOD_MAP(CooSub, log)
 END_METHOD_MAP
 
 /*============================================================================*/
@@ -36,12 +43,19 @@ DESTRUCTOR(CooLevel1)
 CONSTRUCTOR(CooLevel1)
 {
     printf("CooLevel1Constructor:%p\n", self);
-    return self;
+}
+
+#define SUPER(type) (NULL != DynamicCast(type, self) ? ((type##Vtable*)(self->__super.__vptr->__rtti.__base)) : _c(self))
+void METHOD_NAMED(CooLevel1, log)(_Self(CooSub))
+{
+    puts("I'm CooLevel1::log.");
+    SUPER(CooSub)->log((CooSub*)self);
 }
 
 BEGIN_METHOD_MAP(CooLevel1, CooSub)
     CONSTRUCTOR_MAP(CooLevel1)
     DESTRUCTOR_MAP(CooLevel1)
+    METHOD_MAP(CooLevel1, log)
 END_METHOD_MAP
 
 #endif   /* ----- #ifndef _SUBTEST_INC  ----- */

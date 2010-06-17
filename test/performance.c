@@ -14,7 +14,6 @@
 CONSTRUCTOR(MyBase)
 {
     self->m_count = 0;
-    return self;
 }
 
 void METHOD_NAMED(MyBase, virtual_method)(_Self(MyBase))

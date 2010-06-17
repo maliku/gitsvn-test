@@ -12,7 +12,6 @@
 CONSTRUCTOR(MPaintEngine)
 {
     _private(MPaintEngine)->act_device = NULL;
-    return self;
 }
 
 DESTRUCTOR(MPaintEngine)

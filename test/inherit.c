@@ -12,6 +12,7 @@
 int main()
 {
     CooLevel1 * sub = New(CooLevel1);
+    _c(sub)->log((CooSub*)sub);
     Delete(sub);
     return 0;
 }

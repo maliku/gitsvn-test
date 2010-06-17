@@ -71,7 +71,6 @@ CONSTRUCTOR(VideoDevice)
     _m(offset_x) = _m(offset_y) = 0;
     _m(handles_any_size) = 0;
     _m(input_grab) = MIL_GRAB_OFF;
-    return self;
 }
 
 DESTRUCTOR(VideoDevice)

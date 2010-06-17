@@ -35,7 +35,6 @@ CONSTRUCTOR(PthreadMutex)
 /* 		MIL_OutOfMemory();
  */
 	}
-	return (self);
 }
 
 DESTRUCTOR(PthreadMutex)

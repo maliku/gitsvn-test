@@ -20,8 +20,6 @@ CONSTRUCTOR(Signal)
     _tm(Signal, group).id = ~((unsigned)-1);
     _m(num_slots) = 0;
     _m(mutex) = MIL_CreateMutex();
-
-    return self;
 }
 
 DESTRUCTOR(Signal)
@@ -286,7 +284,6 @@ CONSTRUCTOR(SignalSimple)
         VirtualMethodVerify(self, empty);
         is_virtual_method_checked = MIL_TRUE;
     }
-    return self;
 }
 
 DESTRUCTOR(SignalSimple)

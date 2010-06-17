@@ -18,8 +18,6 @@ CONSTRUCTOR(MPaintDevice)
     _private(MPaintDevice)->phys_dpiy = 0;
     _private(MPaintDevice)->depth = 0;
     _private(MPaintDevice)->paint_engine = NULL;
-
-    return self;
 }
 
 /* DESTRUCTOR(MPaintDevice)

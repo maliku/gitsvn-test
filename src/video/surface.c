@@ -44,7 +44,6 @@ CONSTRUCTOR(Surface)
     _m(format_version) = 0;
     _m(refcount) = 0;
     memset(&_m(clip_rect), 0, sizeof(_m(clip_rect)));
-    return self;
 }
 
 /** 

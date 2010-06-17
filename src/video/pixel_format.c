@@ -31,8 +31,6 @@ CONSTRUCTOR(PixelFormat)
 	_m(Amask) = 0;
 	_m(colorkey) = 0;
 	_m(alpha) = 0;
-
-    return self;
 }
 
 DESTRUCTOR(PixelFormat)

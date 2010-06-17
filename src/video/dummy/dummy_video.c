@@ -41,7 +41,6 @@ CONSTRUCTOR(DummyVideoDevice)
     }
     printf("DummyVideoDevice %p constructed...\n", self);
     ((VideoDevice*)self)->name = DUMMY_VIDEO_DRIVER_NAME;
-    return self;
 }
 
 DESTRUCTOR(DummyVideoDevice)

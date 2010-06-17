@@ -10,7 +10,6 @@
 
 CONSTRUCTOR(MIL_Bitmap)
 {
-    return self;
 }
 
 DESTRUCTOR(MIL_Bitmap)

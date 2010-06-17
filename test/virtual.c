@@ -18,7 +18,6 @@ DESTRUCTOR(MyBase)
 CONSTRUCTOR(MyBase)
 {
     printf("MyBase %p constructed...\n", self);
-    return self;
 }
 
 void METHOD_NAMED(MyBase, vtest)(_SELF, int in)
@@ -44,7 +43,6 @@ DESTRUCTOR(MySub)
 CONSTRUCTOR(MySub)
 {
     printf("MySub %p constructed...\n", self);
-    return self;
 }
 
 void METHOD_NAMED(MySub, vtest)(_SELF, int in)
@@ -75,7 +73,6 @@ DESTRUCTOR(MySub2)
 CONSTRUCTOR(MySub2)
 {
     printf("MySub2 %p constructed...\n", self);
-    return self;
 }
 
 void METHOD_NAMED(MySub2, vtest)(_SELF, int in)

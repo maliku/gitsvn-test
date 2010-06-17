@@ -180,15 +180,12 @@ CONSTRUCTOR(FBconVideoDevice)
 		if ( self ) {
 			MIL_free(self);
 		}
-		return(NULL);
 	}
 	MIL_memset(_m(hw_data), 0, (sizeof *_m(hw_data)));
 	_m(hw_data)->wait_vbl = FB_WaitVBL;
 	_m(hw_data)->wait_idle = FB_WaitIdle;
 	_m(hw_data)->mouse_fd = -1;
 	_m(hw_data)->keyboard_fd = -1;
-
-    return self;
 }
 
 DESTRUCTOR(FBconVideoDevice)

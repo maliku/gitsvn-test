@@ -1,3 +1,5 @@
+[2010-06-17]: Make constructor of class never need return self pointer no
+longer. 
 [2010-06-11]: Remove METHOD_PLACEHOLD/NON_CONSTRUCTOR/NON_DESTRUCTOR macro.
 [2010-06-10]: Make all platforms support build the Vtable out of order.
 [2010-06-08]: Change the pixels operations class to function.

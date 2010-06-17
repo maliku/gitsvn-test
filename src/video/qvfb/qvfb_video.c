@@ -47,7 +47,6 @@ CONSTRUCTOR(QVFbVideoDevice)
     printf("QVFbVideoDevice %p constructed...\n", self);
     _m(hw_data) = (QVFbHardwareDependent*)MIL_malloc(sizeof (*_m(hw_data)));
     ((VideoDevice*)self)->name = QVFB_VIDEO_DRIVER_NAME;
-    return self;
 }
 
 DESTRUCTOR(QVFbVideoDevice)
