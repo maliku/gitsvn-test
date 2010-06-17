@@ -2,6 +2,6 @@ INCLUDES = -I../../include -I../include
 
 noinst_LTLIBRARIES = libmisc.la
 
-libmisc_la_SOURCES = coobase.c  coo.c  endian.c  rwops.c  misc.c cpuinfo.c
+libmisc_la_SOURCES = coo.c  endian.c  rwops.c  misc.c cpuinfo.c string.c
 
-EXTRA_DIST = coobase.c  coo.c  endian.c  rwops.c  misc.c cpuinfo.c
+EXTRA_DIST = coo.c  endian.c  rwops.c  misc.c cpuinfo.c string.c

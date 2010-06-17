@@ -1,11 +1,14 @@
 #ifndef  _SUBTEST_INC
 #define  _SUBTEST_INC
 
-#include <milui/coobase.h>
+#include <milui/MIL_object.h>
 
-BEGIN_CLASS_INHERIT(CooSub, CooBase)
+BEGIN_CLASS_INHERIT(CooSub, MObject)
     BEGIN_METHOD_EXPAND_DECLARE(CooSub)
-    void (*log)(_Self(CooSub));
+#define MIL_CooSub_METHOD_TABLE \
+        MIL_MObject_METHOD_TABLE\
+        void (*log)(_Self(CooSub));
+        METHOD_TABLE(CooSub)
     END_METHOD_DECLARE
 END_CLASS_INHERIT
 
@@ -24,7 +27,7 @@ void METHOD_NAMED(CooSub, log)(_Self(CooSub))
     puts("I'm CooSub::log.");
 }
 
-BEGIN_METHOD_MAP(CooSub, CooBase)
+BEGIN_METHOD_MAP(CooSub, MObject)
     CONSTRUCTOR_MAP(CooSub)
     DESTRUCTOR_MAP(CooSub)
     METHOD_MAP(CooSub, log)

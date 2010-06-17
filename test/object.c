@@ -30,19 +30,16 @@ void test(_Self(Object), int i)
     printf("The public member Object->m0 = %d.\n", _public(Object)->m0);
 }
 
-BEGIN_METHOD_MAP(Object, CooBase)
+BEGIN_METHOD_MAP(Object, MObject)
     CONSTRUCTOR_MAP(Object)
     DESTRUCTOR_MAP(Object)
-    END_METHOD_MAP
-
-
-
+END_METHOD_MAP
 
 int main()
 {
     Object* obj = New(Object);
 //    _MC(obj)->test(obj, 666);
-    Delete(obj);
+    _c(obj)->release(obj);
     return 0;
 }
 

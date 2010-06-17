@@ -9,10 +9,10 @@
 
 #ifndef __OBJECT_H__
 #define __OBJECT_H__
-#include <milui/coobase.h>
+#include <milui/MIL_object.h>
 
 /* ====================== for class Object ======================*/
-BEGIN_CLASS_INHERIT(Object, CooBase)
+BEGIN_CLASS_INHERIT(Object, MObject)
     NO_METHOD_EXPAND(Object)
 
     int m0;

@@ -12,10 +12,19 @@
 
 #include "coo.h"
 
-CLASS(CooBase)
+CLASS(MObject)
 {
-    BEGIN_METHOD_DECLARE(CooBase)
+    BEGIN_METHOD_DECLARE(MObject)
+#define MIL_MObject_METHOD_TABLE \
+        MObject* (*retain)(_SELF);\
+        void (*release)(_SELF);\
+        int  (*releaseCount)(_SELF);
+        MIL_MObject_METHOD_TABLE
     END_METHOD_DECLARE
+
+    BEGIN_PRIVATE(MObject)
+        int ref;
+    END_PRIVATE
 };
 
 #endif   /* ----- #ifndef COOBASE_INC  ----- */

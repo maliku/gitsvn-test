@@ -18,8 +18,6 @@
 extern "C" {
 #endif
 
-#define METHOD_TABLE(type) MIL_##type##_METHOD_TABLE
-
 typedef enum {
     MIL_PE_DUMMY = 0,
     MIL_PE_RASTER = 1,

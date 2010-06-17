@@ -320,6 +320,8 @@ void* SafeCast(void* vtable, void* ptr);
 #define MIL_ClearError() 
 #define MIL_OutOfMemory() 
 
+#define METHOD_TABLE(type) MIL_##type##_METHOD_TABLE
+
 #ifdef __cplusplus
 }
 #endif

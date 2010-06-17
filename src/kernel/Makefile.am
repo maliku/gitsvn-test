@@ -10,6 +10,6 @@ COMMON_LIBADD = \
 libkernel_la_LIBADD =  \
     $(COMMON_LIBADD)
 
-libkernel_la_SOURCES = application.c signals.c
+libkernel_la_SOURCES = application.c signals.c object.c
 
 EXTRA_DIST = application.c signals.c
