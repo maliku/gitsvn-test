@@ -23,7 +23,7 @@ CONSTRUCTOR(Object)
     _public(Object)->m0 = 119;
 }
 
-void test(_Self(Object), int i)
+void METHOD_NAMED(Object, test)(_Self(Object), int i)
 {
     printf("Object::test input %d.\n", i);
     printf("The private member Object->p_m1 = %d.\n", _private(Object)->p_m1);
@@ -33,12 +33,13 @@ void test(_Self(Object), int i)
 BEGIN_METHOD_MAP(Object, MObject)
     CONSTRUCTOR_MAP(Object)
     DESTRUCTOR_MAP(Object)
+    METHOD_MAP(Object, test)
 END_METHOD_MAP
 
 int main()
 {
     Object* obj = New(Object);
-//    _MC(obj)->test(obj, 666);
+    _c(obj)->test(obj, 666);
     _c(obj)->release(obj);
     return 0;
 }

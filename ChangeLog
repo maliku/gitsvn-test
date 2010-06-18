@@ -1,3 +1,4 @@
+[2010-06-18]: Add Super() macro for invoke method of super class.
 [2010-06-17]: Make constructor of class never need return self pointer no
 longer. 
 [2010-06-11]: Remove METHOD_PLACEHOLD/NON_CONSTRUCTOR/NON_DESTRUCTOR macro.

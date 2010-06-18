@@ -13,7 +13,10 @@
 
 /* ====================== for class Object ======================*/
 BEGIN_CLASS_INHERIT(Object, MObject)
-    NO_METHOD_EXPAND(Object)
+    BEGIN_METHOD_EXPAND_DECLARE(Object)
+        METHOD_TABLE(MObject)
+        void (*test)(_Self(Object), int);
+    END_METHOD_EXPAND_DECLARE
 
     int m0;
     BEGIN_PRIVATE(Object)

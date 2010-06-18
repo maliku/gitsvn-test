@@ -313,6 +313,7 @@ void* SafeCast(void* vtable, void* ptr);
 #define IsTypeOf(type, ptr) (NULL != DynamicCast(type, ptr))
 #define GetTypeName(ptr) \
     ((NULL != ptr && NULL != (*(RTTI**)ptr) && NULL != (*(RTTI**)ptr)->__name) ? (*(RTTI**)ptr)->__name : "")
+#define Super(base) (NULL != DynamicCast(base, self) ? &g_##base##Vtable : NULL)
 
 #define MIL_Error(err)
 #define MIL_SetError(fmt, ...) fprintf(stderr, fmt "\n", ##__VA_ARGS__)

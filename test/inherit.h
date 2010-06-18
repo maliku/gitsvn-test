@@ -48,11 +48,10 @@ CONSTRUCTOR(CooLevel1)
     printf("CooLevel1Constructor:%p\n", self);
 }
 
-#define SUPER(type) (NULL != DynamicCast(type, self) ? ((type##Vtable*)(self->__super.__vptr->__rtti.__base)) : _c(self))
 void METHOD_NAMED(CooLevel1, log)(_Self(CooSub))
 {
     puts("I'm CooLevel1::log.");
-    SUPER(CooSub)->log((CooSub*)self);
+    Super(CooSub)->log(self);
 }
 
 BEGIN_METHOD_MAP(CooLevel1, CooSub)
@@ -60,6 +59,34 @@ BEGIN_METHOD_MAP(CooLevel1, CooSub)
     DESTRUCTOR_MAP(CooLevel1)
     METHOD_MAP(CooLevel1, log)
 END_METHOD_MAP
+
+/*============================================================================*/
+BEGIN_CLASS_INHERIT(CooLevel2, CooLevel1)
+    NO_METHOD_EXPAND(CooLevel2)
+END_CLASS_INHERIT
+
+DESTRUCTOR(CooLevel2)
+{
+    printf("CooLevel2Destructor:%p\n", self);
+}
+
+CONSTRUCTOR(CooLevel2)
+{
+    printf("CooLevel2Constructor:%p\n", self);
+}
+
+void METHOD_NAMED(CooLevel2, log)(_Self(CooSub))
+{
+    puts("I'm CooLevel2::log.");
+    Super(CooLevel1)->log(self);
+}
+
+BEGIN_METHOD_MAP(CooLevel2, CooLevel1)
+    CONSTRUCTOR_MAP(CooLevel2)
+    DESTRUCTOR_MAP(CooLevel2)
+    METHOD_MAP(CooLevel2, log)
+END_METHOD_MAP
+
 
 #endif   /* ----- #ifndef _SUBTEST_INC  ----- */
 
