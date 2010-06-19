@@ -80,7 +80,8 @@ extern MIL_loblit MIL_CalculateBlit0(Surface *surface, int complex);
 extern MIL_loblit MIL_CalculateBlit1(Surface *surface, int complex);
 extern MIL_loblit MIL_CalculateBlitN(Surface *surface, int complex);
 extern MIL_loblit MIL_CalculateAlphaBlit(Surface *surface, int complex);
-
+int MIL_LowerBlit (Surface *src, MIL_Rect *srcrect,
+				Surface *dst, MIL_Rect *dstrect);
 /*
  * Useful macros for blitting routines
  */

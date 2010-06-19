@@ -12,6 +12,7 @@
 #include "pixel_format.h"
 #include "pixels.h"
 #include "RLEaccel.h"
+#include "blit.h"
 #include "MIL_gdi.h"
 
 /*
@@ -587,7 +588,9 @@ int  METHOD_NAMED(Surface, fillRect)(_SELF, MIL_Rect *dstrect, Uint32 color)
 }
 
 int  Surface_X_saveBMP(_SELF, const char *file)
-{}
+{
+	return -1;
+}
 
 int  Surface_X_stretchBlit(_SELF, const MIL_Rect *srcrect, Surface *dst, const MIL_Rect* dstrect)
 {

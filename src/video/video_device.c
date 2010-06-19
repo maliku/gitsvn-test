@@ -25,7 +25,6 @@ VideoDevice* CreateVideoDevice(const char* driver_name)
 {
 	VideoDevice* video = NULL;
 	int i = 0;
-	PixelFormat vformat;
 
 	/* Check to make sure we don't overwrite 'g_current_video' */
 	if ( NULL != g_current_video ) {

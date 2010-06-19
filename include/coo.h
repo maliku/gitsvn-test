@@ -33,7 +33,7 @@ typedef struct __RTTI {
 
 STRUCT __CommonVtable {
         RTTI __rtti;
-        void* (*OrderConstruct)(void*);
+        void  (*OrderConstruct)(void*);
         void  (*Predestructor)(void*);
         void  (*Constructor)(void*);
         void  (*Destructor)(void*);
@@ -77,7 +77,7 @@ struct __##type {\
 	    __BaseOf##type __class; \
     struct __##type##Vtable {\
         RTTI __rtti;\
-        void* (*OrderConstruct)(void*);\
+        void  (*OrderConstruct)(void*);\
         void  (*Predestructor)(void*);\
         void  (*Constructor)(void*); \
         void  (*Destructor)(void*);
@@ -162,7 +162,7 @@ BEGIN_CLASS_INHERIT_NEED_FORWARD_DECALRE(type, basetype)
         void * __class; \
     struct __##type##Vtable {\
         RTTI __rtti;\
-        void* (*OrderConstruct)(void*);\
+        void  (*OrderConstruct)(void*);\
         void  (*Predestructor)(void*);\
         void  (*Constructor)(void*); \
         void  (*Destructor)(void*);
@@ -228,7 +228,7 @@ END_METHOD_MAP
 #define	METHOD_NAMED(type, func) type##_X_##func
 
 #define PRECONSTRUCTORS(type, base) \
-void* type##OrderConstruct(_SELF) { \
+void type##OrderConstruct(_SELF) { \
     type##VtableBuilder(&g_##type##Vtable);\
         if (g_##base##Vtable.OrderConstruct) {\
             g_##base##Vtable.OrderConstruct(self); \
@@ -300,10 +300,10 @@ static void type##_X_##Clone(_Self(type), _Rhs(type))
 #define News(type, num) type##ArrayConstructor((type *)MIL_malloc(sizeof(type)), (num))
 void OrderDestruct(void*);
 /* Normal Delete operator. */
-void Delete(void*);
+extern void Delete(void*);
 /* Delete a array of object. */
 void Deletes(void*, size_t);
-void* SafeCast(void* vtable, void* ptr);
+extern void* SafeCast(void* vtable, void* ptr);
 /* Delete a object without free memory. */
 #define DeleteAt(p) OrderDestruct(p)
 

@@ -52,6 +52,7 @@ int Signal_X_connectGroup(_SELF, Sint32 group, void* slot)
 {
     struct list_head* i = NULL;
     MIL_Bool is_break = MIL_FALSE;
+	SlotsGroup* group_new = NULL;
 
     if (NULL != slot) {
         _c(_tm(Signal, mutex))->lock(_tm(Signal, mutex));
@@ -80,7 +81,7 @@ int Signal_X_connectGroup(_SELF, Sint32 group, void* slot)
         }
         _c(_tm(Signal, mutex))->unlock(_tm(Signal, mutex));
 
-        SlotsGroup* group_new = (SlotsGroup*)MIL_malloc(sizeof(*group_new));
+        group_new = (SlotsGroup*)MIL_malloc(sizeof(*group_new));
         if (NULL != group_new) {
             INIT_LIST_HEAD((struct list_head*)&group_new->slot_head.list);
             INIT_LIST_HEAD((struct list_head*)&group_new->sub_slots);

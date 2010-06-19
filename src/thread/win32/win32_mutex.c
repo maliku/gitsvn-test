@@ -36,7 +36,7 @@ DESTRUCTOR(Win32Mutex)
 
 Sint32 METHOD_NAMED(Win32Mutex, lock)(_SELF)
 {
-	if ( WaitForSingleObject(self->id, INFINITE) == WAIT_FAILED ) {
+	if ( WaitForSingleObject(((Win32Mutex*)self)->id, INFINITE) == WAIT_FAILED ) {
 		MIL_SetError("Couldn't wait on mutex");
 		return -1;
 	}
@@ -49,7 +49,7 @@ Sint32 METHOD_NAMED(Win32Mutex, unlock)(_SELF)
 		MIL_SetError("Passed a NULL mutex");
 		return -1;
 	}
-	if ( ReleaseMutex(self->id) == FALSE ) {
+	if ( ReleaseMutex(((Win32Mutex*)self)->id) == FALSE ) {
 		MIL_SetError("Couldn't release mutex");
 		return -1;
 	}
@@ -57,14 +57,11 @@ Sint32 METHOD_NAMED(Win32Mutex, unlock)(_SELF)
 }
 
 BEGIN_METHOD_MAP(Win32Mutex, MIL_mutex)
+	CONSTRUCTOR_MAP(Win32Mutex)
     DESTRUCTOR_MAP(Win32Mutex)
     METHOD_MAP(Win32Mutex, lock)
     METHOD_MAP(Win32Mutex, unlock)
 END_METHOD_MAP
-
-
-    CONSTRUCTOR_MAP(Win32Mutex)
-
 
 MIL_mutex* CreateWin32Mutex()
 {
