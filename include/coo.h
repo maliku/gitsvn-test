@@ -49,7 +49,7 @@ typedef struct __##type type;
 #define	CLASS_NEED_FORWARD_DECLARE(type)	\
     struct __##type##Vtable;\
 typedef struct __##type##Vtable type##Vtable;\
-extern struct __##type##Vtable g_##type##Vtable;\
+extern DECLSPEC type##Vtable g_##type##Vtable;\
 typedef type __BaseOf##type; \
 extern void* type##Preconstructor(_SELF);\
 void type##Predestructor(_SELF);\
@@ -72,7 +72,7 @@ CLASS(type) \
 #define BEGIN_METHOD_EXPAND_DECLARE(type) \
 struct __##type##Vtable; \
 typedef struct __##type##Vtable type##Vtable;\
-extern type##Vtable g_##type##Vtable;\
+extern DECLSPEC type##Vtable g_##type##Vtable;\
 struct __##type {\
     union { \
 	    __BaseOf##type __class; \
@@ -88,7 +88,7 @@ struct __##type {\
 
 #define NO_METHOD_EXPAND(type) \
 typedef __VtableTypeOf##type##Base type##Vtable;\
-extern type##Vtable g_##type##Vtable;\
+extern DECLSPEC type##Vtable g_##type##Vtable;\
 struct __##type {\
     union { \
 	    __BaseOf##type __class; \

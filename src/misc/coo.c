@@ -1,6 +1,6 @@
 #include "coo.h"
 
-DECLSPEC CommonVtable g_NonBaseVtable = {0};
+DECLSPEC CommonVtable g_NonBaseVtable;
 
 __INLINE__ void OrderDestruct(void * ptr)
 {

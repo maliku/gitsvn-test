@@ -1,7 +1,10 @@
 #ifndef  _SUBTEST_INC
 #define  _SUBTEST_INC
-
+#ifdef WIN32
+#include <MIL_object.h>
+#else
 #include <milui/MIL_object.h>
+#endif
 
 BEGIN_CLASS_INHERIT(CooSub, MObject)
     BEGIN_METHOD_EXPAND_DECLARE(CooSub)
