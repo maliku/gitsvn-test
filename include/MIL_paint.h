@@ -264,6 +264,7 @@ typedef enum {
 
 CLASS(MScreen)
 {
+    BEGIN_METHOD_DECLARE(MScreen)
 #define MIL_MScreen_METHOD_TABLE \
     int  (*colorIndex)(_Self(MScreen), Uint32, Uint32, Uint32);\
     Uint8* (*baseAddr)(_CSelf(MScreen));\
@@ -303,6 +304,7 @@ CLASS(MScreen)
     int  (*totalSize)(_Self(MScreen));\
     int  (*width)(_Self(MScreen));
     METHOD_TABLE(MScreen)
+    END_METHOD_DECLARE
 
     BEGIN_PRIVATE(MScreen)
     int	depth;

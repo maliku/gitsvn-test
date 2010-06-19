@@ -6,8 +6,30 @@
  *  Organization: http://www.ds0101.net
  */
 
-#include "coo.h"
 #include "MIL_paint.h"
+
+CONSTRUCTOR(MScreen)
+{
+    _private(MScreen)->depth = 0;
+    _private(MScreen)->data = NULL;
+    _private(MScreen)->dh = 0;
+    _private(MScreen)->dw = 0;
+    _private(MScreen)->grayscale = MIL_FALSE;
+    _private(MScreen)->h = 0;
+    _private(MScreen)->lstep = 0;
+    _private(MScreen)->mapsize = 0;
+    _private(MScreen)->physHeight = 0;
+    _private(MScreen)->physWidth = 0;
+    _private(MScreen)->screenclut = NULL;
+    _private(MScreen)->screencols = 0;
+    _private(MScreen)->size = 0;
+    _private(MScreen)->w = 0;
+}
+
+DESTRUCTOR(MScreen)
+{
+
+}
 
 int  METHOD_NAMED(MScreen, colorIndex)(_Self(MScreen), Uint32 r, Uint32 g, Uint32 b)
 {
@@ -16,7 +38,7 @@ int  METHOD_NAMED(MScreen, colorIndex)(_Self(MScreen), Uint32 r, Uint32 g, Uint3
 
 Uint8* METHOD_NAMED(MScreen, baseAddr)(_CSelf(MScreen))
 {
-
+    return _private(MScreen)->data;
 }
 
 void METHOD_NAMED(MScreen, blit)
@@ -194,4 +216,9 @@ int  METHOD_NAMED(MScreen, width)(_Self(MScreen))
 {
 
 }
+
+BEGIN_METHOD_MAP(MScreen, NonBase)
+    CONSTRUCTOR_MAP(MScreen)
+    DESTRUCTOR_MAP(MScreen)
+END_METHOD_MAP
 
