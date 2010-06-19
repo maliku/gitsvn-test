@@ -50,6 +50,7 @@ int main()
     time_t start, end;
     double diff = .0;
     int i = 0;
+	MySub* sub = NULL;
     MyBase* base = (MyBase*)New(MyBase);
     time(&start);
     for (i = 0; i < TEST_COUNT; i++) {
@@ -71,7 +72,7 @@ int main()
 
     Delete(base);
 
-    MySub* sub = (MySub*)New(MySub);
+    sub = (MySub*)New(MySub);
     time(&start);
     for (i = 0; i < TEST_COUNT; i++) {
         _c(sub)->virtual_method((MyBase*)sub);

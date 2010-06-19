@@ -31,14 +31,15 @@ typedef struct __RTTI {
     void* __reserve; /* reserved for align. */
 } RTTI;
 
-STRUCT __CommonVtable {
+STRUCT DECLSPEC __CommonVtable {
         RTTI __rtti;
         void  (*OrderConstruct)(void*);
         void  (*Predestructor)(void*);
         void  (*Constructor)(void*);
         void  (*Destructor)(void*);
 } CommonVtable;
-extern CommonVtable g_NonBaseVtable;
+
+extern DECLSPEC CommonVtable g_NonBaseVtable;
 
 #define CLASS_FORWARD_DECLARE(type) \
 struct __##type;\
@@ -183,7 +184,7 @@ static __INLINE__ void type##VtableBuilder(type##Vtable* vtbl){}\
 PRECONSTRUCTORS(type, basetype)\
 PREDESTRUCTORS(type, basetype)\
 type##Vtable g_##type##Vtable = {\
-    {(RTTI*)(&g_##basetype##Vtable), #type},\
+    {(RTTI*)(&g_##basetype##Vtable), #type, NULL, NULL},\
     type##OrderConstruct,\
     type##Predestructor,
 
@@ -201,13 +202,14 @@ static void type##VtableBuilder(type##Vtable*);\
 PRECONSTRUCTORS(type, basetype)\
 PREDESTRUCTORS(type, basetype)\
 type##Vtable g_##type##Vtable = {\
-    {(RTTI*)(&g_##basetype##Vtable), #type},\
+    {NULL, #type, NULL, NULL},\
     type##OrderConstruct,\
     type##Predestructor};\
 static void type##VtableBuilder(type##Vtable* vtbl)\
 {\
     static char is_first = 1;\
     if (0 == is_first) return ;\
+	vtbl->__rtti.__base = (RTTI*)&g_##basetype##Vtable;\
 
 #define	METHOD_MAP(type, method) vtbl->method = type##_X_##method;
 
@@ -300,10 +302,10 @@ static void type##_X_##Clone(_Self(type), _Rhs(type))
 #define News(type, num) type##ArrayConstructor((type *)MIL_malloc(sizeof(type)), (num))
 void OrderDestruct(void*);
 /* Normal Delete operator. */
-extern void Delete(void*);
+extern DECLSPEC void Delete(void*);
 /* Delete a array of object. */
 void Deletes(void*, size_t);
-extern void* SafeCast(void* vtable, void* ptr);
+extern DECLSPEC void* SafeCast(void* vtable, void* ptr);
 /* Delete a object without free memory. */
 #define DeleteAt(p) OrderDestruct(p)
 

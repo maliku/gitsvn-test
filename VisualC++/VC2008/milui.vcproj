@@ -63,7 +63,11 @@
 				Name="VCLinkerTool"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
+				GenerateMapFile="true"
+				MapExports="true"
 				SubSystem="2"
+				RandomizedBaseAddress="2"
+				FixedBaseAddress="0"
 				TargetMachine="1"
 			/>
 			<Tool

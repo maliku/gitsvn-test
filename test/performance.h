@@ -6,8 +6,11 @@
  * @date 2010-03-03 22:59:01 
  *  Organization: http://www.ds0101.net
  */
-
+#ifdef WIN32
+#include <coo.h>
+#else
 #include <milui/coo.h>
+#endif
 
 CLASS(MyBase)
 {

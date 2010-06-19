@@ -7,7 +7,11 @@
  *  Organization: http://www.ds0101.net
  */
 
+#ifdef WIN32
+#include <coo.h>
+#else
 #include <milui/coo.h>
+#endif
 
 CLASS(MyBase)
 {

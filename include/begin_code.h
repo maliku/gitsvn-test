@@ -53,7 +53,11 @@
 #    define DECLSPEC __declspec(dllimport)
 #   endif
 #  else
-#   define DECLSPEC	__declspec(dllexport)
+#   ifdef MILUI_EXPORTS
+#    define DECLSPEC	__declspec(dllexport)
+#   else
+#    define DECLSPEC __declspec(dllimport)
+#   endif
 #  endif
 # else
 #  define DECLSPEC

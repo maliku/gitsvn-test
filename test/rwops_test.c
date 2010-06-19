@@ -7,7 +7,12 @@
  *  Organization: http://www.ds0101.net
  */
 #include <string.h>
+#ifdef WIN32
+#include <MIL_rwops.h>
+#else
 #include <milui/MIL_rwops.h>
+#endif
+
 
 int main()
 {
