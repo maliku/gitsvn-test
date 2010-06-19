@@ -23,7 +23,7 @@ CLASS(MIL_Application)
     END_METHOD_DECLARE
 };
 
-MIL_Application* CreateApplication(char **args, int num);
+DECLSPEC MIL_Application* CreateApplication(char **args, int num);
 
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus

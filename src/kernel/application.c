@@ -117,7 +117,7 @@ DESTRUCTOR(Application)
     printf("Application %p destructed...\n", self);
 }
     
-MIL_Application* CreateApplication(char **args, int num)
+DECLSPEC MIL_Application* CreateApplication(char **args, int num)
 {
     return New(Application);
 }
