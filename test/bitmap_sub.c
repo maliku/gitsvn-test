@@ -28,6 +28,6 @@ int main()
 {
     MyBitmap* bitmap = (MyBitmap*)LoadBitmapFromFile("res/mil.bmp");
     printf("Size of MyBitmap = %d.\n", sizeof(MyBitmap));
-    printf("bmp width = %d, height = %d.\n", _vc0((MIL_Image*)bitmap, getWidth), _vc0((MIL_Image*)bitmap, getHeight));
+    printf("bmp width = %d, height = %d.\n", _c((MIL_Image*)bitmap)->getWidth((MIL_Image*)bitmap), _c((MIL_Image*)bitmap)->getHeight((MIL_Image*)bitmap));
     return 0;
 }

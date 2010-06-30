@@ -8,7 +8,6 @@
  */
 
 #include "virtual.h"
-extern CommonVtable _declspec(dllimport) g_NonBaseVtable;
 /* ====================== for class MyBase ======================*/
 DESTRUCTOR(MyBase)
 {
@@ -112,7 +111,7 @@ int main()
     assert(NULL != DynamicCast(MySub, sub2));
     puts(GetTypeName(sub2));
     _c(sub2)->vtest(sub2, 789);
-    _vc1(sub2, ptest, 456);
+    _c(sub2)->ptest(sub2, 456);
     Delete(sub2);
 
     return 0;

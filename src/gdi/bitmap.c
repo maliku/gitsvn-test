@@ -58,7 +58,7 @@ MIL_Bitmap* LoadBitmapFromFile(const char* file)
     if (NULL != file) {
         MIL_Bitmap* bmp = (MIL_Bitmap*)New(MIL_Bitmap);
         if (NULL != bmp) {
-            if (MIL_OK == _vc1((MIL_Image*)bmp, loadFile, file)) {
+            if (MIL_OK == _c((MIL_Image*)bmp)->loadFile((MIL_Image*)bmp, file)) {
                 return (MIL_Bitmap*)bmp;
             }
             else {

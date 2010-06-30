@@ -137,16 +137,6 @@ BEGIN_CLASS_INHERIT_NEED_FORWARD_DECALRE(type, basetype)
 #if defined(__GNUC__) && __GNUC__ >= 4
 #define _vc(pobj, method, ...) _vf(pobj, method)((pobj), ##__VA_ARGS__)
 #endif
-#define _vc0(pobj, method) _vf(pobj, method)((pobj))
-#define _vc1(pobj, method, arg1) _vf(pobj, method)((pobj), arg1)
-#define _vc2(pobj, method, arg1, arg2) _vf(pobj, method)((pobj), arg1, arg2)
-#define _vc3(pobj, method, arg1, arg2, arg3) _vf(pobj, method)((pobj), arg1, arg2, arg3)
-#define _vc4(pobj, method, arg1, arg2, arg3, arg4) _vf(pobj, method)((pobj), arg1, arg2, arg3, arg4)
-#define _vc5(pobj, method, arg1, arg2, arg3, arg4, arg5) _vf(pobj, method)((pobj), arg1, arg2, arg3, arg4, arg5)
-#define _vc6(pobj, method, arg1, arg2, arg3, arg4, arg5, arg6) _vf(pobj, method)((pobj), arg1, arg2, arg3, arg4, arg5, arg6)
-#define _vc7(pobj, method, arg1, arg2, arg3, arg4, arg5, arg6, arg7) _vf(pobj, method)((pobj), arg1, arg2, arg3, arg4, arg5, arg6, arg7)
-#define _vc8(pobj, method, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) _vf(pobj, method)((pobj), arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)
-#define _vc9(pobj, method, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) _vf(pobj, method)((pobj), arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)
 
 #define BEGIN_PRIVATE(type) \
     char __ [sizeof(struct _##type##_private {

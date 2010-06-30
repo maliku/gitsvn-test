@@ -124,7 +124,7 @@ int QVFbVideoDevice_X_videoInit(_Self(VideoDevice), PixelFormat *vformat)
     data->hdr = (QVFbHeader *) data->shmrgn;
 
     format_calc(vformat, data->hdr->depth);
-    if (8 == _vc0(vformat, getBitsPerPixel)) {
+    if (8 == _c(vformat)->getBitsPerPixel(vformat)) {
         data->hdr->numcols = 256;
     }
     return 0;
@@ -148,8 +148,8 @@ Surface* QVFbVideoDevice_X_setVideoMode(_Self(VideoDevice),
     ((Surface*)current)->pitch = ((QVFbVideoDevice*)self)->hw_data->hdr->linestep;
     ((Surface*)current)->pixels = ((QVFbVideoDevice*)self)->hw_data->shmrgn + 
         ((QVFbVideoDevice*)self)->hw_data->hdr->dataoffset;
-    _vc1(current, setClipRect, NULL);
-    if ( ! _vc5(current, reallocFormat, bpp, 0, 0, 0, 0) ) {
+    _c(current)->setClipRect(current, NULL);
+    if ( ! _c(current)->reallocFormat(current, bpp, 0, 0, 0, 0) ) {
         return(NULL);
 	}
     format_calc(((Surface*)current)->format, /*data->hdr->depth*/bpp);

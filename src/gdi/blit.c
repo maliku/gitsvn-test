@@ -54,7 +54,7 @@ static int MIL_SoftBlit(Surface *src, MIL_Rect *srcrect,
 	/* Lock the destination if it's in hardware */
 	dst_locked = 0;
 	if ( MIL_MUSTLOCK(dst) ) {
-		if ( _vc0(dst, lock) < 0 ) {
+		if ( _c(dst)->lock(dst) < 0 ) {
 			okay = 0;
 		} else {
 			dst_locked = 1;
@@ -63,7 +63,7 @@ static int MIL_SoftBlit(Surface *src, MIL_Rect *srcrect,
 	/* Lock the source if it's in hardware */
 	src_locked = 0;
 	if ( MIL_MUSTLOCK(src) ) {
-		if ( _vc0(src, lock) < 0 ) {
+		if ( _c(src)->lock(src) < 0 ) {
 			okay = 0;
 		} else {
 			src_locked = 1;
@@ -100,10 +100,10 @@ static int MIL_SoftBlit(Surface *src, MIL_Rect *srcrect,
 
 	/* We need to unlock the surfaces if they're locked */
 	if ( dst_locked ) {
-		_vc0(dst, unlock);
+		_c(dst)->unlock(dst);
 	}
 	if ( src_locked ) {
-		_vc0(src, unlock);
+		_c(src)->unlock(src);
 	}
 	/* Blit is done! */
 	return(okay ? 0 : -1);
@@ -237,7 +237,7 @@ int MIL_CalculateBlit(Surface *surface)
 
 	/* Clean everything out to start */
 	if ( (surface->flags & MIL_RLEACCEL) == MIL_RLEACCEL ) {
-		_vc1(surface, UnRLE, 1);
+		_c(surface)->UnRLE(surface, 1);
 	}
 	surface->map->sw_blit = NULL;
 
@@ -276,7 +276,7 @@ int MIL_CalculateBlit(Surface *surface)
 		if ( hw_blit_ok ) {
 			VideoDevice *video = ACT_VIDEO_DEVICE;
 			VideoDevice *this  = ACT_VIDEO_DEVICE;
-			_vc2(video, checkHWBlit, (Surface*)surface, (Surface*)surface->map->dst);
+			_c(video)->checkHWBlit(video, (Surface*)surface, (Surface*)surface->map->dst);
 		}
 	}
 	
@@ -287,7 +287,7 @@ int MIL_CalculateBlit(Surface *surface)
 			if ( ACT_VIDEO_DEVICE->vinfo.blit_hw_A ) {
 				VideoDevice *video = ACT_VIDEO_DEVICE;
 				VideoDevice *this  = ACT_VIDEO_DEVICE;
-                _vc2(video, checkHWBlit, (Surface*)surface, (Surface*)surface->map->dst);
+                _c(video)->checkHWBlit(video, (Surface*)surface, (Surface*)surface->map->dst);
 			}
 	}
 
@@ -345,10 +345,10 @@ int MIL_CalculateBlit(Surface *surface)
 	        if(surface->map->identity
 		   && (blit_index == 1
 		       || (blit_index == 3 && !surface->format->Amask))) {
-		        if ( _vc0(surface, RLE) == 0 )
+		        if ( _c(surface)->RLE(surface) == 0 )
 			        surface->map->sw_blit = MIL_RLEBlit;
 		} else if(blit_index == 2 && surface->format->Amask) {
-		        if ( _vc0(surface, RLE) == 0 )
+		        if ( _c(surface)->RLE(surface) == 0 )
 			        surface->map->sw_blit = MIL_RLEAlphaBlit;
 		}
 	}
@@ -380,7 +380,7 @@ int MIL_LowerBlit (Surface *src, MIL_Rect *srcrect,
 	/* Check to make sure the blit mapping is valid */
 	if ( (src->map->dst != dst) ||
              (src->map->dst->format_version != src->map->format_version) ) {
-		if ( _vc1(src, mapSurface, dst) < 0 ) {
+		if ( _c(src)->mapSurface(src, dst) < 0 ) {
 			return(-1);
 		}
 	}

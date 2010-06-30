@@ -258,7 +258,7 @@ int MIL_SoftStretch(Surface *src, const MIL_Rect *srcrect,
 	/* Lock the destination if it's in hardware */
 	dst_locked = 0;
 	if ( MIL_MUSTLOCK(dst) ) {
-		if ( _vc0(dst, lock) < 0 ) {
+		if ( _c(dst)->lock(dst) < 0 ) {
 			MIL_SetError("Unable to lock destination surface");
 			return(-1);
 		}
@@ -267,9 +267,9 @@ int MIL_SoftStretch(Surface *src, const MIL_Rect *srcrect,
 	/* Lock the source if it's in hardware */
 	src_locked = 0;
 	if ( MIL_MUSTLOCK(src) ) {
-		if ( _vc0(src, lock) < 0 ) {
+		if ( _c(src)->lock(src) < 0 ) {
 			if ( dst_locked ) {
-				_vc0(dst, unlock);
+				_c(dst)->unlock(dst);
 			}
 			MIL_SetError("Unable to lock source surface");
 			return(-1);
@@ -350,10 +350,10 @@ int MIL_SoftStretch(Surface *src, const MIL_Rect *srcrect,
 
 	/* We need to unlock the surfaces if they're locked */
 	if ( dst_locked ) {
-		_vc0(dst, unlock);
+		_c(dst)->unlock(dst);
 	}
 	if ( src_locked ) {
-		_vc0(src, unlock);
+		_c(src)->unlock(src);
 	}
 	return(0);
 }

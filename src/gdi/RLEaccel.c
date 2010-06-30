@@ -847,7 +847,7 @@ int MIL_RLEBlit(Surface *src, MIL_Rect *srcrect,
 
 	/* Lock the destination if necessary */
 	if ( MIL_MUSTLOCK(dst) ) {
-		if ( _vc0(dst, lock) < 0 ) {
+		if ( _c(dst)->lock(dst) < 0 ) {
 			return(-1);
 		}
 	}
@@ -935,7 +935,7 @@ int MIL_RLEBlit(Surface *src, MIL_Rect *srcrect,
 done:
 	/* Unlock the destination if necessary */
 	if ( MIL_MUSTLOCK(dst) ) {
-		_vc0(dst, unlock);
+		_c(dst)->unlock(dst);
 	}
 	return(0);
 }
@@ -1113,7 +1113,7 @@ int MIL_RLEAlphaBlit(Surface *src, MIL_Rect *srcrect,
 
     /* Lock the destination if necessary */
     if ( MIL_MUSTLOCK(dst) ) {
-	if ( _vc0(dst, lock) < 0 ) {
+	if ( _c(dst)->lock(dst) < 0 ) {
 	    return -1;
 	}
     }
@@ -1252,7 +1252,7 @@ int MIL_RLEAlphaBlit(Surface *src, MIL_Rect *srcrect,
  done:
     /* Unlock the destination if necessary */
     if ( MIL_MUSTLOCK(dst) ) {
-        _vc0(dst, unlock);
+        _c(dst)->unlock(dst);
     }
     return 0;
 }
@@ -1786,7 +1786,7 @@ int MIL_RLESurface(Surface *surface)
 
 	/* Lock the surface if it's in hardware */
 	if ( MIL_MUSTLOCK(surface) ) {
-		if ( _vc0(surface, lock) < 0 ) {
+		if ( _c(surface)->lock(surface) < 0 ) {
 			return(-1);
 		}
 	}
@@ -1804,7 +1804,7 @@ int MIL_RLESurface(Surface *surface)
 
 	/* Unlock the surface if it's in hardware */
 	if ( MIL_MUSTLOCK(surface) ) {
-		_vc0(surface, unlock);
+		_c(surface)->unlock(surface);
 	}
 
 	if(retcode < 0)

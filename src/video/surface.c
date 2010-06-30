@@ -64,10 +64,10 @@ DESTRUCTOR(Surface)
 		return;
 	}
 	while ( surface->locked > 0 ) {
-		_vc0(surface, unlock);
+		_c(surface)->unlock(surface);
 	}
 	if ( (surface->flags & MIL_RLEACCEL) == MIL_RLEACCEL ) {
-	        _vc1(surface, UnRLE, 0);
+	        _c(surface)->UnRLE(surface, 0);
 	}
 	if ( surface->format ) {
 		Delete(surface->format);
@@ -80,7 +80,7 @@ DESTRUCTOR(Surface)
 	if ( surface->hwdata ) {
 		VideoDevice *video = ACT_VIDEO_DEVICE;
 		VideoDevice *this  = ACT_VIDEO_DEVICE;
-		_vc1(video, freeHWSurface, surface);
+		_c(video)->freeHWSurface(video, surface);
 	}
 	if ( surface->pixels &&
 	     ((surface->flags & MIL_PREALLOC) != MIL_PREALLOC) ) {
@@ -100,7 +100,7 @@ int Surface_X_lock(_SELF)
 		if ( surface->flags & (MIL_HWSURFACE|MIL_ASYNCBLIT) ) {
 			VideoDevice *video = ACT_VIDEO_DEVICE;
 			VideoDevice *this  = ACT_VIDEO_DEVICE;
-			if ( _vc1(video, lockHWSurface, surface) < 0 ) {
+			if ( _c(video)->lockHWSurface(video, surface) < 0 ) {
 				return(-1);
 			}
 		}
@@ -108,7 +108,7 @@ int Surface_X_lock(_SELF)
             /* TODO: Add thread safe lock. */
         }
 		if ( surface->flags & MIL_RLEACCEL ) {
-			_vc1(surface, UnRLE, 1);
+			_c(surface)->UnRLE(surface, 1);
 			surface->flags |= MIL_RLEACCEL;	/* save accel'd state */
 		}
 		/* This needs to be done here in case pixels changes value */
@@ -137,12 +137,12 @@ void Surface_X_unlock(_SELF)
 	if ( surface->flags & (MIL_HWSURFACE|MIL_ASYNCBLIT) ) {
 		VideoDevice *video = ACT_VIDEO_DEVICE;
 		VideoDevice *this  = ACT_VIDEO_DEVICE;
-		_vc1(video, unlockHWSurface, surface);
+		_c(video)->unlockHWSurface(video, surface);
 	} else {
 		/* Update RLE encoded surface with new data */
 		if ( (surface->flags & MIL_RLEACCEL) == MIL_RLEACCEL ) {
 		        surface->flags &= ~MIL_RLEACCEL; /* stop lying */
-                _vc0(surface, RLE);
+                _c(surface)->RLE(surface);
 		}
 	}
 }
@@ -169,7 +169,7 @@ int  Surface_X_setColorKey(_SELF, Uint32 flag, Uint32 key)
 
 	/* UnRLE surfaces before we change the colorkey */
 	if ( surface->flags & MIL_RLEACCEL ) {
-	        _vc1(surface, UnRLE, 1);
+	        _c(surface)->UnRLE(surface, 1);
 	}
 
 	if ( flag ) {
@@ -180,7 +180,7 @@ int  Surface_X_setColorKey(_SELF, Uint32 flag, Uint32 key)
 		surface->flags |= MIL_SRCCOLORKEY;
 		surface->format->colorkey = key;
 		if ( (surface->flags & MIL_HWACCEL) == MIL_HWACCEL ) {
-			if ((_vc2(video, setHWColorKey, surface, key) < 0) ) {
+			if ((_c(video)->setHWColorKey(video, surface, key) < 0) ) {
 				surface->flags &= ~MIL_HWACCEL;
 			}
 		}
@@ -222,7 +222,7 @@ int  Surface_X_setAlpha(_SELF, Uint32 flag, Uint8 value)
 	}
 
 	if(!(flag & MIL_RLEACCELOK) && (surface->flags & MIL_RLEACCEL))
-		_vc1(surface, UnRLE, 1);
+		_c(surface)->UnRLE(surface, 1);
 
 	if ( flag ) {
 		VideoDevice* video = ACT_VIDEO_DEVICE;
@@ -231,7 +231,7 @@ int  Surface_X_setAlpha(_SELF, Uint32 flag, Uint8 value)
 		surface->flags |= MIL_SRCALPHA;
 		surface->format->alpha = value;
 		if ( (surface->flags & MIL_HWACCEL) == MIL_HWACCEL ) {
-			if ( (_vc2(video, setHWAlpha, surface, value) < 0) ) {
+			if ( (_c(video)->setHWAlpha(video, surface, value) < 0) ) {
 				surface->flags &= ~MIL_HWACCEL;
 			}
 		}
@@ -450,11 +450,11 @@ int  METHOD_NAMED(Surface, fillRect)(_SELF, MIL_Rect *dstrect, Uint32 color)
 			hw_rect.y += ACT_VIDEO_DEVICE->offset_y;
 			dstrect = &hw_rect;
 		}
-		return(_vc3(video, fillHWRect, dst, dstrect, color));
+		return(_c(video)->fillHWRect(video, dst, dstrect, color));
 	}
 
 	/* Perform software fill */
-	if ( _vc0(dst, lock) != 0 ) {
+	if ( _c(dst)->lock(dst) != 0 ) {
 		return(-1);
 	}
 	row = (Uint8 *)dst->pixels+dstrect->y*dst->pitch+
@@ -581,7 +581,7 @@ int  METHOD_NAMED(Surface, fillRect)(_SELF, MIL_Rect *dstrect, Uint32 color)
 			break;
 		}
 	}
-	_vc0(dst, unlock);
+	_c(dst)->unlock(dst);
 
 	/* We're done! */
 	return(0);
@@ -618,7 +618,7 @@ Surface* Surface_X_displayFormat(_SELF)
 #else
 	flags |= surface->flags & (MIL_SRCCOLORKEY | MIL_SRCALPHA | MIL_RLEACCELOK);
 #endif
-	return(_vc2(surface, convert, ACT_VIDEO_DEVICE->visible->format, flags));
+	return(_c(surface)->convert(surface, ACT_VIDEO_DEVICE->visible->format, flags));
 
 }
 
@@ -671,7 +671,7 @@ Surface* Surface_X_displayFormatAlpha(_SELF)
 	format = (PixelFormat*)MIL_AllocFormat(32, rmask, gmask, bmask, amask);
 	flags = ACT_VIDEO_DEVICE->visible->flags & MIL_HWSURFACE;
 	flags |= surface->flags & (MIL_SRCALPHA | MIL_RLEACCELOK);
-	converted = _vc2(surface, convert, format, flags);
+	converted = _c(surface)->convert(surface, format, flags);
 	Delete(format);
 	return(converted);
 }
@@ -733,7 +733,7 @@ Surface* Surface_X_convert(_SELF, PixelFormat *format, Uint32 flags)
 			surface_flags &= ~MIL_SRCCOLORKEY;
 		} else {
 			colorkey = surface->format->colorkey;
-			_vc2(surface, setColorKey, 0, 0);
+			_c(surface)->setColorKey(surface, 0, 0);
 		}
 	}
 	if ( (surface_flags & MIL_SRCALPHA) == MIL_SRCALPHA ) {
@@ -742,7 +742,7 @@ Surface* Surface_X_convert(_SELF, PixelFormat *format, Uint32 flags)
 			surface->flags &= ~MIL_SRCALPHA;
 		} else {
 			alpha = surface->format->alpha;
-			_vc2(surface, setAlpha, 0, 0);
+			_c(surface)->setAlpha(surface, 0, 0);
 		}
 	}
 
@@ -755,29 +755,29 @@ Surface* Surface_X_convert(_SELF, PixelFormat *format, Uint32 flags)
 
 	/* Clean up the original surface, and update converted surface */
 	if ( convert != NULL ) {
-		_vc1(convert, setClipRect, &surface->clip_rect);
+		_c(convert)->setClipRect(convert, &surface->clip_rect);
 	}
 	if ( (surface_flags & MIL_SRCCOLORKEY) == MIL_SRCCOLORKEY ) {
 		Uint32 cflags = surface_flags&(MIL_SRCCOLORKEY|MIL_RLEACCELOK);
 		if ( convert != NULL ) {
 			Uint8 keyR, keyG, keyB;
 
-			_vc4(surface->format, getRGB, colorkey, &keyR, &keyG, &keyB);
-            _vc2(convert, setColorKey, cflags|(flags&MIL_RLEACCELOK),
-                    _vc3(convert->format, mapRGB, keyR, keyG, keyB));
+			_c(surface->format)->getRGB(surface->format, colorkey, &keyR, &keyG, &keyB);
+            _c(convert)->setColorKey(convert, cflags|(flags&MIL_RLEACCELOK),
+                    _c(convert->format)->mapRGB(convert->format, keyR, keyG, keyB));
         }
-		_vc2(surface, setColorKey, cflags, colorkey);
+		_c(surface)->setColorKey(surface, cflags, colorkey);
 	}
 	if ( (surface_flags & MIL_SRCALPHA) == MIL_SRCALPHA ) {
 		Uint32 aflags = surface_flags&(MIL_SRCALPHA|MIL_RLEACCELOK);
 		if ( convert != NULL ) {
-		        _vc2(convert, setAlpha, aflags|(flags&MIL_RLEACCELOK),
+		        _c(convert)->setAlpha(convert, aflags|(flags&MIL_RLEACCELOK),
 				alpha);
 		}
 		if ( format->Amask ) {
 			surface->flags |= MIL_SRCALPHA;
 		} else {
-			_vc2(surface, setAlpha, aflags, alpha);
+			_c(surface)->setAlpha(surface, aflags, alpha);
 		}
 	}
 
@@ -791,7 +791,7 @@ PixelFormat* Surface_X_reallocFormat(_SELF, int bpp,
     Surface* surface = (Surface*)self;
 	if ( surface->format ) {
 		Delete(surface->format);
-		_vc0(surface, formatChanged);
+		_c(surface)->formatChanged(surface);
 	}
 	surface->format = (PixelFormat*)MIL_AllocFormat(bpp, Rmask, Gmask, Bmask, Amask);
 	return surface->format;
@@ -845,7 +845,7 @@ int Surface_X_mapSurface(_SELF, Surface *dst)
 	/* Clear out any previous mapping */
 	map = src->map;
 	if ( (src->flags & MIL_RLEACCEL) == MIL_RLEACCEL ) {
-		_vc1(src, UnRLE, 1);
+		_c(src)->UnRLE(src, 1);
 	}
 	MIL_InvalidateMap(map);
 
@@ -877,7 +877,7 @@ int Surface_X_mapSurface(_SELF, Surface *dst)
 
 		    default:
 			/* Palette --> BitField */
-			map->table = _vc1(srcfmt, map1toN, (MIL_PixelFormat*)dstfmt);
+			map->table = _c(srcfmt)->map1toN(srcfmt, (MIL_PixelFormat*)dstfmt);
 			if ( map->table == NULL ) {
 				return(-1);
 			}
@@ -888,7 +888,7 @@ int Surface_X_mapSurface(_SELF, Surface *dst)
 		switch (dstfmt->BytesPerPixel) {
 		    case 1:
 			/* BitField --> Palette */
-			map->table = _vc2(srcfmt, mapNto1, (MIL_PixelFormat*)dstfmt, &map->identity);
+			map->table = _c(srcfmt)->mapNto1(srcfmt, (MIL_PixelFormat*)dstfmt, &map->identity);
 			if ( ! map->identity ) {
 				if ( map->table == NULL ) {
 					return(-1);
@@ -954,7 +954,7 @@ int Surface_X_RLE(_SELF)
 
 	/* Clear any previous RLE conversion */
 	if ( (surface->flags & MIL_RLEACCEL) == MIL_RLEACCEL ) {
-		_vc1(surface, UnRLE, 1);
+		_c(surface)->UnRLE(surface, 1);
 	}
 
 	/* We don't support RLE encoding of bitmaps */
@@ -964,7 +964,7 @@ int Surface_X_RLE(_SELF)
 
 	/* Lock the surface if it's in hardware */
 	if ( MIL_MUSTLOCK(surface) ) {
-		if ( _vc0(surface, lock) < 0 ) {
+		if ( _c(surface)->lock(surface) < 0 ) {
 			return(-1);
 		}
 	}
@@ -982,7 +982,7 @@ int Surface_X_RLE(_SELF)
 
 	/* Unlock the surface if it's in hardware */
 	if ( MIL_MUSTLOCK(surface) ) {
-		_vc0(surface, unlock);
+		_c(surface)->unlock(surface);
 	}
 
 	if(retcode < 0)
@@ -1156,18 +1156,18 @@ Surface * CreateRGBSurface (Uint32 flags,
 	}
 	surface->w = width;
 	surface->h = height;
-	surface->pitch = _vc0(surface, calculatePitch);
+	surface->pitch = _c(surface)->calculatePitch(surface);
 	surface->pixels = NULL;
 	surface->offset = 0;
 	surface->hwdata = NULL;
 	surface->locked = 0;
 	surface->map = NULL;
-	_vc1(surface, setClipRect, NULL);
-	_vc0(surface, formatChanged);
+	_c(surface)->setClipRect(surface, NULL);
+	_c(surface)->formatChanged(surface);
 
 	/* Get the pixels */
 	if ( ((flags&MIL_HWSURFACE) == MIL_SWSURFACE) || 
-				(_vc1(video, allocHWSurface, (Surface*)surface) < 0) ) {
+				(_c(video)->allocHWSurface(video, (Surface*)surface) < 0) ) {
 		if ( surface->w && surface->h ) {
 			surface->pixels = MIL_malloc(surface->h * surface->pitch);
 			if ( surface->pixels == NULL ) {
@@ -1243,11 +1243,11 @@ int MIL_FillRect(Surface *dst, MIL_Rect *dstrect, Uint32 color)
 			hw_rect.y += ACT_VIDEO_DEVICE->offset_y;
 			dstrect = &hw_rect;
 		}
-		return(_vc3(video, fillHWRect, dst, dstrect, color));
+		return(_c(video)->fillHWRect(video, dst, dstrect, color));
 	}
 
 	/* Perform software fill */
-	if ( _vc0(dst, lock) != 0 ) {
+	if ( _c(dst)->lock(dst) != 0 ) {
 		return(-1);
 	}
 	row = (Uint8 *)dst->pixels+dstrect->y*dst->pitch+
@@ -1374,7 +1374,7 @@ int MIL_FillRect(Surface *dst, MIL_Rect *dstrect, Uint32 color)
 			break;
 		}
 	}
-	_vc0(dst, unlock);
+	_c(dst)->unlock(dst);
 
 	/* We're done! */
 	return(0);

@@ -73,31 +73,31 @@ CONSTRUCTOR(Application)
             MIL_Color color = {255, 0, 0};
             int i, j;
             char *pixels = (char*)screen->pixels;
-            _vc1(screen, setClipRect, &rclip);
+            _c(screen)->setClipRect(screen, &rclip);
             Delete(img);
             for (i = 0; i < 480; ++i)
             {
-                memset(pixels, 255 - i % 255, _vc0(screen, getBytesPerPixel) * 640);
-                pixels += _vc0((Surface*)screen, getPitch);
+                memset(pixels, 255 - i % 255, _c(screen)->getBytesPerPixel(screen) * 640);
+                pixels += _c((Surface*)screen)->getPitch((Surface*)screen);
             }
-            _vc2(screen, fillRect, &rc, 0xffffffff);
+            _c(screen)->fillRect(screen, &rc, 0xffffffff);
             _c(vd)->updateRects(vd, 1, &rc);
             getchar();
             if (NULL != bmp) {
-                Surface* convert = _vc2(bmp, convert, screen->format, screen->flags);
+                Surface* convert = _c(bmp)->convert(bmp, screen->format, screen->flags);
                 MIL_Image* screen_img = CreateImageFromSurface(screen);
                 if (NULL != screen_img) {
                     MIL_Graphics* gc = MIL_CreateMemGCFromImage(screen_img);
                     MIL_Pen* pen = (MIL_Pen*)New(SolidPen);
                     _c(pen)->setColor(pen, &color);
                     _c(gc)->selectPen(gc, pen);
-//                _vc2(convert, setColorKey, MIL_SRCCOLORKEY, 0);
-//                _vc2(convert, setAlpha, MIL_SRCALPHA, 5);
+//                _c(convert)->setColorKey(convert, MIL_SRCCOLORKEY, 0);
+//                _c(convert)->setAlpha(convert, MIL_SRCALPHA, 5);
                     for (j = 0; j < 400; ++j) {
                         rcdst.x = j;
                         rcpos.x = j;
 //                    _c(convert)->stretchBlit(convert, &rcbmp, screen, &rcdst);
-                        _vc3(convert, blit, &rcbmp, screen, &rcpos);
+                        _c(convert)->blit(convert, &rcbmp, screen, &rcpos);
                         _c(gc)->setPixel(gc, 10, 10);
                         _c(gc)->drawLine(gc, 1, 1, 639, 479);
                         _c(vd)->updateRects(vd, 1, &rc);

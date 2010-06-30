@@ -425,7 +425,7 @@ MIL_Status MIL_SaveBMP_RW (Surface *saveme, MIL_RWops *dst, int freedst)
 		}
 	}
 
-	if ( surface && (_vc0(surface, lock) == 0) ) {
+	if ( surface && (_c(surface)->lock(surface) == 0) ) {
 		const int bw = surface->w*surface->format->BytesPerPixel;
 
 		/* Set the BMP file header values */
@@ -526,7 +526,7 @@ MIL_Status MIL_SaveBMP_RW (Surface *saveme, MIL_RWops *dst, int freedst)
 		}
 
 		/* Close it up.. */
-		_vc0(surface, unlock);
+		_c(surface)->unlock(surface);
 		if ( surface != saveme ) {
 			Delete(surface);
 		}

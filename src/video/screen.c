@@ -94,7 +94,7 @@ void METHOD_NAMED(MScreen, disconnect)(_Self(MScreen))
 
 int  METHOD_NAMED(MScreen, height)(_Self(MScreen))
 {
-
+    return _private(MScreen)->h;
 }
 
 MIL_Bool METHOD_NAMED(MScreen, initDevice)(_Self(MScreen))
@@ -214,11 +214,21 @@ int  METHOD_NAMED(MScreen, totalSize)(_Self(MScreen))
 
 int  METHOD_NAMED(MScreen, width)(_Self(MScreen))
 {
-
+    return _private(MScreen)->w;
 }
 
 BEGIN_METHOD_MAP(MScreen, NonBase)
     CONSTRUCTOR_MAP(MScreen)
     DESTRUCTOR_MAP(MScreen)
 END_METHOD_MAP
+
+int CreateScreen(const char* device_name, int w, int h, int bpp)
+{
+    return 0;
+}
+
+MScreen* MIL_TakeScreen(int index)
+{
+    return NULL;
+}
 
