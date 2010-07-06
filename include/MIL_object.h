@@ -27,5 +27,7 @@ CLASS(MObject)
     END_PRIVATE
 };
 
+#define MIL_Ref(obj) (_c(DynamicCast(MObject, obj))->retain(obj))
+#define MIL_UnRef(obj) (_c(DynamicCast(MObject, obj))->release(obj))
 #endif   /* ----- #ifndef COOBASE_INC  ----- */
 

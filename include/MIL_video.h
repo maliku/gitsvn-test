@@ -28,7 +28,7 @@
 #define _MIL_video_h
 
 #include "MIL_stdinc.h"
-//#include "MIL_error.h"
+#include "MIL_object.h"
 #include "MIL_rwops.h"
 
 #include "begin_code.h"
@@ -92,7 +92,9 @@ typedef struct MIL_Palette {
  * @class MIL_PixelFormat
  * @brief Interface for Pixel Format, which is readonly structure for user.
  */
-BEGIN_INTERFACE(MIL_PixelFormat) 
+BEGIN_CLASS_INHERIT(MIL_PixelFormat, MObject) 
+    BEGIN_METHOD_EXPAND_DECLARE(MIL_PixelFormat)
+    MIL_MObject_METHOD_TABLE
     Uint32 (*mapColor)(_CSELF, MIL_Color* color);
     Uint32 (*mapRGB)(_CSELF, Uint8 r, Uint8 g, Uint8 b);
     Uint32 (*mapRGBA)(_CSELF, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
@@ -107,7 +109,8 @@ BEGIN_INTERFACE(MIL_PixelFormat)
     MIL_Bool (*equals)(_CSelf(MIL_PixelFormat), const MIL_PixelFormat*);
     Uint32 (*getPaletteSize)(_CSelf(MIL_PixelFormat));
     MIL_Status (*getPalette)(_CSelf(MIL_PixelFormat), MIL_Palette*);
-END_INTERFACE
+    END_METHOD_EXPAND_DECLARE
+END_CLASS_INHERIT
 
 struct Surface;
 extern MIL_PixelFormat* MIL_AllocFormat(int bpp,

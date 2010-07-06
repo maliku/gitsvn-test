@@ -28,17 +28,6 @@ VideoDeviceEntry g_video_dummy = {
 CONSTRUCTOR(DummyVideoDevice)
 {
     static MIL_Bool s_virtual_method_check = MIL_FALSE;
-    if (!s_virtual_method_check) {
-        VirtualMethodVerify(self, videoInit);
-        VirtualMethodVerify(self, listModes);
-        VirtualMethodVerify(self, setVideoMode);
-        VirtualMethodVerify(self, toggleFullScreen);
-        VirtualMethodVerify(self, updateRects);
-        VirtualMethodVerify(self, updateMouse);
-        VirtualMethodVerify(self, createYUVOverlay);
-        VirtualMethodVerify(self, videoQuit);
-        s_virtual_method_check = MIL_TRUE;
-    }
     printf("DummyVideoDevice %p constructed...\n", self);
     ((VideoDevice*)self)->name = DUMMY_VIDEO_DRIVER_NAME;
 }

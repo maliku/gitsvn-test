@@ -9,7 +9,7 @@
 #include "pixel_format.h"
 #include "pixels.h"
 
-METHOD_MAP_PLACEHOLDER(MIL_PixelFormat, NonBase)
+METHOD_MAP_PLACEHOLDER(MIL_PixelFormat, MObject)
 
 CONSTRUCTOR(PixelFormat)
 {

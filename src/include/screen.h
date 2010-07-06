@@ -9,5 +9,6 @@
 #ifndef  SCREEN_INC
 #define  SCREEN_INC
 
+#include "MIL_paint.h"
 #endif   /* ----- #ifndef SCREEN_INC  ----- */
 

@@ -39,10 +39,10 @@ typedef char* MText;
 typedef int MLine;
 typedef int MWidget;
 
-CLASS_FORWARD_DECLARE(MPaintDevice);
-CLASS_FORWARD_DECLARE(MPainter);
-CLASS_FORWARD_DECLARE(MImage);
-CLASS_FORWARD_DECLARE(MIL_Region);
+CLASS_DECLARE(MPaintDevice);
+CLASS_DECLARE(MPainter);
+CLASS_DECLARE(MImage);
+CLASS_DECLARE(MIL_Region);
 
 CLASS(MPaintEngine)
 {
@@ -74,7 +74,7 @@ CLASS(MPaintEngine)
     END_PRIVATE
 };
 
-CLASS_NEED_FORWARD_DECLARE(MPaintDevice)
+CLASS_DEFINE(MPaintDevice)
 {
     BEGIN_METHOD_DECLARE(MPaintDevice)
 #define MIL_MPaintDevice_METHOD_TABLE \
@@ -103,7 +103,7 @@ CLASS_NEED_FORWARD_DECLARE(MPaintDevice)
     END_PRIVATE
 };
 
-CLASS_NEED_FORWARD_DECLARE(MPainter)
+CLASS_DEFINE(MPainter)
 {
     BEGIN_METHOD_DECLARE(MPainter)
 #define MIL_MPainter_METHOD_TABLE \
@@ -228,7 +228,7 @@ BEGIN_CLASS_INHERIT(MRasterSurface, MPaintDevice)
 
 END_CLASS_INHERIT
 
-BEGIN_CLASS_INHERIT_NEED_FORWARD_DECALRE(MImage, MRasterSurface)
+BEGIN_CLASS_INHERIT_DEFINE(MImage, MRasterSurface)
     BEGIN_METHOD_EXPAND_DECLARE(MImage)
 #define MIL_MImage_METHOD_TABLE \
         MIL_MRasterSurface_METHOD_TABLE\
@@ -255,11 +255,12 @@ BEGIN_CLASS_INHERIT_NEED_FORWARD_DECALRE(MImage, MRasterSurface)
 END_CLASS_INHERIT
 
 typedef enum {
-    MIL_FBCON_SCREEN = 0,
-    MIL_DIRECTFB_SCREEN = 1,
-    MIL_QVFB_SCREEN = 2,
-    MIL_GL_SCREEN = 3,
-    MIL_VNC_SCREEN = 4
+    MIL_UNKNOW_SCREEN = 0,
+    MIL_FBCON_SCREEN = 1,
+    MIL_DIRECTFB_SCREEN = 2,
+    MIL_QVFB_SCREEN = 3,
+    MIL_GL_SCREEN = 4,
+    MIL_VNC_SCREEN = 5
 } MIL_Screen_Clsid;
 
 CLASS(MScreen)
@@ -269,7 +270,7 @@ CLASS(MScreen)
     int  (*colorIndex)(_Self(MScreen), Uint32, Uint32, Uint32);\
     Uint8* (*baseAddr)(_CSelf(MScreen));\
     void (*blit)(_Self(MScreen), const MImage*, const MIL_Point*, const MIL_Rect*);\
-    void (*blitRG)(_Self(MScreen), const MImage*, const MIL_Point*, const MIL_Region*);\
+    void (*blitRg)(_Self(MScreen), const MImage*, const MIL_Point*, const MIL_Region*);\
     MIL_Screen_Clsid (*classID)(_CSelf(MScreen));\
     MIL_Color* (*clut)(_Self(MScreen));\
     int  (*colorCount)(_CSelf(MScreen));\
@@ -294,7 +295,7 @@ CLASS(MScreen)
     void (*restore)(_Self(MScreen));\
     void (*save)(_Self(MScreen));\
     int  (*screenSize)(_CSelf(MScreen));\
-    void (*setDirty)(_Self(MScreen), const MIL_Rect*);\
+    void (*setDirty)(_Self(MScreen), int numrects, const MIL_Rect*);\
     void (*setMode)(_Self(MScreen), int, int, int);\
     void (*setPixelFormat)(_Self(MScreen), MIL_PixelFormat*);\
     void (*shutdownDevice)(_Self(MScreen));\
@@ -313,7 +314,7 @@ CLASS(MScreen)
     int	dw;
     MIL_Bool grayscale;
     int	h;
-    int	lstep;
+    int	pitch;
     int	mapsize;
     int	physHeight;
     int	physWidth;
@@ -321,6 +322,7 @@ CLASS(MScreen)
     int	screencols;
     int	size;
     int	w;
+    MIL_PixelFormat* format;
     END_PRIVATE
 };
 

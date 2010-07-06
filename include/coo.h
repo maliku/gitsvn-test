@@ -41,12 +41,12 @@ STRUCT DECLSPEC __CommonVtable {
 
 extern DECLSPEC CommonVtable g_NonBaseVtable;
 
-#define CLASS_FORWARD_DECLARE(type) \
+#define CLASS_DECLARE(type) \
 struct __##type;\
 typedef struct __##type type;
 
 /* Macro for class declare. */
-#define	CLASS_NEED_FORWARD_DECLARE(type)	\
+#define	CLASS_DEFINE(type)	\
     struct __##type##Vtable;\
 typedef struct __##type##Vtable type##Vtable;\
 extern DECLSPEC type##Vtable g_##type##Vtable;\
@@ -57,8 +57,8 @@ struct __##type
 
 /* Macro for class declare. */
 #define	CLASS(type)	\
-CLASS_FORWARD_DECLARE(type)\
-CLASS_NEED_FORWARD_DECLARE(type)
+CLASS_DECLARE(type)\
+CLASS_DEFINE(type)
 
 /* Declare a interface, it can't include any data member. */
 #define BEGIN_INTERFACE(type) \
@@ -95,15 +95,15 @@ struct __##type {\
         type##Vtable *__vptr; \
     }__super;
 
-#define	BEGIN_CLASS_INHERIT_NEED_FORWARD_DECALRE(type, basetype) \
+#define	BEGIN_CLASS_INHERIT_DEFINE(type, basetype) \
 typedef basetype __BaseOf##type; \
 typedef basetype##Vtable __VtableTypeOf##type##Base;\
 extern void* type##Preconstructor(_SELF);\
 void type##Predestructor(_SELF);
 
 #define	BEGIN_CLASS_INHERIT(type, basetype) \
-CLASS_FORWARD_DECLARE(type)\
-BEGIN_CLASS_INHERIT_NEED_FORWARD_DECALRE(type, basetype)
+CLASS_DECLARE(type)\
+BEGIN_CLASS_INHERIT_DEFINE(type, basetype)
 
 #define	END_CLASS_INHERIT };
 
