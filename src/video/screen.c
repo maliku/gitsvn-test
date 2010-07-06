@@ -267,13 +267,26 @@ BEGIN_METHOD_MAP(MScreen, NonBase)
 
 END_METHOD_MAP
 
+#include "qvfb/screen_qvfb.h"
+#define MAX_SCREENS 16
+MScreen* g_screen_table[MAX_SCREENS];
 int CreateScreen(const char* device_name, int w, int h, int bpp)
 {
-    return 0;
+    g_screen_table[0] = (MScreen*)New(ScreenQVFB);
+    if (NULL != g_screen_table[0]) {
+        if (_c(g_screen_table[0])->initDevice(g_screen_table[0]))
+        _c(g_screen_table[0])->setMode(g_screen_table[0], w, h, bpp);
+        return 0;
+    }
+    return -1;
 }
 
+/* TODO: Complete it. */
 MScreen* MIL_TakeScreen(int index)
 {
-    return NULL;
+    if (NULL == g_screen_table[index]) {
+        CreateScreen("qvfb", 640, 480, 32);
+    }
+    return g_screen_table[index];
 }
 

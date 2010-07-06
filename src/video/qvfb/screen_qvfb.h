@@ -44,11 +44,11 @@ typedef struct {
     QVFbHeader* hdr;
 } QVFbHardwareDependent;
 
-
 BEGIN_CLASS_INHERIT(ScreenQVFB, MScreen)
     NO_METHOD_EXPAND(ScreenQVFB)
 
     QVFbHardwareDependent* hw_data;
 END_CLASS_INHERIT
+
 #endif   /* ----- #ifndef SCREEN_QVFB_INC  ----- */
 

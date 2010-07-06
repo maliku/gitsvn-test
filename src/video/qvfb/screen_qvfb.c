@@ -262,7 +262,16 @@ void METHOD_NAMED(ScreenQVFB, shutdownDevice)(_Self(MScreen))
 
 void METHOD_NAMED(ScreenQVFB, solidFill)(_Self(MScreen), const MIL_Color* c, const MIL_Rect* rc)
 {
-
+    if (NULL != rc && NULL != c) {
+        int i, j;
+        printf("solidFill %p.\n", _private(MScreen)->data);
+        for (i = 0; i < rc->h; ++i) {
+            MIL_memset(_private(MScreen)->data + _private(MScreen)->pitch * i, 
+                    255, rc->w * 
+                    _c(_private(MScreen)->format)->getBytesPerPixel(_private(MScreen)->format));
+        }
+        _c(self)->setDirty(self, 1, rc);
+    }
 }
 
 int  METHOD_NAMED(ScreenQVFB, subScreenIndexAt)(_CSelf(MScreen), const MIL_Point* pt)

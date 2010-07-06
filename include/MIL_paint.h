@@ -326,6 +326,7 @@ CLASS(MScreen)
     END_PRIVATE
 };
 
+MScreen* MIL_TakeScreen(int index);
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
 }
