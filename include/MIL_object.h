@@ -18,7 +18,7 @@ CLASS(MObject)
 #define MIL_MObject_METHOD_TABLE \
         MObject* (*retain)(_SELF);\
         void (*release)(_SELF);\
-        int  (*releaseCount)(_SELF);
+        int  (*releaseCount)(_CSELF);
         MIL_MObject_METHOD_TABLE
     END_METHOD_DECLARE
 
@@ -27,7 +27,7 @@ CLASS(MObject)
     END_PRIVATE
 };
 
-#define MIL_Ref(obj) (_c(DynamicCast(MObject, obj))->retain(obj))
-#define MIL_UnRef(obj) (_c(DynamicCast(MObject, obj))->release(obj))
+#define MIL_Ref(obj) (_c(DynamicCast(MObject, obj))->retain((void*)(obj)))
+#define MIL_UnRef(obj) (_c(DynamicCast(MObject, obj))->release((void*)(obj)))
 #endif   /* ----- #ifndef COOBASE_INC  ----- */
 

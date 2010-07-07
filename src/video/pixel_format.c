@@ -66,7 +66,7 @@ Uint32 PixelFormat_X_mapRGB(_CSELF, Uint8 r, Uint8 g, Uint8 b)
 	}
 }
 
-Uint32 METHOD_NAMED(PixelFormat, mapColor)(_CSELF, MIL_Color* color)
+Uint32 METHOD_NAMED(PixelFormat, mapColor)(_CSELF, const MIL_Color* color)
 {
     if (NULL != color) {
         return PixelFormat_X_mapRGB(self, color->r, color->g, color->b);

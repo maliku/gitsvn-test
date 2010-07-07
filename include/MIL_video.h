@@ -95,7 +95,7 @@ typedef struct MIL_Palette {
 BEGIN_CLASS_INHERIT(MIL_PixelFormat, MObject) 
     BEGIN_METHOD_EXPAND_DECLARE(MIL_PixelFormat)
     MIL_MObject_METHOD_TABLE
-    Uint32 (*mapColor)(_CSELF, MIL_Color* color);
+    Uint32 (*mapColor)(_CSELF, const MIL_Color* color);
     Uint32 (*mapRGB)(_CSELF, Uint8 r, Uint8 g, Uint8 b);
     Uint32 (*mapRGBA)(_CSELF, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
     void  (*getRGB)(_CSELF, Uint32 pixel, Uint8 *r,Uint8 *g,Uint8 *b);

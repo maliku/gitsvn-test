@@ -45,7 +45,7 @@ extern DECLSPEC CommonVtable g_NonBaseVtable;
 struct __##type;\
 typedef struct __##type type;
 
-/* Macro for class declare. */
+/* Macro for class define. */
 #define	CLASS_DEFINE(type)	\
     struct __##type##Vtable;\
 typedef struct __##type##Vtable type##Vtable;\
@@ -295,13 +295,13 @@ void OrderDestruct(void*);
 extern DECLSPEC void Delete(void*);
 /* Delete a array of object. */
 void Deletes(void*, size_t);
-extern DECLSPEC void* SafeCast(void* vtable, void* ptr);
+extern DECLSPEC void* SafeCast(const void* vtable, void* ptr);
 /* Delete a object without free memory. */
 #define DeleteAt(p) OrderDestruct(p)
 
 #define StaticCast(type, ptr) (type*)(ptr)
 #define ReinterpretCast(type, ptr)
-#define DynamicCast(type, ptr) StaticCast(type, SafeCast(&g_##type##Vtable, ptr))
+#define DynamicCast(type, ptr) StaticCast(type, SafeCast(&g_##type##Vtable, (void*)(ptr)))
 #define IsTypeOf(type, ptr) (NULL != DynamicCast(type, ptr))
 #define GetTypeName(ptr) \
     ((NULL != ptr && NULL != (*(RTTI**)ptr) && NULL != (*(RTTI**)ptr)->__name) ? (*(RTTI**)ptr)->__name : "")

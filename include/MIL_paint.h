@@ -263,6 +263,8 @@ typedef enum {
     MIL_VNC_SCREEN = 5
 } MIL_Screen_Clsid;
 
+CLASS_DECLARE(MScreenPrivate)
+
 CLASS(MScreen)
 {
     BEGIN_METHOD_DECLARE(MScreen)
@@ -323,6 +325,7 @@ CLASS(MScreen)
     int	size;
     int	w;
     MIL_PixelFormat* format;
+    MScreenPrivate* d_ptr;
     END_PRIVATE
 };
 

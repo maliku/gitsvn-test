@@ -36,7 +36,7 @@ void METHOD_NAMED(MObject, release)(_SELF)
     }
 }
 
-int METHOD_NAMED(MObject, releaseCount)(_SELF)
+int METHOD_NAMED(MObject, releaseCount)(_CSELF)
 {
     return _private(MObject)->ref;
 }

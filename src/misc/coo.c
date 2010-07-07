@@ -11,7 +11,7 @@ __INLINE__ void Delete(void *ptr)
     }
 }
 
-__INLINE__ void* SafeCast(void* vtable, void* ptr)
+__INLINE__ void* SafeCast(const void* vtable, void* ptr)
 {
     if (NULL != ptr) {
         RTTI* tmp = *(RTTI**)ptr;

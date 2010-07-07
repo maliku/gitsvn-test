@@ -6,13 +6,176 @@
  *  Organization: http://www.ds0101.net
  */
 
-#include "MIL_paint.h"
-#include "pixel_format.h"
+#include "screen.h"
+#include "pixel_format.h" /* For New(PixelFormat) */
+#include "misc.h"
 
+#define SOLID_FILL_TEMPLATE(type, size) \
+static void solidFill_##type(MScreen* screen, const MIL_Color* color, \
+                               const MRegion* region)\
+{\
+    type* dest = (type*)(_c(screen)->baseAddr(screen));\
+    const MIL_PixelFormat* fmt = (MIL_PixelFormat*)MIL_Ref(_c(screen)->pixelFormat(screen));\
+    const type c = _c(fmt)->mapColor(fmt, color);\
+    const int stride = _c(screen)->linestep(screen);\
+    MIL_UnRef(fmt);\
+    /*const QVector<QRect> rects = region->rects(); \
+    for (int i = 0; i < rects.size(); ++i) {\
+        const QRect r = rects.at(i); \
+        rectfill(dest, c, r.x(), r.y(), r.width(), r.height(), stride);\
+    }*/\
+}
+
+SOLID_FILL_TEMPLATE(char, 1)
+SOLID_FILL_TEMPLATE(short, 2)
+SOLID_FILL_TEMPLATE(int, 4)
+
+void solidFill_setup(MScreen* screen, const MIL_Color* color,
+                        const MRegion* region)
+{
+#if 0
+    switch (_c(screen)->depth()) {
+        case 32:
+            if (screen->pixelType() == MScreen::NormalPixel)
+                screen->d_ptr->solidFill = solidFill_template<quint32>;
+            else
+                screen->d_ptr->solidFill = solidFill_template<qabgr8888>;
+            break;
+        case 24:
+            if (screen->pixelType() == MScreen::NormalPixel)
+                screen->d_ptr->solidFill = solidFill_template<qrgb888>;
+            else
+                screen->d_ptr->solidFill = solidFill_template<quint24>;
+            break;
+        case 18:
+            screen->d_ptr->solidFill = solidFill_template<quint18>;
+            break;
+        case 16:
+            if (screen->pixelType() == MScreen::NormalPixel)
+                screen->d_ptr->solidFill = solidFill_template<quint16>;
+            else
+                screen->d_ptr->solidFill = solidFill_template<qbgr565>;
+            break;
+        case 15:
+            if (screen->pixelType() == MScreen::NormalPixel)
+                screen->d_ptr->solidFill = solidFill_template<qrgb555>;
+            else
+                screen->d_ptr->solidFill = solidFill_template<qbgr555>;
+            break;
+        case 12:
+            screen->d_ptr->solidFill = solidFill_template<qrgb444>;
+            break;
+        case 8:
+            screen->d_ptr->solidFill = solidFill_template<quint8>;
+            break;
+        case 4:
+            screen->d_ptr->solidFill = solidFill_gray4;
+            break;
+        case 1:
+            screen->d_ptr->solidFill = solidFill_mono;
+            break;
+        default:
+            qFatal("solidFill_setup(): Screen depth %d not supported!",
+                    screen->depth());
+            screen->d_ptr->solidFill = 0;
+            break;
+    }
+#endif
+    _friend(MScreen, screen)->d_ptr->solidFill(screen, color, region);
+}
+
+void blit_setup(MScreen *screen, const MImage* image,
+                   const MIL_Point* topLeft, const MRegion* region)
+{
+#if 0
+    switch (screen->depth()) {
+    case 32:
+        if (screen->pixelType() == QScreen::NormalPixel)
+            screen->d_ptr->blit = blit_32;
+        else
+            screen->d_ptr->blit = blit_template<qabgr8888, quint32>;
+        break;
+    case 24:
+        if (screen->pixelType() == QScreen::NormalPixel)
+            screen->d_ptr->blit = blit_qrgb888;
+        else
+            screen->d_ptr->blit = blit_24;
+        break;
+    case 18:
+        screen->d_ptr->blit = blit_18;
+        break;
+    case 16:
+#if MIL_BYTEORDER == MIL_BIG_ENDIAN
+        if (screen->d_ptr->fb_is_littleEndian)
+            screen->d_ptr->blit = blit_16_bigToLittleEndian;
+        else
+#endif
+        if (screen->pixelType() == QScreen::NormalPixel)
+            screen->d_ptr->blit = blit_16;
+        else
+            screen->d_ptr->blit = blit_template<qbgr565, quint16>;
+        break;
+    case 15:
+#if MIL_BYTEORDER == MIL_BIG_ENDIAN
+        if (screen->d_ptr->fb_is_littleEndian)
+            screen->d_ptr->blit = blit_15_bigToLittleEndian;
+        else
+#endif // Q_BIG_ENDIAN
+        if (screen->pixelType() == QScreen::NormalPixel)
+            screen->d_ptr->blit = blit_15;
+        else
+            screen->d_ptr->blit = blit_template<qbgr555, qrgb555>;
+        break;
+    case 12:
+        screen->d_ptr->blit = blit_12;
+        break;
+    case 8:
+        screen->d_ptr->blit = blit_8;
+        break;
+    case 4:
+        screen->d_ptr->blit = blit_4;
+        break;
+    case 1:
+        screen->d_ptr->blit = blit_1;
+        break;
+    default:
+        qFatal("blit_setup(): Screen depth %d not supported!",
+               screen->depth());
+        screen->d_ptr->blit = 0;
+        break;
+    }
+#endif
+    _friend(MScreen, screen)->d_ptr->blit(screen, image, topLeft, region);
+}
+
+CONSTRUCTOR(MScreenPrivate)
+{
+#ifdef MIL_CLIENTBLIT
+    _m(supportsBlitInClients) = false;
+#endif
+    _m(classId) = 0;
+    _m(q_ptr) = NULL;
+    _m(solidFill) = solidFill_setup;
+    _m(blit) = blit_setup;
+#if MIL_BYTEORDER == MIL_BIG_ENDIAN
+    _m(fb_is_littleEndian) = false;
+#endif
+//    pixmapFactory = 0;
+//    graphicsSystem = &defaultGraphicsSystem;
+}
+
+DESTRUCTOR(MScreenPrivate)
+{
+}
+
+BEGIN_METHOD_MAP(MScreenPrivate, NonBase)
+    CONSTRUCTOR_MAP(MScreenPrivate)
+    DESTRUCTOR_MAP(MScreenPrivate)
+END_METHOD_MAP
 
 CONSTRUCTOR(MScreen)
 {
-    _private(MScreen)->depth = 0;
+    _private(MScreen)->depth = 1;
     _private(MScreen)->data = NULL;
     _private(MScreen)->dh = 0;
     _private(MScreen)->dw = 0;
@@ -32,11 +195,13 @@ CONSTRUCTOR(MScreen)
 DESTRUCTOR(MScreen)
 {
     MIL_UnRef(_private(MScreen)->format);
+    _private(MScreen)->d_ptr = (MScreenPrivate*)New(MScreenPrivate);
+    _private(MScreen)->d_ptr->q_ptr = self;
 }
 
 int  METHOD_NAMED(MScreen, colorIndex)(_Self(MScreen), Uint32 r, Uint32 g, Uint32 b)
 {
-
+    Delete(_private(MScreen)->d_ptr);
 }
 
 Uint8* METHOD_NAMED(MScreen, baseAddr)(_CSelf(MScreen))
@@ -274,8 +439,13 @@ int CreateScreen(const char* device_name, int w, int h, int bpp)
 {
     g_screen_table[0] = (MScreen*)New(ScreenQVFB);
     if (NULL != g_screen_table[0]) {
-        if (_c(g_screen_table[0])->initDevice(g_screen_table[0]))
-        _c(g_screen_table[0])->setMode(g_screen_table[0], w, h, bpp);
+        if (_c(g_screen_table[0])->initDevice(g_screen_table[0])) {
+            _c(g_screen_table[0])->setMode(g_screen_table[0], w, h, bpp);
+        }
+        else {
+            Delete(g_screen_table[0]);
+            g_screen_table[0] = NULL;
+        }
         return 0;
     }
     return -1;
