@@ -40,14 +40,14 @@ CLASS_DEFINE(MScreenPrivate)
     MScreen *q_ptr;
 };
 
-STRUCT
+typedef struct
 {
     int left, top, right, bottom;
-} RECT;
+} _RECT;
 
-extern MIL_Bool is_rect_empty(RECT*);
-extern void normalize_rect(RECT*);
-extern void get_bound_rect(RECT*, const RECT*, const RECT*);
+extern MIL_Bool is_rect_empty(_RECT*);
+extern void normalize_rect(_RECT*);
+extern void get_bound_rect(_RECT*, const _RECT*, const _RECT*);
 
 #endif   /* ----- #ifndef SCREEN_INC  ----- */
 

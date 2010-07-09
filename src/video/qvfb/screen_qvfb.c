@@ -9,6 +9,7 @@
 #include "screen_qvfb.h"
 #include "pixel_format.h"
 
+#if MIL_VIDEO_DRIVER_QVFB
 static int format_calc(MIL_PixelFormat* fmt, int bpp)
 {
     PixelFormat* vformat = DynamicCast(PixelFormat, fmt);
@@ -171,57 +172,16 @@ void METHOD_NAMED(ScreenQVFB, save)(_Self(MScreen))
 
 }
 
-__INLINE__ MIL_Bool is_rect_empty(RECT* prc)
-{
-    if( prc->left == prc->right ) return MIL_TRUE;
-    if( prc->top == prc->bottom ) return MIL_TRUE;
-    return MIL_FALSE;
-}
-
-__INLINE__ void normalize_rect(RECT* pRect)
-{
-    int iTemp;
-
-    if(pRect->left > pRect->right)
-    {
-         iTemp = pRect->left;
-         pRect->left = pRect->right;
-         pRect->right = iTemp;
-    }
-
-    if(pRect->top > pRect->bottom)
-    {
-         iTemp = pRect->top;
-         pRect->top = pRect->bottom;
-         pRect->bottom = iTemp;
-    }
-}
-
-__INLINE__ void get_bound_rect(RECT* pdrc, const RECT* psrc1, const RECT* psrc2)
-{
-    RECT src1, src2;
-    memcpy(&src1, psrc1, sizeof(RECT));
-    memcpy(&src2, psrc2, sizeof(RECT));
-
-    normalize_rect(&src1);
-    normalize_rect(&src2);
-
-    pdrc->left = (src1.left < src2.left) ? src1.left : src2.left;
-    pdrc->top  = (src1.top < src2.top) ? src1.top : src2.top;
-    pdrc->right = (src1.right > src2.right) ? src1.right : src2.right;
-    pdrc->bottom = (src1.bottom > src2.bottom) 
-                   ? src1.bottom : src2.bottom;
-}
 
 void METHOD_NAMED(ScreenQVFB, setDirty)(_Self(MScreen), int numrects, 
         const MIL_Rect* rects)
 {
     int i;
 
-    RECT bound = _tm(ScreenQVFB, hw_data)->hdr->update;
+    _RECT bound = _tm(ScreenQVFB, hw_data)->hdr->update;
 
     for (i = 0; i < numrects; ++i) {
-        RECT rc = {rects[i].x, rects[i].y, 
+        _RECT rc = {rects[i].x, rects[i].y, 
                         rects[i].x + rects[i].w, rects[i].y + rects[i].h};
 
         if (is_rect_empty(&bound))
@@ -310,4 +270,4 @@ BEGIN_METHOD_MAP(ScreenQVFB, MScreen)
 
 END_METHOD_MAP
 
-
+#endif

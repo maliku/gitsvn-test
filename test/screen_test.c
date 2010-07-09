@@ -5,8 +5,12 @@
  * @version 1.0
  *  Organization: http://www.ds0101.net
  */
-
+#ifdef WIN32
+#include <MIL_paint.h>
+#else
 #include <milui/MIL_paint.h>
+#endif
+
 
 int main()
 {

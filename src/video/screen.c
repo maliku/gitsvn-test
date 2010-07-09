@@ -10,6 +10,49 @@
 #include "pixel_format.h" /* For New(PixelFormat) */
 #include "misc.h"
 
+__INLINE__ MIL_Bool is_rect_empty(_RECT* prc)
+{
+    if( prc->left == prc->right ) return MIL_TRUE;
+    if( prc->top == prc->bottom ) return MIL_TRUE;
+    return MIL_FALSE;
+}
+
+__INLINE__ void normalize_rect(_RECT* pRect)
+{
+    int iTemp;
+
+    if(pRect->left > pRect->right)
+    {
+         iTemp = pRect->left;
+         pRect->left = pRect->right;
+         pRect->right = iTemp;
+    }
+
+    if(pRect->top > pRect->bottom)
+    {
+         iTemp = pRect->top;
+         pRect->top = pRect->bottom;
+         pRect->bottom = iTemp;
+    }
+}
+
+__INLINE__ void get_bound_rect(_RECT* pdrc, const _RECT* psrc1, const _RECT* psrc2)
+{
+    _RECT src1, src2;
+    memcpy(&src1, psrc1, sizeof(_RECT));
+    memcpy(&src2, psrc2, sizeof(_RECT));
+
+    normalize_rect(&src1);
+    normalize_rect(&src2);
+
+    pdrc->left = (src1.left < src2.left) ? src1.left : src2.left;
+    pdrc->top  = (src1.top < src2.top) ? src1.top : src2.top;
+    pdrc->right = (src1.right > src2.right) ? src1.right : src2.right;
+    pdrc->bottom = (src1.bottom > src2.bottom) 
+                   ? src1.bottom : src2.bottom;
+}
+
+
 #define MIL_MEMFILL_TEMPLATE(T) \
 __INLINE__ void mil_memfill_##T(T *dest, T value, int count)\
 {\
@@ -124,7 +167,7 @@ static void solidFill_gray4(MScreen *screen, const MIL_Color* color,
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #endif
 
-static inline void mil_rectfill_mono(Uint8 *dest, Uint8 value,
+static __INLINE__ void mil_rectfill_mono(Uint8 *dest, Uint8 value,
                                     int x, int y, int width, int height,
                                     int stride)
 {
@@ -284,14 +327,14 @@ void blit_setup(MScreen *screen, const MImage* image,
 CONSTRUCTOR(MScreenPrivate)
 {
 #ifdef MIL_CLIENTBLIT
-    _m(supportsBlitInClients) = false;
+    _m(supportsBlitInClients) = MIL_FALSE;
 #endif
     _m(classId) = 0;
     _m(q_ptr) = NULL;
     _m(solidFill) = solidFill_setup;
     _m(blit) = blit_setup;
 #if MIL_BYTEORDER == MIL_BIG_ENDIAN
-    _m(fb_is_littleEndian) = false;
+    _m(fb_is_littleEndian) = MIL_FALSE;
 #endif
 //    pixmapFactory = 0;
 //    graphicsSystem = &defaultGraphicsSystem;
@@ -335,7 +378,7 @@ DESTRUCTOR(MScreen)
 
 int  METHOD_NAMED(MScreen, colorIndex)(_Self(MScreen), Uint32 r, Uint32 g, Uint32 b)
 {
-    Delete(_private(MScreen)->d_ptr);
+    return -1;
 }
 
 Uint8* METHOD_NAMED(MScreen, baseAddr)(_CSelf(MScreen))
@@ -361,7 +404,7 @@ MIL_Screen_Clsid METHOD_NAMED(MScreen, classID)(_CSelf(MScreen))
 
 MIL_Color* METHOD_NAMED(MScreen, clut)(_Self(MScreen))
 {
-
+	return NULL;
 }
 
 int  METHOD_NAMED(MScreen, colorCount)(_CSelf(MScreen))
@@ -571,11 +614,12 @@ BEGIN_METHOD_MAP(MScreen, NonBase)
 END_METHOD_MAP
 
 #include "qvfb/screen_qvfb.h"
+#include "wvfb/screen_wvfb.h"
 #define MAX_SCREENS 16
 MScreen* g_screen_table[MAX_SCREENS];
 int CreateScreen(const char* device_name, int w, int h, int bpp)
 {
-    g_screen_table[0] = (MScreen*)New(ScreenQVFB);
+    g_screen_table[0] = (MScreen*)New(ScreenWVFB);
     if (NULL != g_screen_table[0]) {
         if (_c(g_screen_table[0])->initDevice(g_screen_table[0])) {
             _c(g_screen_table[0])->setMode(g_screen_table[0], w, h, bpp);

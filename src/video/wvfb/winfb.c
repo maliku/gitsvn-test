@@ -37,14 +37,14 @@ void* win_FbInit (int w, int h, int depth)
     hScreen = OpenFileMapping (FILE_MAP_ALL_ACCESS, FALSE, "WVFBScreenMap");
     if (hScreen == NULL)
     { 
-        fprintf (stderr, "WVFB NEWGAL Engine: Could not open file mapping object WVFBScreenMap."); 
+        fprintf (stderr, "WVFB Engine: Could not open file mapping object WVFBScreenMap.\n"); 
         return NULL;
     } 
 
     lpScreen = MapViewOfFile (hScreen, FILE_MAP_ALL_ACCESS, 0, 0, 0);
     if (lpScreen == NULL) 
     { 
-        fprintf(stderr, "WVFB NEWGAL Engine: Could not map view of file.");
+        fprintf(stderr, "WVFB Engine: Could not map view of file.\n");
         return NULL;
     }
     

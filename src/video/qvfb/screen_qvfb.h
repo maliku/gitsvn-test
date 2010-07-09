@@ -20,7 +20,7 @@ typedef struct
     int depth;
     int linestep;
     int dataoffset;
-    RECT update;
+    _RECT update;
     Uint8 dirty;
     int  numcols;
     unsigned int clut[256];

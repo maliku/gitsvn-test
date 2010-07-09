@@ -13,47 +13,46 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
-#include "wvfb.h"
+#include "pixel_format.h"
+#include "screen_wvfb.h"
 #include "winfb.h"
 
 /* ----------------------------------------------------------------------------------- */
 
-static int WVFB_Available (void)
+CONSTRUCTOR(ScreenWVFB)
 {
-    return win_FbAvailable ();
+    _m(hw_data) = (ScreenWVFbPrivate*)MIL_malloc(sizeof (*_m(hw_data)));
 }
 
-void METHOD_NAMED(ScreenQVFB, shutdownDevice)(_Self(MScreen))
+DESTRUCTOR(ScreenWVFB)
 {
-    MIL_free (device->hw_data);
+    MIL_free(_m(hw_data));
 }
 
-void METHOD_NAMED(ScreenQVFB, setDirty)(_Self(MScreen), int numrects, 
+void METHOD_NAMED(ScreenWVFB, setDirty)(_Self(MScreen), int numrects, 
         const MIL_Rect* rects)
 {
     int i;
-    RECT bound;
-    struct GAL_PrivateVideoData* data = self->hw_data;
+    _RECT bound;
+    ScreenWVFbPrivate* data = _tm(ScreenWVFB, hw_data);
 
     win_FbLock ();
 
-    bound = self->hw_data->hdr->update;
+    bound = data->hdr->update;
     if (bound.right == -1) bound.right = 0;
     if (bound.bottom == -1) bound.bottom = 0;
 
     for (i = 0; i < numrects; i++) {
-        RECT rc;
-        SetRect (&rc, rects[i].x, rects[i].y, 
-                        rects[i].x + rects[i].w, rects[i].y + rects[i].h);
+        _RECT rc = {rects[i].x, rects[i].y, 
+                        rects[i].x + rects[i].w, rects[i].y + rects[i].h};
         if (is_rect_empty(&bound))
             bound = rc;
         else if (!is_rect_empty(&rc))
             get_bound_rect(&bound, &bound, &rc);
     }
 
-    self->hw_data->hdr->update = bound;
-    self->hw_data->hdr->dirty = TRUE;
+    data->hdr->update = bound;
+    data->hdr->dirty = MIL_TRUE;
 
     win_FbUnlock ();
 }
@@ -105,18 +104,17 @@ VideoBootStrap WVFB_bootstrap = {
 };
 #endif
 
-MIL_Bool METHOD_NAMED(ScreenQVFB, initDevice)(_Self(MScreen))
+MIL_Bool METHOD_NAMED(ScreenWVFB, initDevice)(_Self(MScreen))
 {
-    struct GAL_PrivateVideoData* data = self->hw_data;
+    ScreenWVFbPrivate* data = _tm(ScreenWVFB, hw_data);
     PixelFormat* vformat = DynamicCast(PixelFormat, _private(MScreen)->format);
 
-    //TODO
-    //check available
+    if (!win_FbAvailable()) return MIL_FALSE;
 
     data->shmrgn = win_FbInit (0, 0, 0);
     if ((int)data->shmrgn == -1 || data->shmrgn == NULL) {
-        GAL_SetError ("NEWGAL>WVFB: Unable to attach to virtual FrameBuffer server.\n");
-        return -1;
+        MIL_SetError ("SCREEN>WVFB: Unable to attach to virtual FrameBuffer server.\n");
+        return MIL_FALSE;
     }
     data->hdr = (struct WVFbHeader *) data->shmrgn;
 
@@ -147,21 +145,21 @@ MIL_Bool METHOD_NAMED(ScreenQVFB, initDevice)(_Self(MScreen))
             vformat->Bmask = 0x000000FF;
             break;
         default:
-            GAL_SetError ("NEWGAL>WVFB: Not supported depth: %d.\n", vformat->BitsPerPixel);
-            return -1;
+            MIL_SetError ("SCREEN>WVFB: Not supported depth: %d.\n", vformat->BitsPerPixel);
+            return MIL_FALSE;
     }
 
-    return 0;
+    return MIL_TRUE;
 }
 
-void METHOD_NAMED(ScreenQVFB, setMode)(_Self(MScreen), int width, int height, int bpp)
+void METHOD_NAMED(ScreenWVFB, setMode)(_Self(MScreen), int width, int height, int bpp)
 {
     /* Set up the mode framebuffer */
 //    current->flags = GAL_HWSURFACE | GAL_FULLSCREEN;
-    _private(MScreen)->w = self->hw_data->hdr->width;
-    _private(MScreen)->h = self->hw_data->hdr->height;
-    _private(MScreen)->pitch = self->hw_data->hdr->linestep;
-    _private(MScreen)->data = self->hw_data->shmrgn + self->hw_data->hdr->dataoffset;
+    _private(MScreen)->w = _tm(ScreenWVFB, hw_data)->hdr->width;
+    _private(MScreen)->h = _tm(ScreenWVFB, hw_data)->hdr->height;
+    _private(MScreen)->pitch = _tm(ScreenWVFB, hw_data)->hdr->linestep;
+    _private(MScreen)->data = _tm(ScreenWVFB, hw_data)->shmrgn + _tm(ScreenWVFB, hw_data)->hdr->dataoffset;
 }
 
 #if 0
@@ -179,9 +177,19 @@ static int WVFB_SetColors(_THIS, int firstcolor, int ncolors, GAL_Color *colors)
 }
 #endif
 
-void METHOD_NAMED(ScreenQVFB, shutdownDevice)(_Self(MScreen))
+void METHOD_NAMED(ScreenWVFB, shutdownDevice)(_Self(MScreen))
 {
     win_FbClose ();
 }
 
+BEGIN_METHOD_MAP(ScreenWVFB, MScreen)
+    CONSTRUCTOR_MAP(ScreenWVFB)
+    DESTRUCTOR_MAP(ScreenWVFB)
+
+    METHOD_MAP(ScreenWVFB, initDevice)
+    METHOD_MAP(ScreenWVFB, setDirty)
+    METHOD_MAP(ScreenWVFB, setMode)
+    METHOD_MAP(ScreenWVFB, shutdownDevice)
+
+END_METHOD_MAP
 #endif /* MIL_SCREEN_WVFB */

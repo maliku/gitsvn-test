@@ -239,11 +239,11 @@
 						Name="qvfb"
 						>
 						<File
-							RelativePath="..\..\src\video\qvfb\qvfb_video.c"
+							RelativePath="..\..\src\video\qvfb\screen_qvfb.c"
 							>
 						</File>
 						<File
-							RelativePath="..\..\src\video\qvfb\qvfb_video.h"
+							RelativePath="..\..\src\video\qvfb\screen_qvfb.h"
 							>
 						</File>
 					</Filter>
@@ -256,6 +256,26 @@
 						</File>
 						<File
 							RelativePath="..\..\src\video\fbcon\fbcon_video.h"
+							>
+						</File>
+					</Filter>
+					<Filter
+						Name="wvfb"
+						>
+						<File
+							RelativePath="..\..\src\video\wvfb\screen_wvfb.c"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\video\wvfb\screen_wvfb.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\video\wvfb\winfb.c"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\video\wvfb\winfb.h"
 							>
 						</File>
 					</Filter>
