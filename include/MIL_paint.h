@@ -320,10 +320,11 @@ CLASS(MScreen)
     int	mapsize;
     int	physHeight;
     int	physWidth;
-    MIL_Color* screenclut;
+    unsigned screenclut[256];
     int	screencols;
     int	size;
     int	w;
+    /* TODO: remove the format item and use the same one of MScreenPrivate */
     MIL_PixelFormat* format;
     MScreenPrivate* d_ptr;
     END_PRIVATE

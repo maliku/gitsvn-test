@@ -174,6 +174,7 @@ typedef unsigned int uintptr_t;
 
 /* Disable screensaver */
 #define MIL_VIDEO_DISABLE_SCREENSAVER	1
+#define MIL_SCREEN_WVFB	1
 
 /* Enable assembly routines (Win64 doesn't have inline asm) */
 #ifndef _WIN64

@@ -282,6 +282,30 @@ static void type##_X_##Clone(_Self(type), _Rhs(type))
 
 #define PLACEHOLDER(anything) 0
 
+#if 0
+#define OPERATOR_NOT_DECLARE(type) int (*type##_X_operator_not)(_Self(type));
+#define OPERATOR_NOT_MAP(type) METHOD_MAP(type, operator_not)
+#define OPERATOR_NOT(type) int type##_X_operator_not(_Self(type))
+#define OPERATOR_REVERSE_DECLARE(type) int (*type##_X_operator_reverse)(_Self(type));
+#define OPERATOR_REVERSE_MAP(type) METHOD_MAP(type, operator_reverse)
+#define OPERATOR_REVERSE(type) int type##_X_operator_reverse(_Self(type))
+#define _op1(opt, a) do {\
+    if (strcmp("!", #opt) == 0) _c(a)->operator_not(a);\
+    else if (strcmp("*", #opt) == 0) _c(a)->operator_pointer(a);\
+    else if (strcmp("~", #opt) == 0) _c(a)->operator_reverse(a);\
+    else if (strcmp("&", #opt) == 0) _c(a)->operator_addr(a);\
+}while(0)
+
+#define _op2(a, opt, b) do {\
+    if (strcmp("=", #opt) == 0) _c(a)->__operator_assign(a, b);\
+    else if (strcmp("==", #opt) == 0) _c(a)->__operator_equal(a, b);\
+    else if (strcmp("+",  #opt) == 0) _c(a)->__operator_plus(a, b);\
+    else if (strcmp("-",  #opt) == 0) _c(a)->__operator_minus(a, b);\
+    else if (strcmp("*",  #opt) == 0) _c(a)->__operator_multi(a, b);\
+    else if (strcmp("/",  #opt) == 0) _c(a)->__operator_division(a, b);\
+}while(0)
+#endif
+
 /* Placement new operator. */
 #define NewAt(type, p) type##Preconstructor((type *)p)
 /* Normal new operator. */

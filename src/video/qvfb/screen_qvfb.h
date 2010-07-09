@@ -13,11 +13,6 @@
 
 #define QVFB_MOUSE_PIPE       "/tmp/.qtvfb_mouse-%d"
 
-typedef struct
-{
-    int left, top, right, bottom;
-} RECT;
-
 typedef struct 
 {
     int width;
@@ -39,9 +34,13 @@ typedef struct
     MIL_Bool repeat;
 }QVFbKeyData;
 
+/* TODO: change to a class? */
 typedef struct {
     unsigned char* shmrgn;
     QVFbHeader* hdr;
+    MIL_Bool success;
+    int brightness;
+    MIL_Bool blank;
 } QVFbHardwareDependent;
 
 BEGIN_CLASS_INHERIT(ScreenQVFB, MScreen)

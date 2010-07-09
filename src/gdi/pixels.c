@@ -33,6 +33,16 @@
 
 /* Helper functions */
 #if 0
+MIL_PixelFormat *MIL_ReallocFormat(MIL_Surface *surface, int bpp,
+			Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
+{
+	if ( surface->format ) {
+		MIL_FreeFormat(surface->format);
+		MIL_FormatChanged(surface);
+	}
+	surface->format = MIL_AllocFormat(bpp, Rmask, Gmask, Bmask, Amask);
+	return surface->format;
+}
 /*
  * Free a previously allocated format structure
  */

@@ -10,8 +10,11 @@
 #define  SCREEN_INC
 
 #include "MIL_paint.h"
-typedef void (*SolidFillFunc)(MScreen*, const MIL_Color*, const MRegion*);
-typedef void (*BlitFunc)(MScreen*, const MImage*, const MIL_Point*, const MRegion*);
+
+typedef void (*SolidFillFunc)(MScreen*, const MIL_Color*, const MIL_Rect*);
+typedef void (*BlitFunc)(MScreen*, const MImage*, const MIL_Point*, const MIL_Rect*);
+//typedef void (*SolidFillFunc)(MScreen*, const MIL_Color*, const MRegion*);
+//typedef void (*BlitFunc)(MScreen*, const MImage*, const MIL_Point*, const MRegion*);
 
 CLASS_DEFINE(MScreenPrivate)
 {
@@ -36,6 +39,15 @@ CLASS_DEFINE(MScreenPrivate)
     int classId;
     MScreen *q_ptr;
 };
+
+STRUCT
+{
+    int left, top, right, bottom;
+} RECT;
+
+extern MIL_Bool is_rect_empty(RECT*);
+extern void normalize_rect(RECT*);
+extern void get_bound_rect(RECT*, const RECT*, const RECT*);
 
 #endif   /* ----- #ifndef SCREEN_INC  ----- */
 

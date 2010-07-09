@@ -10,15 +10,60 @@
 #include "pixel_format.h" /* For New(PixelFormat) */
 #include "misc.h"
 
-#define SOLID_FILL_TEMPLATE(type, size) \
+#define MIL_MEMFILL_TEMPLATE(T) \
+__INLINE__ void mil_memfill_##T(T *dest, T value, int count)\
+{\
+    int n = (count + 7) / 8;\
+    switch (count & 0x07)\
+    {\
+    case 0: do { *dest++ = value;\
+    case 7:      *dest++ = value;\
+    case 6:      *dest++ = value;\
+    case 5:      *dest++ = value;\
+    case 4:      *dest++ = value;\
+    case 3:      *dest++ = value;\
+    case 2:      *dest++ = value;\
+    case 1:      *dest++ = value;\
+    } while (--n > 0);\
+    }\
+}
+MIL_MEMFILL_TEMPLATE(char)
+MIL_MEMFILL_TEMPLATE(short)
+MIL_MEMFILL_TEMPLATE(int)
+
+#define MIL_RECTFILL_TEMPLATE(T) \
+__INLINE__ void mil_rectfill_##T(T *dest, T value,\
+                        int x, int y, int width, int height, int stride)\
+{\
+    char *d = (char*)(dest + x) + y * stride;\
+    printf("color=%d.\n", value);\
+    if ((Uint32)stride == (width * sizeof(T))) {\
+        mil_memfill_##T((T*)(d), value, width * height);\
+    } else {\
+        int j;\
+        for (j = 0; j < height; ++j) {\
+            dest = (T*)(d);\
+            mil_memfill_##T(dest, value, width);\
+            d += stride;\
+        }\
+    }\
+}
+
+MIL_RECTFILL_TEMPLATE(char)
+MIL_RECTFILL_TEMPLATE(short)
+MIL_RECTFILL_TEMPLATE(int)
+
+#define SOLID_FILL_TEMPLATE(type) \
 static void solidFill_##type(MScreen* screen, const MIL_Color* color, \
-                               const MRegion* region)\
+                               const MIL_Rect* r)\
 {\
     type* dest = (type*)(_c(screen)->baseAddr(screen));\
     const MIL_PixelFormat* fmt = (MIL_PixelFormat*)MIL_Ref(_c(screen)->pixelFormat(screen));\
-    const type c = _c(fmt)->mapColor(fmt, color);\
+    const type c = (type)_c(fmt)->mapColor(fmt, color);\
     const int stride = _c(screen)->linestep(screen);\
+    printf("color=%d.\n", c);\
     MIL_UnRef(fmt);\
+    mil_rectfill_##type(dest, c, r->x, r->y, r->w, r->h, stride);\
     /*const QVector<QRect> rects = region->rects(); \
     for (int i = 0; i < rects.size(); ++i) {\
         const QRect r = rects.at(i); \
@@ -26,66 +71,154 @@ static void solidFill_##type(MScreen* screen, const MIL_Color* color, \
     }*/\
 }
 
-SOLID_FILL_TEMPLATE(char, 1)
-SOLID_FILL_TEMPLATE(short, 2)
-SOLID_FILL_TEMPLATE(int, 4)
+SOLID_FILL_TEMPLATE(char)
+SOLID_FILL_TEMPLATE(short)
+SOLID_FILL_TEMPLATE(int)
 
-void solidFill_setup(MScreen* screen, const MIL_Color* color,
-                        const MRegion* region)
+__INLINE__ int mGray(int r, int g, int b)// convert R,G,B to gray 0..255
+{ return (r*11+g*16+b*5)/32; }
+
+static __INLINE__ void mil_rectfill_gray4(Uint8 *dest, Uint8 value,
+                                     int x, int y, int width, int height,
+                                     int stride)
 {
-#if 0
-    switch (_c(screen)->depth()) {
+    const int pixelsPerByte = 2;
+    const int doAlign = x & 1;
+    const int doTail = (width - doAlign) & 1;
+    const int width8 = (width - doAlign) / pixelsPerByte;
+    int j;
+    dest += y * stride + x / pixelsPerByte;
+
+    for (j = 0; j < height; ++j) {
+        if (doAlign)
+            *dest = (*dest & 0xf0) | (value & 0x0f);
+        if (width8)
+            mil_memfill_char(dest + doAlign, value, width8);
+        if (doTail) {
+            Uint8 *d = dest + doAlign + width8;
+            *d = (*d & 0x0f) | (value & 0xf0);
+        }
+        dest += stride;
+    }
+}
+
+static void solidFill_gray4(MScreen *screen, const MIL_Color* color,
+                            const MIL_Rect* r)
+{
+    Uint8 *dest = (Uint8*)(_c(screen)->baseAddr(screen));
+    const Uint8 c = mGray(color->r, color->g, color->b) >> 4;
+    const Uint8 c8 = (c << 4) | c;
+
+    const int stride = _c(screen)->linestep(screen);
+        mil_rectfill_gray4(dest, c8, r->x, r->y, r->w, r->h, stride);
+//    const QVector<QRect> rects = region.rects();
+//
+//    for (int i = 0; i < rects.size(); ++i) {
+//        const QRect r = rects.at(i);
+//        qt_rectfill_gray4(dest, c8, r.x(), r.y(), r.width(), r.height(),
+//                          stride);
+//    }
+}
+
+#ifndef MIN
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#endif
+
+static inline void mil_rectfill_mono(Uint8 *dest, Uint8 value,
+                                    int x, int y, int width, int height,
+                                    int stride)
+{
+    const int pixelsPerByte = 8;
+    const int alignWidth = MIN(width, (8 - (x & 7)) & 7);
+    const int doAlign = (alignWidth > 0 ? 1 : 0);
+    const int alignStart = pixelsPerByte - 1 - (x & 7);
+    const int alignStop = alignStart - (alignWidth - 1);
+    const Uint8 alignMask = ((1 << alignWidth) - 1) << alignStop;
+    const int tailWidth = (width - alignWidth) & 7;
+    const int doTail = (tailWidth > 0 ? 1 : 0);
+    const Uint8 tailMask = (1 << (pixelsPerByte - tailWidth)) - 1;
+    const int width8 = (width - alignWidth) / pixelsPerByte;
+    int j;
+
+    dest += y * stride + x / pixelsPerByte;
+    stride -= (doAlign + width8);
+
+    for (j = 0; j < height; ++j) {
+        if (doAlign) {
+            *dest = (*dest & ~alignMask) | (value & alignMask);
+            ++dest;
+        }
+        if (width8) {
+            mil_memfill_char(dest, value, width8);
+            dest += width8;
+        }
+        if (doTail)
+            *dest = (*dest & tailMask) | (value & ~tailMask);
+        dest += stride;
+    }
+}
+
+static void solidFill_mono(MScreen *screen, const MIL_Color* color,
+                           const MIL_Rect* r)
+{
+    Uint8 *dest = (Uint8*)(_c(screen)->baseAddr(screen));
+    const Uint8 c8 = (mGray(color->r, color->g, color->b) >> 7) * 0xff;
+
+    const int stride = _c(screen)->linestep(screen);
+        mil_rectfill_mono(dest, c8, r->x, r->y, r->w, r->h, stride);
+//    const QVector<QRect> rects = region.rects();
+//
+//    for (int i = 0; i < rects.size(); ++i) {
+//        const QRect r = rects.at(i);
+//        qt_rectfill_mono(dest, c8, r.x(), r.y(), r.width(), r.height(),
+//                         stride);
+//    }
+}
+void solidFill_setup(MScreen* screen, const MIL_Color* color,
+                        const MIL_Rect* region)
+{
+    printf("depth = %d.\n", _c(screen)->depth(screen));
+    switch (_c(screen)->depth(screen)) {
         case 32:
-            if (screen->pixelType() == MScreen::NormalPixel)
-                screen->d_ptr->solidFill = solidFill_template<quint32>;
-            else
-                screen->d_ptr->solidFill = solidFill_template<qabgr8888>;
+                _friend(MScreen, screen)->d_ptr->solidFill = solidFill_int;
             break;
+#if 0
         case 24:
-            if (screen->pixelType() == MScreen::NormalPixel)
-                screen->d_ptr->solidFill = solidFill_template<qrgb888>;
-            else
-                screen->d_ptr->solidFill = solidFill_template<quint24>;
+                screen->d_ptr->solidFill = solidFill_int;
             break;
         case 18:
             screen->d_ptr->solidFill = solidFill_template<quint18>;
             break;
+#endif
         case 16:
-            if (screen->pixelType() == MScreen::NormalPixel)
-                screen->d_ptr->solidFill = solidFill_template<quint16>;
-            else
-                screen->d_ptr->solidFill = solidFill_template<qbgr565>;
+                _friend(MScreen, screen)->d_ptr->solidFill = solidFill_short;
             break;
         case 15:
-            if (screen->pixelType() == MScreen::NormalPixel)
-                screen->d_ptr->solidFill = solidFill_template<qrgb555>;
-            else
-                screen->d_ptr->solidFill = solidFill_template<qbgr555>;
+                _friend(MScreen, screen)->d_ptr->solidFill = solidFill_short;
             break;
         case 12:
-            screen->d_ptr->solidFill = solidFill_template<qrgb444>;
+            _friend(MScreen, screen)->d_ptr->solidFill = solidFill_short;
             break;
         case 8:
-            screen->d_ptr->solidFill = solidFill_template<quint8>;
+            _friend(MScreen, screen)->d_ptr->solidFill = solidFill_char;
             break;
         case 4:
-            screen->d_ptr->solidFill = solidFill_gray4;
+            _friend(MScreen, screen)->d_ptr->solidFill = solidFill_gray4;
             break;
         case 1:
-            screen->d_ptr->solidFill = solidFill_mono;
+            _friend(MScreen, screen)->d_ptr->solidFill = solidFill_mono;
             break;
         default:
-            qFatal("solidFill_setup(): Screen depth %d not supported!",
-                    screen->depth());
-            screen->d_ptr->solidFill = 0;
+            MIL_SetError("solidFill_setup(): Screen depth %d not supported!",
+                    _c(screen)->depth(screen));
+            _friend(MScreen, screen)->d_ptr->solidFill = NULL;
             break;
     }
-#endif
     _friend(MScreen, screen)->d_ptr->solidFill(screen, color, region);
 }
 
 void blit_setup(MScreen *screen, const MImage* image,
-                   const MIL_Point* topLeft, const MRegion* region)
+                   const MIL_Point* topLeft, const MIL_Rect* region)
 {
 #if 0
     switch (screen->depth()) {
@@ -175,6 +308,8 @@ END_METHOD_MAP
 
 CONSTRUCTOR(MScreen)
 {
+    _private(MScreen)->d_ptr = (MScreenPrivate*)New(MScreenPrivate);
+    _private(MScreen)->d_ptr->q_ptr = self;
     _private(MScreen)->depth = 1;
     _private(MScreen)->data = NULL;
     _private(MScreen)->dh = 0;
@@ -185,18 +320,17 @@ CONSTRUCTOR(MScreen)
     _private(MScreen)->mapsize = 0;
     _private(MScreen)->physHeight = 0;
     _private(MScreen)->physWidth = 0;
-    _private(MScreen)->screenclut = NULL;
     _private(MScreen)->screencols = 0;
     _private(MScreen)->size = 0;
     _private(MScreen)->w = 0;
+    memset(_private(MScreen)->screenclut, 0, 256);
     _private(MScreen)->format = (MIL_PixelFormat*)New(PixelFormat);
 }
 
 DESTRUCTOR(MScreen)
 {
     MIL_UnRef(_private(MScreen)->format);
-    _private(MScreen)->d_ptr = (MScreenPrivate*)New(MScreenPrivate);
-    _private(MScreen)->d_ptr->q_ptr = self;
+    Delete(_private(MScreen)->d_ptr);
 }
 
 int  METHOD_NAMED(MScreen, colorIndex)(_Self(MScreen), Uint32 r, Uint32 g, Uint32 b)
@@ -365,7 +499,11 @@ void METHOD_NAMED(MScreen, shutdownDevice)(_Self(MScreen))
 
 void METHOD_NAMED(MScreen, solidFill)(_Self(MScreen), const MIL_Color* c, const MIL_Rect* rc)
 {
-
+//    QWSDisplay::grab();
+    assert(_private(MScreen)->d_ptr);
+    _private(MScreen)->d_ptr->solidFill(self, c, rc);
+//                     region.translated(-offset()) & QRect(0, 0, dw, dh));
+//    QWSDisplay::ungrab();
 }
 
 int  METHOD_NAMED(MScreen, subScreenIndexAt)(_CSelf(MScreen), const MIL_Point* pt)

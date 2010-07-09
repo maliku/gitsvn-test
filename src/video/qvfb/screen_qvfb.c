@@ -171,14 +171,14 @@ void METHOD_NAMED(ScreenQVFB, save)(_Self(MScreen))
 
 }
 
-static __INLINE__ MIL_Bool is_rect_empty(RECT* prc)
+__INLINE__ MIL_Bool is_rect_empty(RECT* prc)
 {
     if( prc->left == prc->right ) return MIL_TRUE;
     if( prc->top == prc->bottom ) return MIL_TRUE;
     return MIL_FALSE;
 }
 
-static __INLINE__ void normalize_rect(RECT* pRect)
+__INLINE__ void normalize_rect(RECT* pRect)
 {
     int iTemp;
 
@@ -197,7 +197,7 @@ static __INLINE__ void normalize_rect(RECT* pRect)
     }
 }
 
-static __INLINE__ void get_bound_rect(RECT* pdrc,  const RECT* psrc1, const RECT* psrc2)
+__INLINE__ void get_bound_rect(RECT* pdrc, const RECT* psrc1, const RECT* psrc2)
 {
     RECT src1, src2;
     memcpy(&src1, psrc1, sizeof(RECT));
@@ -248,6 +248,10 @@ void METHOD_NAMED(ScreenQVFB, setMode)(_Self(MScreen), int w, int h, int depth)
         _tm(ScreenQVFB, hw_data)->hdr->dataoffset;
     _private(MScreen)->depth = depth;
     _private(MScreen)->mapsize = _private(MScreen)->pitch * _private(MScreen)->h;
+    if (NULL != _private(MScreen)->format) {
+        MIL_UnRef(_private(MScreen)->format);
+    }
+    _private(MScreen)->format = MIL_AllocFormat(depth, 0, 0, 0, 0);
 //    _c(current)->setClipRect(current, NULL);
 //    if ( ! _c(current)->reallocFormat(current, bpp, 0, 0, 0, 0) ) {
 //        return(NULL);
@@ -263,13 +267,7 @@ void METHOD_NAMED(ScreenQVFB, shutdownDevice)(_Self(MScreen))
 void METHOD_NAMED(ScreenQVFB, solidFill)(_Self(MScreen), const MIL_Color* c, const MIL_Rect* rc)
 {
     if (NULL != rc && NULL != c) {
-        int i, j;
-        printf("solidFill %p.\n", _private(MScreen)->data);
-        for (i = 0; i < rc->h; ++i) {
-            MIL_memset(_private(MScreen)->data + _private(MScreen)->pitch * i, 
-                    255, rc->w * 
-                    _c(_private(MScreen)->format)->getBytesPerPixel(_private(MScreen)->format));
-        }
+        Super(MScreen)->solidFill(self, c, rc);
         _c(self)->setDirty(self, 1, rc);
     }
 }
