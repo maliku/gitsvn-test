@@ -619,7 +619,7 @@ END_METHOD_MAP
 MScreen* g_screen_table[MAX_SCREENS];
 int CreateScreen(const char* device_name, int w, int h, int bpp)
 {
-    g_screen_table[0] = (MScreen*)New(ScreenWVFB);
+    g_screen_table[0] = (MScreen*)New(ScreenQVFB);
     if (NULL != g_screen_table[0]) {
         if (_c(g_screen_table[0])->initDevice(g_screen_table[0])) {
             _c(g_screen_table[0])->setMode(g_screen_table[0], w, h, bpp);
